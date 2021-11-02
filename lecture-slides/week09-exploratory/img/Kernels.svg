@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="600.0px" height="432.0px" viewBox="0 0 480 346"
+    xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink">
+  <title>Kernels of all sorts</title>
+  <desc>Various kernels for statistics and convolutions</desc>
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:creator>Brian Amberg, redone by Rodney Drenth</dc:creator>
+    <dc:subject dc:language="en-us" dc:format="image/svg+xml" dc:coverage="NA">
+      Convolution Kernels, Bayesian Statistics
+    </dc:subject>
+    <dc:rights>Creative Commons Attribution - Share Alike 3.0 Unported</dc:rights>
+    <dc:source></dc:source>
+    <dc:publisher>self</dc:publisher>
+    <dc:date>11-Apr-2012</dc:date>
+    <dc:contributor dc:source="bzclienfit.py" dc:language="python.exe;x.x">
+      python modules: minichart pysvg bzclinefit
+    </dc:contributor>
+  </metadata>
+  <!-- <rect fill="#F8DDF8" width="800" height="600" /> -->
+  <g fill="none" font-family="DejaVu" stroke="black" stroke-width="2"
+      transform="translate(240,300)">
+    <!-- uniform -->
+    <path stroke="#F03000" d="M-210.0,-0.0 L-140.0,-0.0
+     L-138.2,-120.0
+     L138.3,-120.0
+     L140.0,-0.0
+     L210.0,-0.0"/>
+    <!-- triangle -->
+    <path stroke="#00C040" d="M-210.0,-0.0 L-140.0,-0.0
+     L0.0,-240.0
+     L140.0,-0.0
+     L210.0,-0.0"/>
+    <!-- epanechnikov -->
+    <path stroke="#0060E0" d="M-210.0,-0.0 L-140.0,-0.0
+     L-133.0,-17.6
+     C-102.5,-92.0 -57.9,-180.0 0.0,-180.0
+     C2.3,-180.0 4.7,-179.8 7.0,-179.5
+     C66.1,-172.0 109.7,-77.5 140.0,-0.0
+     L147.0,-0.0
+     L210.0,-0.0"/>
+    <!-- quartic -->
+    <path stroke="#00C8C8" d="M-210.0,-0.0 L-199.5,-0.0
+     L-189.0,-0.0
+     L-178.5,-0.0
+     L-168.0,-0.0
+     L-157.5,-0.0
+     L-147.0,-0.0
+     C-143.5,-0.0 -140.0,0.3 -136.5,-0.5
+     C-132.7,-2.0 -129.3,-4.5 -126.0,-8.1
+     C-122.2,-12.3 -118.7,-17.5 -115.5,-23.0
+     C-111.8,-29.3 -108.3,-36.1 -105.0,-43.1
+     L-94.5,-66.7
+     L-84.0,-92.2
+     L-73.5,-118.1
+     L-63.0,-143.1
+     C-58.0,-154.6 -52.8,-165.9 -47.2,-176.7
+     C-43.9,-183.1 -40.4,-189.3 -36.7,-195.1
+     C-33.4,-200.3 -30.0,-205.1 -26.2,-209.5
+     C-22.9,-213.3 -19.4,-216.7 -15.7,-219.3
+     C-12.4,-221.7 -8.9,-223.5 -5.2,-224.4
+     C-1.8,-225.2 1.8,-225.2 5.3,-224.4
+     C8.9,-223.5 12.4,-221.7 15.8,-219.3
+     C19.4,-216.7 22.9,-213.3 26.2,-209.5
+     C30.0,-205.1 33.4,-200.3 36.8,-195.1
+     C40.4,-189.3 43.9,-183.1 47.3,-176.7
+     L54.3,-162.5
+     L64.8,-139.0
+     L75.3,-113.8
+     L85.8,-87.8
+     L96.2,-62.6
+     L106.8,-39.4
+     C110.0,-32.7 113.5,-26.1 117.2,-20.1
+     C120.5,-14.9 123.9,-10.1 127.8,-6.3
+     C131.1,-3.1 134.5,-1.0 138.3,-0.1
+     L148.8,-0.0
+     L159.3,-0.0
+     L169.8,-0.0
+     L180.2,-0.0
+     L190.8,-0.0
+     L201.2,-0.0
+     L210.0,-0.0"/>
+    <!-- triweight -->
+    <path stroke="#C00080" d="M-210.0,-0.0 L-199.5,-0.0
+     L-189.0,-0.0
+     L-178.5,-0.0
+     L-168.0,-0.0
+     L-157.5,-0.0
+     L-147.0,-0.0
+     L-136.5,-0.0
+     C-133.0,-0.1 -129.5,-0.5 -126.0,-1.8
+     C-122.3,-3.1 -118.8,-5.4 -115.5,-8.6
+     C-111.7,-12.2 -108.2,-16.8 -105.0,-22.0
+     C-101.1,-28.2 -97.7,-35.1 -94.5,-42.3
+     C-90.7,-50.8 -87.3,-59.7 -84.0,-68.8
+     L-73.5,-99.8
+     L-63.0,-133.1
+     L-56.0,-155.6
+     L-43.8,-192.9
+     C-40.5,-202.3 -37.0,-211.6 -33.2,-220.5
+     C-30.0,-228.2 -26.6,-235.6 -22.7,-242.2
+     C-19.6,-247.7 -16.2,-252.7 -12.2,-256.5
+     C-8.9,-259.7 -5.5,-261.6 -1.7,-262.4
+     C1.9,-262.6 5.3,-261.8 8.8,-259.4
+     C12.6,-256.7 16.1,-252.6 19.3,-247.9
+     C23.1,-242.1 26.6,-235.4 29.8,-228.5
+     C33.5,-220.3 37.0,-211.5 40.3,-202.6
+     L47.3,-182.6
+     L57.8,-150.0
+     L68.2,-116.3
+     L78.8,-83.9
+     C82.1,-74.0 85.5,-64.3 89.3,-54.9
+     C92.5,-46.7 95.9,-38.7 99.7,-31.3
+     C102.9,-25.1 106.4,-19.3 110.3,-14.4
+     C113.5,-10.3 117.0,-6.8 120.8,-4.4
+     C124.1,-2.3 127.7,-1.0 131.2,-0.5
+     C134.7,0.1 138.2,-0.0 141.8,-0.0
+     L152.3,-0.0
+     L162.8,-0.0
+     L173.3,-0.0
+     L183.8,-0.0
+     L194.3,-0.0
+     L210.0,-0.0"/>
+    <!-- gaussian -->
+    <path stroke="#FF9000" d="M-210.0,-31.1 L-199.5,-34.7
+     L-189.0,-38.5
+     L-178.5,-42.5
+     L-168.0,-46.6
+     L-157.5,-50.9
+     L-147.0,-55.2
+     L-136.5,-59.5
+     L-127.8,-63.1
+     C-102.3,-73.6 -76.7,-83.6 -50.8,-89.7
+     L-40.2,-91.9
+     L-29.7,-93.6
+     L-19.2,-94.8
+     L-8.8,-95.6
+     L1.8,-95.7
+     L12.3,-95.4
+     L22.8,-94.5
+     L33.3,-93.1
+     L43.8,-91.2
+     L52.5,-89.2
+     C78.5,-83.0 104.0,-72.9 129.5,-62.4
+     L140.0,-58.1
+     L150.5,-53.7
+     L161.0,-49.4
+     L171.5,-45.2
+     L182.0,-41.1
+     L192.5,-37.2
+     L203.0,-33.5
+     L210.0,-31.1"/>
+    <!-- cosine -->
+    <path stroke="#F0D000" d="M-210.0,-0.0 L-140.0,-0.0
+     L-133.0,-14.8
+     C-100.8,-82.6 -57.3,-188.5 0.0,-188.5
+     C2.3,-188.5 4.7,-188.3 7.0,-187.9
+     C64.6,-178.4 107.0,-69.9 140.0,-0.0
+     L147.0,-0.0
+     L210.0,-0.0"/>
+  </g>
+  <g stroke="#000" stroke-width="2" fill="none" font-family="DejaVu" font-style="Sans" font-size="12">
+    <path d="M30,20 h 420 v 300 h-420 v-300 z"/>
+    <g fill="#000" text-anchor="end" stroke="none" transform="translate(24,5)">
+      <text y="300.0">0.0</text>
+      <text y="252.0">0.2</text>
+      <text y="204.0">0.4</text>
+      <text y="156.0">0.6</text>
+      <text y="108.0">0.8</text>
+      <text y="60.0">1.0</text>
+    </g>
+    <g fill="#000" text-anchor="middle" stroke="none" transform="translate(-2,335)">
+        <!-- <text x="30.0">-1.5</text>
+        <text x="450.0">1.5</text> -->
+      <text x="100.0">-1.0</text>
+      <text x="170.0">-0.5</text>
+      <text x="240.0">0.0</text>
+      <text x="310.0">0.5</text>
+      <text x="380.0">1.0</text>
+    </g>
+    <path stroke-width="1" d=" M30,300 h6 M30,252 h6 M30,204 h6 M30,156 h6 M30,108 h6 M30,60 h6"/>
+    <path stroke-width="1" d=" M100,320 v-6 M170,320 v-6 M240,320 v-6 M310,320 v-6 M380,320 v-6 M450,320 v-6"/>
+    <path stroke-width="1" d=" M444,300 h6 M444,252 h6 M444,204 h6 M444,156 h6 M444,108 h6 M444,60 h6"/>
+    <path stroke-width="1" d=" M100,20 v6 M170,20 v6 M240,20 v6 M310,20 v6 M380,20 v6 M450,20 v6"/>
+  </g>
+  <g stroke-width="2" fill="none">
+    <path stroke="#F03000" d="M340,45 h20"/>
+    <path stroke="#00C040" d="M340,59 h20"/>
+    <path stroke="#0060E0" d="M340,73 h20"/>
+    <path stroke="#00C8C8" d="M340,87 h20"/>
+    <path stroke="#C00080" d="M340,101 h20"/>
+    <path stroke="#FF9000" d="M340,115 h20"/>
+    <path stroke="#F0D000" d="M340,129 h20"/>
+  </g>
+  <g stroke-width="0.1" fill="#000" font-family="DejaVu" font-style="Sans" font-size="12" text-anchor="start" transform="translate(363, 4)">
+    <text y="45">Uniform</text>
+    <text y="59">Triangle</text>
+    <text y="73">Epanechnikov</text>
+    <text y="87">Quartic</text>
+    <text y="101">Triweight</text>
+    <text y="115">Gaussian</text>
+    <text y="129">Cosine</text>
+  </g>
+</svg>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 9: Exploratory Analysis, Part 1</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 491 Fall 2021   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Week 9: Exploratory Analysis, Part 1
+### Nick Hagerty <br> ECNS 491 Fall 2021 <br> Montana State University
+### <br> These slides use data from <a href="https://gabors-data-analysis.com/data-and-code/">Gabors Data Analysis</a>.
+
+---
+
+name: toc
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.medsmall {
+  font-size: 90%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+&lt;/style&gt;
+
+
+
+# Table of contents
+
+1. [Getting to know your data](#first)
+
+1. [Describing categorical variables](#categories)
+
+1. [Describing distributions](#distributions)
+
+1. [Data handling decisions](#decisions)
+
+
+---
+class: inverse, middle
+name: first
+
+# Getting to know your data
+
+---
+
+# Setup
+
+Load the tidyverse if necessary:
+
+```r
+library(tidyverse)
+```
+
+Download this data on hotel listings in Vienna, Austria in November 2017:
+
+```r
+vienna = read_csv("https://osf.io/y6jvb/download")
+```
+
+---
+
+# First look
+
+You already know these, but let's go over them:
+
+
+```r
+head(vienna)
+```
+
+```
+## # A tibble: 6 x 24
+##   country city_actual rating_count center1label center2label neighbourhood price
+##   &lt;chr&gt;   &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;        &lt;chr&gt;         &lt;dbl&gt;
+## 1 Austria Vienna                36 City centre  Donauturm    17. Hernals      81
+## 2 Austria Vienna               189 City centre  Donauturm    17. Hernals      81
+## 3 Austria Vienna                53 City centre  Donauturm    Alsergrund       85
+## 4 Austria Vienna                55 City centre  Donauturm    Alsergrund       83
+## 5 Austria Vienna                33 City centre  Donauturm    Alsergrund       82
+## 6 Austria Vienna                25 City centre  Donauturm    Alsergrund      229
+## # ... with 17 more variables: city &lt;chr&gt;, stars &lt;dbl&gt;, ratingta &lt;dbl&gt;,
+## #   ratingta_count &lt;dbl&gt;, scarce_room &lt;dbl&gt;, hotel_id &lt;dbl&gt;, offer &lt;dbl&gt;,
+## #   offer_cat &lt;chr&gt;, year &lt;dbl&gt;, month &lt;dbl&gt;, weekend &lt;dbl&gt;, holiday &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, distance_alter &lt;dbl&gt;, accommodation_type &lt;chr&gt;,
+## #   nnights &lt;dbl&gt;, rating &lt;dbl&gt;
+```
+
+---
+
+# First look
+
+.scroll-output-full[
+
+```r
+view(vienna)
+
+summary(vienna)
+```
+
+```
+##    country          city_actual         rating_count  center1label      
+##  Length:428         Length:428         Min.   :   1   Length:428        
+##  Class :character   Class :character   1st Qu.:  27   Class :character  
+##  Mode  :character   Mode  :character   Median :  84   Mode  :character  
+##                                        Mean   : 155                     
+##                                        3rd Qu.: 203                     
+##                                        Max.   :1541                     
+##                                        NA's   :35                       
+##  center2label       neighbourhood          price            city          
+##  Length:428         Length:428         Min.   :  27.0   Length:428        
+##  Class :character   Class :character   1st Qu.:  83.0   Class :character  
+##  Mode  :character   Mode  :character   Median : 109.5   Mode  :character  
+##                                        Mean   : 131.4                     
+##                                        3rd Qu.: 146.0                     
+##                                        Max.   :1012.0                     
+##                                                                           
+##      stars          ratingta     ratingta_count    scarce_room    
+##  Min.   :1.000   Min.   :2.000   Min.   :   2.0   Min.   :0.0000  
+##  1st Qu.:3.000   1st Qu.:3.500   1st Qu.: 129.0   1st Qu.:0.0000  
+##  Median :3.500   Median :4.000   Median : 335.0   Median :1.0000  
+##  Mean   :3.435   Mean   :3.991   Mean   : 556.5   Mean   :0.5981  
+##  3rd Qu.:4.000   3rd Qu.:4.500   3rd Qu.: 811.0   3rd Qu.:1.0000  
+##  Max.   :5.000   Max.   :5.000   Max.   :3171.0   Max.   :1.0000  
+##                  NA's   :103     NA's   :103                      
+##     hotel_id         offer         offer_cat              year     
+##  Min.   :21894   Min.   :0.0000   Length:428         Min.   :2017  
+##  1st Qu.:22028   1st Qu.:0.0000   Class :character   1st Qu.:2017  
+##  Median :22156   Median :1.0000   Mode  :character   Median :2017  
+##  Mean   :22154   Mean   :0.6799                      Mean   :2017  
+##  3rd Qu.:22279   3rd Qu.:1.0000                      3rd Qu.:2017  
+##  Max.   :22409   Max.   :1.0000                      Max.   :2017  
+##                                                                    
+##      month       weekend     holiday     distance      distance_alter  
+##  Min.   :11   Min.   :0   Min.   :0   Min.   : 0.000   Min.   : 0.600  
+##  1st Qu.:11   1st Qu.:0   1st Qu.:0   1st Qu.: 0.700   1st Qu.: 2.700  
+##  Median :11   Median :0   Median :0   Median : 1.300   Median : 3.400  
+##  Mean   :11   Mean   :0   Mean   :0   Mean   : 1.659   Mean   : 3.718  
+##  3rd Qu.:11   3rd Qu.:0   3rd Qu.:0   3rd Qu.: 2.000   3rd Qu.: 4.400  
+##  Max.   :11   Max.   :0   Max.   :0   Max.   :13.000   Max.   :13.000  
+##                                                                        
+##  accommodation_type    nnights      rating     
+##  Length:428         Min.   :1   Min.   :1.000  
+##  Class :character   1st Qu.:1   1st Qu.:3.700  
+##  Mode  :character   Median :1   Median :4.000  
+##                     Mean   :1   Mean   :3.971  
+##                     3rd Qu.:1   3rd Qu.:4.400  
+##                     Max.   :1   Max.   :5.000  
+##                                 NA's   :35
+```
+]
+
+---
+
+# Better summaries with skimr
+
+
+```r
+install.packages("skimr")
+library(skimr)
+skim(vienna)
+```
+.scroll-output-75[
+  .small[
+
+Table: Data summary
+
+|                         |       |
+|:------------------------|:------|
+|Name                     |vienna |
+|Number of rows           |428    |
+|Number of columns        |24     |
+|_______________________  |       |
+|Column type frequency:   |       |
+|character                |8      |
+|numeric                  |16     |
+|________________________ |       |
+|Group variables          |None   |
+
+
+**Variable type: character**
+
+|skim_variable      | n_missing| complete_rate| min| max| empty| n_unique| whitespace|
+|:------------------|---------:|-------------:|---:|---:|-----:|--------:|----------:|
+|country            |         0|             1|   7|   7|     0|        1|          0|
+|city_actual        |         0|             1|   6|  10|     0|        4|          0|
+|center1label       |         0|             1|  11|  11|     0|        1|          0|
+|center2label       |         0|             1|   9|   9|     0|        1|          0|
+|neighbourhood      |         0|             1|   6|  20|     0|       22|          0|
+|city               |         0|             1|   6|   6|     0|        1|          0|
+|offer_cat          |         0|             1|  10|  13|     0|        5|          0|
+|accommodation_type |         0|             1|   5|  19|     0|        8|          0|
+
+
+**Variable type: numeric**
+
+|skim_variable  | n_missing| complete_rate|     mean|     sd|      p0|      p25|     p50|      p75|  p100|hist                                     |
+|:--------------|---------:|-------------:|--------:|------:|-------:|--------:|-------:|--------:|-----:|:----------------------------------------|
+|rating_count   |        35|          0.92|   155.05| 191.22|     1.0|    27.00|    84.0|   203.00|  1541|▇▁▁▁▁ |
+|price          |         0|          1.00|   131.37|  91.58|    27.0|    83.00|   109.5|   146.00|  1012|▇▁▁▁▁ |
+|stars          |         0|          1.00|     3.43|   0.77|     1.0|     3.00|     3.5|     4.00|     5|▁▂▆▇▂ |
+|ratingta       |       103|          0.76|     3.99|   0.48|     2.0|     3.50|     4.0|     4.50|     5|▁▁▃▇▆ |
+|ratingta_count |       103|          0.76|   556.52| 586.87|     2.0|   129.00|   335.0|   811.00|  3171|▇▂▁▁▁ |
+|scarce_room    |         0|          1.00|     0.60|   0.49|     0.0|     0.00|     1.0|     1.00|     1|▆▁▁▁▇ |
+|hotel_id       |         0|          1.00| 22153.50| 146.86| 21894.0| 22027.75| 22155.5| 22279.25| 22409|▇▇▇▇▇ |
+|offer          |         0|          1.00|     0.68|   0.47|     0.0|     0.00|     1.0|     1.00|     1|▃▁▁▁▇ |
+|year           |         0|          1.00|  2017.00|   0.00|  2017.0|  2017.00|  2017.0|  2017.00|  2017|▁▁▇▁▁ |
+|month          |         0|          1.00|    11.00|   0.00|    11.0|    11.00|    11.0|    11.00|    11|▁▁▇▁▁ |
+|weekend        |         0|          1.00|     0.00|   0.00|     0.0|     0.00|     0.0|     0.00|     0|▁▁▇▁▁ |
+|holiday        |         0|          1.00|     0.00|   0.00|     0.0|     0.00|     0.0|     0.00|     0|▁▁▇▁▁ |
+|distance       |         0|          1.00|     1.66|   1.60|     0.0|     0.70|     1.3|     2.00|    13|▇▁▁▁▁ |
+|distance_alter |         0|          1.00|     3.72|   1.63|     0.6|     2.70|     3.4|     4.40|    13|▆▇▁▁▁ |
+|nnights        |         0|          1.00|     1.00|   0.00|     1.0|     1.00|     1.0|     1.00|     1|▁▁▇▁▁ |
+|rating         |        35|          0.92|     3.97|   0.58|     1.0|     3.70|     4.0|     4.40|     5|▁▁▁▇▆ |
+  ]
+]
+
+---
+
+# Better summaries with skimr
+
+
+```r
+vienna %&gt;% 
+  mutate(stars = factor(stars)) %&gt;%
+  skim()
+```
+.scroll-output-75[
+  .small[
+
+Table: Data summary
+
+|                         |           |
+|:------------------------|:----------|
+|Name                     |Piped data |
+|Number of rows           |428        |
+|Number of columns        |24         |
+|_______________________  |           |
+|Column type frequency:   |           |
+|character                |8          |
+|factor                   |1          |
+|numeric                  |15         |
+|________________________ |           |
+|Group variables          |None       |
+
+
+**Variable type: character**
+
+|skim_variable      | n_missing| complete_rate| min| max| empty| n_unique| whitespace|
+|:------------------|---------:|-------------:|---:|---:|-----:|--------:|----------:|
+|country            |         0|             1|   7|   7|     0|        1|          0|
+|city_actual        |         0|             1|   6|  10|     0|        4|          0|
+|center1label       |         0|             1|  11|  11|     0|        1|          0|
+|center2label       |         0|             1|   9|   9|     0|        1|          0|
+|neighbourhood      |         0|             1|   6|  20|     0|       22|          0|
+|city               |         0|             1|   6|   6|     0|        1|          0|
+|offer_cat          |         0|             1|  10|  13|     0|        5|          0|
+|accommodation_type |         0|             1|   5|  19|     0|        8|          0|
+
+
+**Variable type: factor**
+
+|skim_variable | n_missing| complete_rate|ordered | n_unique|top_counts                     |
+|:-------------|---------:|-------------:|:-------|--------:|:------------------------------|
+|stars         |         0|             1|FALSE   |        8|4: 143, 3: 140, 3.5: 57, 2: 47 |
+
+
+**Variable type: numeric**
+
+|skim_variable  | n_missing| complete_rate|     mean|     sd|      p0|      p25|     p50|      p75|  p100|hist                                     |
+|:--------------|---------:|-------------:|--------:|------:|-------:|--------:|-------:|--------:|-----:|:----------------------------------------|
+|rating_count   |        35|          0.92|   155.05| 191.22|     1.0|    27.00|    84.0|   203.00|  1541|▇▁▁▁▁ |
+|price          |         0|          1.00|   131.37|  91.58|    27.0|    83.00|   109.5|   146.00|  1012|▇▁▁▁▁ |
+|ratingta       |       103|          0.76|     3.99|   0.48|     2.0|     3.50|     4.0|     4.50|     5|▁▁▃▇▆ |
+|ratingta_count |       103|          0.76|   556.52| 586.87|     2.0|   129.00|   335.0|   811.00|  3171|▇▂▁▁▁ |
+|scarce_room    |         0|          1.00|     0.60|   0.49|     0.0|     0.00|     1.0|     1.00|     1|▆▁▁▁▇ |
+|hotel_id       |         0|          1.00| 22153.50| 146.86| 21894.0| 22027.75| 22155.5| 22279.25| 22409|▇▇▇▇▇ |
+|offer          |         0|          1.00|     0.68|   0.47|     0.0|     0.00|     1.0|     1.00|     1|▃▁▁▁▇ |
+|year           |         0|          1.00|  2017.00|   0.00|  2017.0|  2017.00|  2017.0|  2017.00|  2017|▁▁▇▁▁ |
+|month          |         0|          1.00|    11.00|   0.00|    11.0|    11.00|    11.0|    11.00|    11|▁▁▇▁▁ |
+|weekend        |         0|          1.00|     0.00|   0.00|     0.0|     0.00|     0.0|     0.00|     0|▁▁▇▁▁ |
+|holiday        |         0|          1.00|     0.00|   0.00|     0.0|     0.00|     0.0|     0.00|     0|▁▁▇▁▁ |
+|distance       |         0|          1.00|     1.66|   1.60|     0.0|     0.70|     1.3|     2.00|    13|▇▁▁▁▁ |
+|distance_alter |         0|          1.00|     3.72|   1.63|     0.6|     2.70|     3.4|     4.40|    13|▆▇▁▁▁ |
+|nnights        |         0|          1.00|     1.00|   0.00|     1.0|     1.00|     1.0|     1.00|     1|▁▁▇▁▁ |
+|rating         |        35|          0.92|     3.97|   0.58|     1.0|     3.70|     4.0|     4.40|     5|▁▁▁▇▆ |
+  ]
+]
+
+---
+class: inverse, middle
+name: categories
+
+# Describing categorical variables
+
+---
+
+# Frequency tables
+
+Base R:
+
+
+```r
+table(vienna$stars, useNA="ifany")
+```
+
+```
+## 
+##   1   2 2.5   3 3.5   4 4.5   5 
+##   1  47   5 140  57 143   8  27
+```
+
+&lt;/br&gt;
+
+Literally just the basics. Not terribly informative, well-formatted, or tidy.
+
+---
+
+# Frequency tables
+
+Using the tidyverse (we've done this before):
+
+
+```r
+vienna %&gt;% count(stars)
+```
+
+```
+## # A tibble: 8 x 2
+##   stars     n
+##   &lt;dbl&gt; &lt;int&gt;
+## 1   1       1
+## 2   2      47
+## 3   2.5     5
+## 4   3     140
+## 5   3.5    57
+## 6   4     143
+## 7   4.5     8
+## 8   5      27
+```
+
+&lt;/br&gt;
+
+Advantage: output is a tibble; can be piped elsewhere.
+
+---
+
+# Frequency tables
+
+Using `summarytools::freq`:
+
+
+```r
+install.packages("summarytools")
+```
+
+```r
+library(summarytools)
+freq(vienna$stars)
+```
+
+```
+## Frequencies  
+## vienna$stars  
+## Type: Numeric  
+## 
+##               Freq   % Valid   % Valid Cum.   % Total   % Total Cum.
+## ----------- ------ --------- -------------- --------- --------------
+##           1      1      0.23           0.23      0.23           0.23
+##           2     47     10.98          11.21     10.98          11.21
+##         2.5      5      1.17          12.38      1.17          12.38
+##           3    140     32.71          45.09     32.71          45.09
+##         3.5     57     13.32          58.41     13.32          58.41
+##           4    143     33.41          91.82     33.41          91.82
+##         4.5      8      1.87          93.69      1.87          93.69
+##           5     27      6.31         100.00      6.31         100.00
+##        &lt;NA&gt;      0                               0.00         100.00
+##       Total    428    100.00         100.00    100.00         100.00
+```
+
+---
+
+# Frequency tables
+
+Using `summarytools::freq`:
+
+
+```r
+install.packages("summarytools")
+```
+
+```r
+library(summarytools)
+freq(vienna$stars, order="freq")
+```
+
+```
+## Frequencies  
+## vienna$stars  
+## Type: Numeric  
+## 
+##               Freq   % Valid   % Valid Cum.   % Total   % Total Cum.
+## ----------- ------ --------- -------------- --------- --------------
+##           4    143     33.41          33.41     33.41          33.41
+##           3    140     32.71          66.12     32.71          66.12
+##         3.5     57     13.32          79.44     13.32          79.44
+##           2     47     10.98          90.42     10.98          90.42
+##           5     27      6.31          96.73      6.31          96.73
+##         4.5      8      1.87          98.60      1.87          98.60
+##         2.5      5      1.17          99.77      1.17          99.77
+##           1      1      0.23         100.00      0.23         100.00
+##        &lt;NA&gt;      0                               0.00         100.00
+##       Total    428    100.00         100.00    100.00         100.00
+```
+
+---
+
+# Crosstabs (two-way frequency tables)
+
+Using `summarytools::ctable`:
+
+
+```r
+ctable(vienna$city_actual, vienna$scarce_room)
+```
+
+```
+## Cross-Tabulation, Row Proportions  
+## city_actual * scarce_room  
+## Data Frame: vienna  
+## 
+## ------------- ------------- -------------- ------------- --------------
+##                 scarce_room              0             1          Total
+##   city_actual                                                          
+##    Fischamend                   1 (100.0%)     0 ( 0.0%)     1 (100.0%)
+##     Schwechat                   5 ( 71.4%)     2 (28.6%)     7 (100.0%)
+##        Vienna                 164 ( 39.2%)   254 (60.8%)   418 (100.0%)
+##    Voesendorf                   2 (100.0%)     0 ( 0.0%)     2 (100.0%)
+##         Total                 172 ( 40.2%)   256 (59.8%)   428 (100.0%)
+## ------------- ------------- -------------- ------------- --------------
+```
+
+Default percentages are out of each row. Options to make them by column or table.
+
+--
+
+Could we make a similar table with `dplyr` and `tidyr`?
+
+---
+
+# Crosstabs (two-way frequency tables)
+
+Yes, but it's fairly complicated and not nicely formatted...
+
+
+```r
+vienna %&gt;%
+  group_by(city_actual, scarce_room) %&gt;%
+  summarize(n=n()) %&gt;%
+  mutate(percent = n/sum(n)) %&gt;%
+  pivot_wider(names_from=scarce_room, values_from=n:percent) %&gt;%
+  mutate(across(n_0:percent_1, replace_na, 0)) %&gt;%
+  rowwise %&gt;%
+  mutate(row_sum = sum(c_across(contains("n"))))
+```
+
+```
+## # A tibble: 4 x 6
+## # Rowwise:  city_actual
+##   city_actual   n_0   n_1 percent_0 percent_1 row_sum
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Fischamend      1     0     1         0           2
+## 2 Schwechat       5     2     0.714     0.286       8
+## 3 Vienna        164   254     0.392     0.608     419
+## 4 Voesendorf      2     0     1         0           3
+```
+
+---
+
+# Bar plots
+
+We're going to use `ggplot2` to make graphs. Don't worry too much about the syntax yet; we'll talk about it more in the next unit, on visualization.
+
+
+```r
+ggplot(vienna, aes(y=neighbourhood)) + 
+  geom_bar()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, middle
+name: distributions
+
+# Describing distributions
+
+---
+
+# Histograms
+
+With default settings:
+
+
+```r
+ggplot(vienna, aes(price)) + 
+  geom_histogram()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Histograms
+
+Make bins line up with nice round numbers:
+
+
+```r
+ggplot(vienna, aes(price)) + 
+  geom_histogram(boundary=0, binwidth=25)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Histograms
+
+Too much detail? Use a larger bin width:
+
+
+```r
+ggplot(vienna, aes(price)) + 
+  geom_histogram(boundary=0, binwidth=100)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Histograms
+
+Want more detail? Use a smaller bin width:
+
+
+```r
+ggplot(vienna, aes(price)) + 
+  geom_histogram(boundary=0, binwidth=1)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-22-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+A smoothed version of a histogram.
+
+
+```r
+ggplot(vienna, aes(rating)) + 
+  geom_density()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-23-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+The **bandwidth** controls the degree of smoothing. Smaller:
+
+
+```r
+ggplot(vienna, aes(rating)) + 
+  geom_density(adjust=.25)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+The **bandwidth** controls the degree of smoothing. Larger:
+
+
+```r
+ggplot(vienna, aes(rating)) + 
+  geom_density(adjust=2)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+Show multiple groups:
+
+
+```r
+vienna %&gt;%
+  mutate(stars_rounded = factor(round(stars))) %&gt;%
+  ggplot(aes(rating, color=stars_rounded)) + 
+    geom_density(adjust=2)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+Show multiple groups:
+
+
+```r
+vienna %&gt;%
+  mutate(stars_rounded = factor(round(stars))) %&gt;%
+  ggplot(aes(rating, fill=stars_rounded)) + 
+    geom_density(adjust=2, alpha=0.4)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Kernel density plots
+
+When might you prefer a density plot vs. a histogram?
+
+--
+
+Histogram:
+- Want to see your raw data as literally as possible
+- Want to count extreme values
+- Care about thresholds
+
+Density plot:
+- Want a more general idea of the distribution
+- Want to compare distributions
+
+---
+
+# Kernel density plots
+
+How does the smoothing work?
+
+&lt;img src="img/kernel-density-animation.gif" width="60%" style="display: block; margin: auto;" /&gt;
+Source: [David Robinson](http://varianceexplained.org/files/bandwidth.html)
+
+---
+
+# Bias-variance tradeoff
+
+Bandwidth choice illustrates a **bias-variance tradeoff**. Heuristically:
+
+Smaller bandwidth:
+- Less bias (more literal representation of your raw data).
+- But higher variance (how meaningful are those wiggles?).
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Bias-variance tradeoff
+
+Bandwidth choice illustrates a **bias-variance tradeoff**. Heuristically:
+
+Larger bandwidth:
+- Lower variance (smoother lines).
+- But more bias (less directly showing your raw data).
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Bias-variance tradeoff
+
+Bias is not always bad! Often we want to accept some bias (inaccuracy) in exchange for less variance (more precision).
+
+&lt;img src="img/bias-variance.png" width="60%" style="display: block; margin: auto;" /&gt;
+Source: [Scott Fortmann-Roe](http://scott.fortmann-roe.com/docs/BiasVariance.html)
+
+---
+class: inverse, middle
+name: decisions
+
+# Data handling decisions
+
+
+---
+
+# Extreme values
+
+There are a couple of really high prices in the `price` variable.
+
+Our histogram would look a lot nicer if we could get rid of them...
+
+
+```r
+ggplot(vienna, aes(price)) + 
+  geom_histogram(boundary=0, binwidth=25)
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+```r
+ggplot(vienna, aes(distance)) + 
+  geom_histogram()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-32-2.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Extreme values
+
+**Should we get rid of them? How do we decide?**
+
+--
+
+&gt; 🗣I don’t know who needs to hear this but we ✨don’t✨ get rid of outliers *because* they’re extreme...&lt;br&gt;&lt;br&gt;we get rid of them when their extreme-ness indicates they’re not a part of the data generating process we want to study (like a typo that says your newborn is 1000 lbs) &lt;/p&gt;&amp;mdash; Chelsea Parlett-Pelleriti (@ChelseaParlett) &lt;a href="https://twitter.com/ChelseaParlett/status/1356285012375556109?ref_src=twsrc%5Etfw"&gt;February 1, 2021&lt;/a&gt;
+
+---
+
+# Extreme values
+
+Values that are much larger or smaller than the rest of your distribution, or that fail logical checks, should be investigated until you are able to classify them into one of these categories:
+1. They are erroneous (and should be excluded).
+2. They are part of a different data generating process (and should be excluded).
+3. They are correct and produced by the same process as less extreme values (and should be retained).
+
+Making sound judgments about extreme values requires **domain knowledge**.
+- If you don't know yourself, it's time to ask someone else! Go back to the documentation of your raw data, or contact the person who collected or gave you the data.
+- This can be one of the most labor-intensive aspects of data analysis, but it is critical to ensure good data quality and accurate conclusions.
+
+---
+
+# Extreme values
+
+Even when extreme values are correct and truly belong to your distribution, they can exert inordinate influence on your analysis. Your results may reflect the extreme values more than the **central tendency** of your data.
+- But this alone is not a reason to remove extreme values.
+- Instead, it's a sign that you should consider applying a **transformation** to your variable.
+
+---
+
+# Transformations
+
+Take a look at the `rating_count` variable.
+
+```r
+ggplot(vienna, aes(rating_count)) +
+  geom_histogram()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Transformations
+
+We can get a different view of this distribution by applying a (natural) logarithmic transformation:
+
+
+```r
+vienna = mutate(vienna, ln_rating_count = log(rating_count))
+ggplot(vienna, aes(ln_rating_count)) + 
+  geom_histogram()
+```
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Transformations
+
+Now we can see finer differences among values in the left (bottom) of the distribution... at the expense of compressing values in the right (top) of the distribution. 
+
+&lt;/br&gt;
+
+**Which should we prefer,** the raw variable or the log-transformed variable?
+
+---
+
+# Transformations
+
+It depends on what you think are more important: **level** or **proportional differences**.
+- Each tick on the raw histogram increases ratings by the same number.
+- Each tick on the transformed histogram multiplies ratings by the same factor.
+
+In other words, is this variable created by an **additive** or **multiplicative** process?
+
+&lt;img src="week09-exploratory-part1-nosolutions_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Transformations
+
+The natural log is by far the most common transformation in economics. Why?
+
+- Many common and important variables follow approximately lognormal distributions (e.g., income, landholdings, trade quantities).
+
+- Proportional changes in these variables often seem more policy-relevant than level changes (everyone's income increases by 2% vs. by $1000).
+
+- It allows us to directly estimate elasticities, which we like because they're unitless and convenient in many theoretical models.
+
+But other transformations can be used:
+- Inverse hyperbolic sine, Box-Cox, square root, exponential.
+- Normalization on the (0, 1) interval: max/min, sigmoidal, hyperbolic tangent.
+
+---
+
+# Transformations
+
+One other common transformation: **z-score normalization.**
+
+$$ z_i = \frac{x_i-\mu}{\sigma} $$
+
+where `\(\mu\)` is the variable's mean and `\(\sigma\)` is its standard deviation.
+
+- Centers the variable at 0.
+- One unit of a z-score = one standard deviation.
+
+In causal inference, often used for variables that have no intrinsic quantitative meaning.
+- E.g., student test scores in education.
+
+In prediction, often required for inputs to many machine learning algorithms.
+- Avoids floating point problems by putting all variables on similar scales.
+
+---
+
+# Missing data
+
+Best option: **Find it.** (The alternatives are not great...)
+
+--
+
+Try to figure out why the values are missing. Then choose one of these options:
+
+**Delete** the observations with missing values.
+- Most common choice in economics research.
+- Caveat results as valid *for the nonmissing sample*.
+- No problem at all under a "Missing Completely at Random" assumption (usually implausible).
+- No real alternative if your outcome variable is missing.
+
+**Impute** the values (using "multiple imputation" or Bayesian methods).
+- Fill in the missing value, predicting it based on the values of other variables.
+- Still relies on a "Missing at Random" assumption.
+- Reasonably common for prediction problems.
+- Rare in economics. For causal inference, can introduce new problems.
+
+---
+
+# Missing data
+
+**Interpolate** the values between its neighbors in time or space.
+- Time: Assume values change linearly (or exponentially) between observations.
+  - Useful in panel data for control variables / predictors.
+  - Example: Control for population in each year, but only have data every 10 years.
+- Space: Assume values change smoothly in two spatial dimensions.
+  - Inverse distance weighting; kriging (can be done using GIS tools)
+  - Example: Fill in groundwater levels at every farm, but only have measurements at certain places.
+
+**Create a flag** (binary variable) to indicate observations with missing values.
+- Then replace the `NA`'s in the original variable with an unused value (`0`? `-999`?). This works so long as you always include both variables in the analysis.
+- Allows you to keep the observation and not lose the rest of its information.
+- Easy. Works well for both prediction and causal inference.
+
+
+---
+class: inverse, middle
+name: challenge
+
+# A brief challenge
+
+---
+
+# Challenge
+
+Load this data:
+
+
+```r
+puzzle = read_csv("https://bit.ly/3B4BraF")
+```
+
+&lt;/br&gt;
+
+**Using your exploratory analysis skills, find the most important thing about this dataset.**
+
+
+---
+
+# Summary of Part 1
+
+### Describing variables
+* Get a initial **summary** of your dataset with `skimr::skim`.
+* Explore categorical variables with **frequency tables** and **crosstabs.**
+* For numerical variables, look at the **histograms** before you do anything else!
+* The bandwidth of **kernel density** plots features a bias/variance tradeoff.
+
+### Data handling decisions
+* **Extreme values** call for scrutiny but should be excluded only if not created by the data generating process you want to study.
+* Natural log **transformations** are widely useful for describing right-skewed variables.
+* The least-bad way to handle **missing data** depends on your objectives.
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
