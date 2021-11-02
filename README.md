@@ -8,7 +8,9 @@ Nick Hagerty, Montana State University
 [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part1-nosolutions.html)
 * Summaries, frequency tables and crosstabs in R
 * Describing distributions (histograms, kernel density, bandwidth choice, stratification)
-* Data handling decisions (extreme values, transformations, missing data)
+* Handling extreme values
+* Handling variable transformations
+* Handling missing data
 
 [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part2.html)
 * Describing relationships (Anscombe's Quartet, scatterplots, transformations, binscatter)
