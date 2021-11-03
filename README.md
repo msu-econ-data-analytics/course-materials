@@ -6,7 +6,7 @@ Nick Hagerty, Montana State University
 
 ## Data Cleaning
 
-[**Data Cleaning Checklist**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf.html)
+[**Data Cleaning Checklist**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf)
 
 
 ## Exploratory Analysis
