@@ -3,6 +3,12 @@
 #### Fall 2021
 Nick Hagerty, Montana State University
 
+
+## Data Cleaning
+
+[**Data Cleaning Checklist**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf.html)
+
+
 ## Exploratory Analysis
 
 [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part1-nosolutions.html)
