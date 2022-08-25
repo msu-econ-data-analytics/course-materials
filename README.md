@@ -1,8 +1,10 @@
 # Course Materials for Advanced Data Analytics in Economics
 
-#### Fall 2021
+#### Fall 2022
 Nick Hagerty, Montana State University
 
+
+### From Fall 2021:
 
 ## Data Cleaning
 

@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 1: R Basics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty*   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 1: R Basics
+]
+.author[
+### Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Based on materials by <a href="https://rafalab.github.io/dsbook/r-basics.html">Rafael Irizarry</a> under a CC license.
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+&lt;/style&gt;
+
+
+
+# Table of contents
+
+1. [About R](#R)
+
+1. [Operators](#operators)
+
+1. [Objects and functions](#objects)
+
+1. [Data frames](#data-frames)
+
+1. [Vectors](#vectors)
+
+1. [Miscellaneous basics](#misc)
+
+
+---
+class: inverse, middle
+name: R
+
+# About R
+
+---
+
+#	Why are we using R in this course?
+
+-	It’s free and open source
+
+- It’s widely used in industry
+
+- It’s widely used in academic research
+
+- It has a large and active user community
+
+--
+
+&lt;/br&gt;
+**Compared with Stata:**
+
+- More of a true programming language
+
+- Steeper learning curve (takes more to get started, but ultimately more powerful)
+
+- Many advantages I'll point out throughout the course
+
+
+---
+
+# R vs. Python
+
+**R:**
+- Built for statistics and data analysis
+- Better at econometrics and data visualization
+
+**Python:**
+- Built for general-purpose programming and software development
+- Better at machine learning
+
+&lt;img src="img/r_vs_python.png" width="60%" style="display: block; margin: auto;" /&gt;
+[(Source)](https://towardsdatascience.com/r-vs-python-comparing-data-science-job-postings-seeking-r-or-python-specialists-2c39ba36d471)
+
+---
+
+# R vs. Python
+
+**R:**
+- Built for statistics and data analysis
+- Better at econometrics and data visualization
+
+**Python:**
+- Built for general-purpose programming and software development
+- Better at machine learning
+
+Most economists use either Stata or R
+
+Many data scientists in industry use both R and Python
+
+Rising competitor to both: Julia
+
+---
+
+# R is a means, not an end
+
+- The goals of this course are **platform-agnostic**
+  *	It’s not about the syntax of specific packages
+  *	It’s about the concepts, logic, and thought processes underlying what we're doing and why
+
+- Your eventual goal: **Use the right tool for the job**
+
+--
+
+&lt;/br&gt;
+- Personally, I probably still have a bit more expertise in Stata than R
+
+- Many of you will know more than me about some of the things we’re learning about
+  *	Please speak up and share!
+
+---
+
+# R and RStudio
+
+- R is like the car's engine
+
+- RStudio is the dashboard
+
+---
+
+# Getting to know RStudio
+
+1. **Tour of panes:** Console, environment, scripts, other stuff
+
+1. **Try out the console**
+  * Use it as a calculator
+  * Access previous commands
+
+1. **Try a new script and save it**
+
+1. **Set global options (Tools -&gt; Options)**
+  * Uncheck "Restore .RData into workspace at start"
+  * Set "Save workspace to .RData on exit" to "Never"
+
+1. **Keyboard shortcuts**
+
+---
+
+# Time for some live coding
+
+Open a **new R script.**
+
+As we go through examples, **retype everything yourself and run it line by line** (ctl+enter). You'll learn more this way.
+
+(Feel free to try out slight tweaks along the way, too.)
+
+
+---
+class: inverse, middle
+name: operators
+
+# Operators
+
+---
+
+# Basic arithmetic
+
+You can use R like a fancy graphing calculator:
+
+```r
+1 + 2 # Addition
+```
+
+```
+## [1] 3
+```
+
+```r
+6 - 7 # Subtraction
+```
+
+```
+## [1] -1
+```
+
+```r
+5 / 2 # Division
+```
+
+```
+## [1] 2.5
+```
+
+```r
+2 ^ 3 # Exponentiation
+```
+
+```
+## [1] 8
+```
+
+```r
+2 + 4 * 1 ^ 3 # Standard order of operations
+```
+
+```
+## [1] 6
+```
+
+---
+
+# Logical evaluation
+
+Logical operators follow standard programming conventions:
+
+```r
+1 &gt; 2
+```
+
+```
+## [1] FALSE
+```
+
+```r
+1 &gt; 2 &amp; 1 &gt; 0.5 # The "&amp;" means "and"
+```
+
+```
+## [1] FALSE
+```
+
+```r
+1 &gt; 2 | 1 &gt; 0.5 # The "|" means "or"
+```
+
+```
+## [1] TRUE
+```
+
+Negation:
+
+```r
+!(1 &gt; 2)
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+# Commenting
+
+R ignores the rest of a line after a `#`. So you can write notes to yourself about what your code is doing.
+
+
+```r
+# Test whether 4 is greater than 3
+4 &gt; 3
+```
+
+```
+## [1] TRUE
+```
+
+&lt;/br&gt;
+Widely accepted conventions:
+- Put the comment **before** the code it refers to.
+- Use present tense.
+
+
+---
+
+# Evaluation
+
+This doesn't work, because `=` is reserved for assignment:
+
+```r
+1 = 1
+```
+
+```
+## Error in 1 = 1: invalid (do_set) left-hand side to assignment
+```
+
+Instead, use **==**:
+
+```r
+1 == 1
+```
+
+```
+## [1] TRUE
+```
+
+For "not equal", use **!=**:
+
+```r
+1 != 2  # This looks weird because of the font
+```
+
+```
+## [1] TRUE
+```
+
+Note: **Read the error message!** 
+--
+What should you do if you don't understand it?
+
+
+---
+class: inverse, middle
+name: objects
+
+# Objects and functions
+
+---
+
+# Objects
+
+We can store values for later by assigning them to **objects.**
+
+```r
+bill = 18.45
+percentage = 0.2
+```
+
+Instead of **=**, you can use **&lt;-** (and many people do):
+
+```r
+bill &lt;- 18.45  # this font turns "&lt;" and "-" into a symbol
+percentage &lt;- 0.2
+```
+
+In this course, I will use `=` for assignment. You can use either one, but be consistent.
+
+---
+
+# Objects
+
+To see the value of an object, just type its name:
+
+```r
+bill
+```
+
+```
+## [1] 18.45
+```
+
+Notice that `bill` and `percentage` are now listed in your Environment pane.
+
+Now, we can calculate the tip:
+
+```r
+bill * percentage
+```
+
+```
+## [1] 3.69
+```
+
+Assign a new value to `bill` and recalculate the tip:
+
+```r
+bill = 90
+bill * percentage
+```
+
+```
+## [1] 18
+```
+
+---
+
+# Challenge
+
+Try on your own, or with a neighbor:
+
+**Calculate the sum of the first 100 positive integers.**
+
+Hint: The formula for the sum of integers `\(1\)` through `\(n\)` is `\(n(n+1)/2\)`.
+
+--
+ 
+Solution:
+
+```r
+n = 100
+n * (n + 1) / 2
+```
+
+```
+## [1] 5050
+```
+
+
+---
+
+# Using functions
+
+Doing anything more complicated than arithmetic requires **functions.**
+
+```r
+log(50)
+```
+
+```
+## [1] 3.912023
+```
+To find out what **arguments** a function takes, look up its help file.
+
+```r
+?log
+```
+
+Some arguments are required, some are optional. You can see that `base` is optional because it has a default value: `exp(1)`.
+
+If you type the arguments in the expected order, you don't need to use argument names:
+
+```r
+log(50, 10)
+```
+
+```
+## [1] 1.69897
+```
+
+---
+
+# Using functions
+
+But using argument names can help improve clarity:
+
+```r
+log(50, base = 10)
+```
+
+```
+## [1] 1.69897
+```
+
+If you name all the arguments, you can put them in any order:
+
+```r
+log(base = 10, x = 50)
+```
+
+```
+## [1] 1.69897
+```
+
+We can use objects as arguments, or nest functions:
+
+```r
+log(bill)
+```
+
+```
+## [1] 4.49981
+```
+
+```r
+log(exp(50))
+```
+
+```
+## [1] 50
+```
+
+---
+
+# Data types
+
+There are many different types of objects:
+- vectors (numeric, character, logical, integer)
+- matrices
+- data frames
+- lists
+- functions
+
+To know what type of object you have, use `class`:
+
+```r
+a = 2
+class(a)
+```
+
+```
+## [1] "numeric"
+```
+
+```r
+class("a")
+```
+
+```
+## [1] "character"
+```
+
+```r
+class(TRUE)
+```
+
+```
+## [1] "logical"
+```
+
+---
+class: inverse, middle
+name: data-frames
+
+# Data frames
+
+---
+
+# Packages
+
+Many of the most useful functions of R come from add-on **packages.**
+
+To install the package called `dslabs`, type:
+
+```r
+install.packages("dslabs")
+```
+
+You only need to install a package on your computer once. But you still need to load it each time you open RStudio:
+
+```r
+library(dslabs)
+```
+
+Load the dataset `murders` from this package:
+
+```r
+data(murders)
+```
+
+
+---
+
+# Data frames
+
+A data frame is like a table. Each row is an observation and each column is a variable.
+
+
+```r
+class(murders)
+```
+
+```
+## [1] "data.frame"
+```
+
+To learn more about an data frame, you can:
+
+(1) Examine its **str**ucture with `str`:
+
+```r
+str(murders)
+```
+
+```
+## 'data.frame':	51 obs. of  5 variables:
+##  $ state     : chr  "Alabama" "Alaska" "Arizona" "Arkansas" ...
+##  $ abb       : chr  "AL" "AK" "AZ" "AR" ...
+##  $ region    : Factor w/ 4 levels "Northeast","South",..: 2 4 4 2 4 4 1 2 2 2 ...
+##  $ population: num  4779736 710231 6392017 2915918 37253956 ...
+##  $ total     : num  135 19 232 93 1257 ...
+```
+
+---
+
+# Data frames
+
+(2) Show the first few rows with `head`:
+
+```r
+head(murders)
+```
+
+```
+##        state abb region population total
+## 1    Alabama  AL  South    4779736   135
+## 2     Alaska  AK   West     710231    19
+## 3    Arizona  AZ   West    6392017   232
+## 4   Arkansas  AR  South    2915918    93
+## 5 California  CA   West   37253956  1257
+## 6   Colorado  CO   West    5029196    65
+```
+
+(3) Directly inspect it with `View` (or just click on it in your Environment pane)
+
+```r
+View(murders)
+```
+
+---
+
+# The accessor ($)
+
+To refer to individual variables (columns) in this data frame, we can use `$`:
+
+```r
+murders$population
+```
+
+```
+##  [1]  4779736   710231  6392017  2915918 37253956  5029196  3574097   897934
+##  [9]   601723 19687653  9920000  1360301  1567582 12830632  6483802  3046355
+## [17]  2853118  4339367  4533372  1328361  5773552  6547629  9883640  5303925
+## [25]  2967297  5988927   989415  1826341  2700551  1316470  8791894  2059179
+## [33] 19378102  9535483   672591 11536504  3751351  3831074 12702379  1052567
+## [41]  4625364   814180  6346105 25145561  2763885   625741  8001024  6724540
+## [49]  1852994  5686986   563626
+```
+
+The object `murders$population` is a **vector**, a set of numbers.
+
+How many entries (rows) does it have?
+
+```r
+length(murders$population)
+```
+
+```
+## [1] 51
+```
+
+---
+
+# Basic plots
+
+Make a quick **histogram:**
+
+```r
+hist(murders$total)
+```
+
+&lt;img src="01-R-basics-with-solutions_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Basic plots
+
+Make a quick **scatterplot:**
+
+```r
+plot(x = murders$population, y = murders$total)
+with(murders, plot(x = population, y = total))  # These lines are equivalent
+```
+&lt;img src="01-R-basics-with-solutions_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, middle
+name: interlude
+
+# Interlude
+
+---
+
+# Cleaning up
+
+You *could* remove objects from your environment (R's memory) using `rm`:
+
+```r
+a = "hi"
+rm(a)
+```
+
+But generally it's better to just **start a new R session.** (Try this now.)
+
+* Your environment is transient. Don't get attached to objects in it.
+
+* Exit R when you're done working. Never save your environment.
+
+* To re-create objects later, plan to re-run your script.
+
+* When you need to keep something, save it to a file (we'll get to this soon).
+
+
+---
+
+# Download these slides
+
+Link: [github.com/msu-econ-data-analytics/course-materials](https://github.com/msu-econ-data-analytics/course-materials)
+
+Try to keep typing all the code yourself. **But also open these slides** in case you temporarily fall behind or want to go back to a previous slide yourself.
+
+These slides are written in R Markdown (.Rmd file), which we'll cover in a couple weeks. You can look at either the .html (slides) or .Rmd (source) file.
+
+* I like to create my own "reference script" where I collect all the new functions I'm learning and annotate/comment them as I go.
+
+
+
+---
+class: inverse, middle
+name: vectors
+
+# Vectors
+
+---
+
+# Vectors
+
+Vectors are the most basic objects in R. `a = 1` produces a vector of length 1.
+
+To create longer vectors, use `c()`, for "concatenate":
+
+```r
+codes = c(380, 124, 818)
+countries = c("italy", "canada", "egypt")
+class(codes)
+```
+
+```
+## [1] "numeric"
+```
+
+```r
+class(countries)
+```
+
+```
+## [1] "character"
+```
+
+In R, you can use either single or double quotes:
+
+```r
+countries = c('italy', 'canada', 'egypt')
+```
+
+--
+
+Why doesn't it work to type `countries = c(canada, spain, egypt)`?
+
+
+---
+
+# Names
+
+We can name the entries of a vector (with or without quotes):
+
+```r
+codes = c(italy = 380, canada = 124, egypt = 818)
+codes
+```
+
+```
+##  italy canada  egypt 
+##    380    124    818
+```
+
+```r
+codes = c("italy" = 380, "canada" = 124, "egypt" = 818)
+codes
+```
+
+```
+##  italy canada  egypt 
+##    380    124    818
+```
+
+Or by using the `names` function:
+
+```r
+codes = c(380, 124, 818)
+country = c("italy", "canada", "egypt")
+names(codes) = country
+codes
+```
+
+```
+##  italy canada  egypt 
+##    380    124    818
+```
+
+---
+
+# Sequences
+
+Another useful way to create vectors is to generate sequences:
+
+```r
+seq(1, 10)
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+Shortcut for consecutive integers:
+
+```r
+1:10
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+Counting by 5s:
+
+```r
+seq(5, 50, 5)
+```
+
+```
+##  [1]  5 10 15 20 25 30 35 40 45 50
+```
+
+---
+
+# Subsetting/Indexing
+
+We use square brackets to access specific elements of a vector:
+
+```r
+codes[2]
+```
+
+```
+## canada 
+##    124
+```
+
+You can get more than one entry by using a multi-entry vector as an index:
+
+```r
+codes[c(1,3)]
+```
+
+```
+## italy egypt 
+##   380   818
+```
+
+Sequences are useful if we want to access, say, the first two elements:
+
+```r
+codes[1:2]
+```
+
+```
+##  italy canada 
+##    380    124
+```
+
+---
+
+# Subsetting/Indexing
+
+You can also index using names, if they're defined:
+
+```r
+codes["canada"]
+```
+
+```
+## canada 
+##    124
+```
+
+And you can assign new values to indexed elements:
+
+```r
+codes[2] = 125
+codes
+```
+
+```
+##  italy canada  egypt 
+##    380    125    818
+```
+
+
+---
+
+# Challenge
+
+
+```r
+library(dslabs)
+data(murders)
+```
+
+Change the name of the column "total" to be "murders", and then change it back to "total". (Hint: use `names()` and indexing.)
+
+--
+ 
+Solution:
+
+```r
+names(murders)[5] = "murders"
+head(murders)
+```
+
+```
+##        state abb region population murders
+## 1    Alabama  AL  South    4779736     135
+## 2     Alaska  AK   West     710231      19
+## 3    Arizona  AZ   West    6392017     232
+## 4   Arkansas  AR  South    2915918      93
+## 5 California  CA   West   37253956    1257
+## 6   Colorado  CO   West    5029196      65
+```
+
+```r
+names(murders)[5] = "total"
+```
+
+
+---
+
+# Converting (coercing) types
+
+Turn numbers into characters, and back again:
+
+```r
+x = 1:5
+y = as.character(x)
+y
+```
+
+```
+## [1] "1" "2" "3" "4" "5"
+```
+
+```r
+as.numeric(y)
+```
+
+```
+## [1] 1 2 3 4 5
+```
+
+---
+
+# Converting (coercing) types
+
+A vector can't mix and match types, so R will just guess:
+
+```r
+z = c(1, "canada", 3)
+z
+```
+
+```
+## [1] "1"      "canada" "3"
+```
+
+```r
+class(z)
+```
+
+```
+## [1] "character"
+```
+
+If a conversion isn't obvious to R, you'll get an `NA` ("not available"):
+
+```r
+as.numeric(z)
+```
+
+```
+## [1]  1 NA  3
+```
+
+---
+
+# Special values
+
+In R, `NA` contains no information.
+
+```r
+NA == NA
+```
+
+```
+## [1] NA
+```
+
+```r
+NA + 0
+```
+
+```
+## [1] NA
+```
+
+```r
+is.na(NA + 0)
+```
+
+```
+## [1] TRUE
+```
+
+`NA` values are very important in representing missing data.
+
+---
+
+# Special values
+
+Other special values in R:
+
+```r
+1/0
+```
+
+```
+## [1] Inf
+```
+
+```r
+-1/0
+```
+
+```
+## [1] -Inf
+```
+
+```r
+0/0
+```
+
+```
+## [1] NaN
+```
+
+---
+
+# Vector arithmetic
+
+Arithmetic operators apply **element-wise.**
+
+$$
+\small{
+`\begin{pmatrix}
+a\\
+b\\
+c\\
+d
+\end{pmatrix}`
++
+`\begin{pmatrix}
+e\\
+f\\
+g\\
+h
+\end{pmatrix}`
+=
+`\begin{pmatrix}
+a +e\\
+b + f\\
+c + g\\
+d + h
+\end{pmatrix}`
+}
+$$
+
+Multiply a vector by a scalar:
+
+```r
+inches = 1:12
+cm = inches * 2.54
+cm
+```
+
+```
+##  [1]  2.54  5.08  7.62 10.16 12.70 15.24 17.78 20.32 22.86 25.40 27.94 30.48
+```
+
+Divide (the elements of) one vector by (the elements of) another:
+
+```r
+murder_rate = murders$total / murders$population * 1e5
+mean(murder_rate)
+```
+
+```
+## [1] 2.779125
+```
+
+
+---
+
+# An aside on data frames
+
+We could add the murder rate to our data frame as a new variable (column):
+
+
+```r
+murders$rate = murders$total / murders$population * 1e5
+head(murders)
+```
+
+```
+##        state abb region population total     rate
+## 1    Alabama  AL  South    4779736   135 2.824424
+## 2     Alaska  AK   West     710231    19 2.675186
+## 3    Arizona  AZ   West    6392017   232 3.629527
+## 4   Arkansas  AR  South    2915918    93 3.189390
+## 5 California  CA   West   37253956  1257 3.374138
+## 6   Colorado  CO   West    5029196    65 1.292453
+```
+
+But this isn't always the best approach to editing data frames. Why?
+* The syntax is redundant and gets complicated quickly.
+* It directly modifies your original data frame, rather than creating a new version.
+* If there is already a column named `rate`, it gets overwritten.
+
+---
+
+# An aside on data frames
+
+One potentially better approach uses `cbind` to create a new object:
+
+
+```r
+murders_with_rate = cbind(murders, murder_rate)
+head(murders_with_rate)
+```
+
+```
+##        state abb region population total murder_rate
+## 1    Alabama  AL  South    4779736   135    2.824424
+## 2     Alaska  AK   West     710231    19    2.675186
+## 3    Arizona  AZ   West    6392017   232    3.629527
+## 4   Arkansas  AR  South    2915918    93    3.189390
+## 5 California  CA   West   37253956  1257    3.374138
+## 6   Colorado  CO   West    5029196    65    1.292453
+```
+
+What should you make sure to watch out for when using `cbind`?
+
+
+---
+
+# Subsetting with logicals
+
+It's often useful to **subset** a vector based on the properties of another vector.
+
+Generate a logical vector that says whether each element of a vector passes a test:
+
+```r
+low = murder_rate &lt;= 0.6  # this is "&lt; =" without a space
+low
+```
+
+```
+##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+## [13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [25] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE
+## [37] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [49] FALSE FALSE FALSE
+```
+
+---
+
+# Subsetting with logicals
+
+Now we can subset (index) states using this logical:
+
+```r
+murders$state[low]
+```
+
+```
+## [1] "Hawaii"        "New Hampshire" "North Dakota"  "Vermont"
+```
+
+How many states meet this test? `sum` coerces logical to numeric, treating `TRUE` as 1 and `FALSE` as 0:
+
+```r
+sum(low)
+```
+
+```
+## [1] 4
+```
+
+---
+
+# Challenge
+
+Try this on your own, or with a neighbor:
+
+**Which state has the most murders?**
+
+Hint: Use logical indexing and the `max` function.
+
+--
+ 
+Solution:
+
+
+```r
+most = max(murders$total)
+is_most = (murders$total == most)
+murders$state[is_most]
+```
+
+```
+## [1] "California"
+```
+
+Or, in one line:
+
+
+```r
+murders$state[murders$total == max(murders$total)]
+```
+
+```
+## [1] "California"
+```
+
+Which syntax is better?
+
+
+---
+class: inverse, middle
+name: misc
+
+# Miscellaneous basics
+
+---
+
+# A useful trick: %in%
+
+Is Montana listed as a state in this dataset?
+
+```r
+"Montana" %in% murders$state
+```
+
+```
+## [1] TRUE
+```
+
+How about D.C. and Puerto Rico?
+
+```r
+c("District of Columbia", "Puerto Rico") %in% murders$state
+```
+
+```
+## [1]  TRUE FALSE
+```
+
+---
+
+# Lists
+
+Lists are objects that can store any combination of types.
+
+```r
+record = list(
+  name = "John Doe",
+  id = 1234,
+  grades = c(94, 88, 95)
+  )
+record
+```
+
+```
+## $name
+## [1] "John Doe"
+## 
+## $id
+## [1] 1234
+## 
+## $grades
+## [1] 94 88 95
+```
+
+**FYI:** A data frame is a list of vectors that follows certain rules.
+
+---
+
+# Lists
+
+Access the components with `$` as usual, or with double square brackets:
+
+```r
+record$id
+```
+
+```
+## [1] 1234
+```
+
+```r
+record[["id"]]
+```
+
+```
+## [1] 1234
+```
+
+```r
+record[[2]]
+```
+
+```
+## [1] 1234
+```
+
+```r
+record$grades[3]
+```
+
+```
+## [1] 95
+```
+
+
+---
+
+# Table of contents
+
+1. [About R](#R)
+
+1. [Operators](#operators)
+
+1. [Objects and functions](#objects)
+
+1. [Data frames](#data-frames)
+
+1. [Vectors](#vectors)
+
+1. [Miscellaneous basics](#misc)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
