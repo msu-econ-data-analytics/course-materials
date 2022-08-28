@@ -96,7 +96,6 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Introduction to Data Science* Ch. 4: Programming Basics](https://rafalab.github.io/dsbook/programming-basics.html) (Rafael A. Irizarry). If/else, writing functions, for-loops, vectorization, functionals.
 * [Intermediate R](https://greenwood-stat.shinyapps.io/IntermediateR-learnr) (Montana State University R Workshops Team). Relational operators, logicals, conditional statements, loops, functions.
 * [*R for Data Science* Ch. 17-21](https://r4ds.had.co.nz/program-intro.html) (Hadley Wickham). Pipes, functions, vectors, iteration.
-* [R Fundamentals: Part 4](https://github.com/dlab-berkeley/R-Fundamentals) (UC Berkeley D-Lab). Script. Functions, for-loops, if/else, Monte Carlo simulations.
 * Big Data in Economics (Grant McDermott):
   - [Lecture 10: Functions in R: (1) Introductory Concepts](https://raw.githack.com/uo-ec607/lectures/master/10-funcs-intro/10-funcs-intro.html). Function syntax, control flow, iteration, vectorization. The section on functional programming uses the tidyverse, which we're covering later in the course.
   - [Lecture 11: Functions in R: (2) Advanced Concepts](https://raw.githack.com/uo-ec607/lectures/master/11-funcs-adv/11-funcs-adv.html). Debugging, catching user errors, caching.
