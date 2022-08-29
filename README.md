@@ -2,18 +2,18 @@
 
 Nick Hagerty, Montana State University
 
----
+***
 
 **Skip to:** [Lecture slides](#Lecture-slides)
 | [External resources](#External-Resources)
 
----
+***
 
 ## Lecture slides
 
 Fall 2022
 
-These are best viewed in html format, but PDFs are also provided in case they work better for your situation.
+*These are best viewed in html format, but PDFs are also provided in case they work better for your situation.*
 
 [**Lecture 1: R Basics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html)
 ([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf))
