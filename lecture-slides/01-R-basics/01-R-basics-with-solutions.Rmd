@@ -315,7 +315,7 @@ bill * percentage
 
 # Challenge
 
-Try on your own, or with a neighbor:
+Try on your own, and compare your solution with a neighbor:
 
 **Calculate the sum of the first 100 positive integers.**
 
@@ -438,12 +438,21 @@ str(murders)
 
 # Data frames
 
-(2) Show the first few rows with `head`:
+(2) Display some summary statistics with `summary`:
+```{r}
+summary(murders)
+```
+
+---
+
+# Data frames
+
+(3) Show the first few rows with `head`:
 ```{r}
 head(murders)
 ```
 
-(3) Directly inspect it with `View` (or just click on it in your Environment pane)
+(4) Directly inspect it with `View` (or just click on it in your Environment pane)
 ```{r, eval=F}
 View(murders)
 ```
@@ -762,6 +771,9 @@ head(murders)
 ```
 
 But this isn't always the best approach to editing data frames. Why?
+
+--
+
 * The syntax is redundant and gets complicated quickly.
 * It directly modifies your original data frame, rather than creating a new version.
 * If there is already a column named `rate`, it gets overwritten.
@@ -812,7 +824,7 @@ sum(low)
 
 # Challenge
 
-Try this on your own, or with a neighbor:
+Try this on your own, and compare with a neighbor:
 
 **Which state has the most murders?**
 

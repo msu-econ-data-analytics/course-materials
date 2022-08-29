@@ -57,8 +57,6 @@ Fall 2022
 * Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
 * Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
 
-*Draws some material from [Rafael A. Irizarry](https://rafalab.github.io/dsbook/) and [Ed Rubin](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression), data from [Gabors Data Analysis](https://gabors-data-analysis.com/data-and-code/), and inspiration from [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html)*.
-
 **Spatial Analysis**
 
 **Data Visualization**

@@ -404,7 +404,7 @@ bill * percentage
 
 # Challenge
 
-Try on your own, or with a neighbor:
+Try on your own, and compare your solution with a neighbor:
 
 **Calculate the sum of the first 100 positive integers.**
 
@@ -589,7 +589,34 @@ str(murders)
 
 # Data frames
 
-(2) Show the first few rows with `head`:
+(2) Display some summary statistics with `summary`:
+
+```r
+summary(murders)
+```
+
+```
+##     state               abb                      region     population      
+##  Length:51          Length:51          Northeast    : 9   Min.   :  563626  
+##  Class :character   Class :character   South        :17   1st Qu.: 1696962  
+##  Mode  :character   Mode  :character   North Central:12   Median : 4339367  
+##                                        West         :13   Mean   : 6075769  
+##                                                           3rd Qu.: 6636084  
+##                                                           Max.   :37253956  
+##      total       
+##  Min.   :   2.0  
+##  1st Qu.:  24.5  
+##  Median :  97.0  
+##  Mean   : 184.4  
+##  3rd Qu.: 268.0  
+##  Max.   :1257.0
+```
+
+---
+
+# Data frames
+
+(3) Show the first few rows with `head`:
 
 ```r
 head(murders)
@@ -605,11 +632,12 @@ head(murders)
 ## 6   Colorado  CO   West    5029196    65
 ```
 
-(3) Directly inspect it with `View` (or just click on it in your Environment pane)
+(4) Directly inspect it with `View` (or just click on it in your Environment pane)
 
 ```r
 View(murders)
 ```
+
 
 ---
 
@@ -653,7 +681,7 @@ Make a quick **histogram:**
 hist(murders$total)
 ```
 
-&lt;img src="01-R-basics_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="01-R-basics_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -665,7 +693,7 @@ Make a quick **scatterplot:**
 plot(x = murders$population, y = murders$total)
 with(murders, plot(x = population, y = total))  # These lines are equivalent
 ```
-&lt;img src="01-R-basics_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="01-R-basics_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1102,6 +1130,9 @@ head(murders)
 ```
 
 But this isn't always the best approach to editing data frames. Why?
+
+--
+
 * The syntax is redundant and gets complicated quickly.
 * It directly modifies your original data frame, rather than creating a new version.
 * If there is already a column named `rate`, it gets overwritten.
@@ -1180,7 +1211,7 @@ sum(low)
 
 # Challenge
 
-Try this on your own, or with a neighbor:
+Try this on your own, and compare with a neighbor:
 
 **Which state has the most murders?**
 
@@ -1299,6 +1330,8 @@ record$grades[3]
 1. [Vectors](#vectors)
 
 1. [Miscellaneous basics](#misc)
+
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
