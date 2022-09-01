@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 2: Programming</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty*   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 2: Programming
+]
+.author[
+### Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Based on materials by <a href="https://rafalab.github.io/dsbook/r-basics.html">Rafael Irizarry</a> under a CC license.
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+&lt;/style&gt;
+
+
+
+
+# Programming
+
+You can do a lot of data analysis in R without knowing much programming.
+
+But knowing some basic concepts of programming can make you a better data analyst.
+
+&lt;/br&gt;
+
+1. [If/else statements](#if-else)
+
+1. [For-loops](#for-loops)
+
+1. [Functions](#functions)
+
+1. [Vectorization](#vectorization)
+
+1. [Parallelization](#parallelization)
+
+
+---
+class: inverse, middle
+name: if-else
+
+# If/else statements
+
+---
+
+# If/else statements
+
+If/else statements are a type of **conditional expression**.
+
+**Example:** Print the reciprocal of `a`, unless `a` is 0.
+
+
+```r
+a = 0
+
+if(a != 0) {
+  
+  print(1 / a)
+  
+} else{
+  
+  print("Reciprocal does not exist.")
+  
+}
+```
+
+```
+## [1] "Reciprocal does not exist."
+```
+
+--
+
+Statements like this are used for **control flow** of your code.
+* They are used all the time in software development.
+* You probably won't use them much in data analysis, until you start writing your own functions and packages.
+
+---
+
+# If/else statements
+
+Here's a related function that you *will* use all the time in data analysis: `ifelse`. Its syntax is:
+
+```r
+ifelse(test, yes, no)
+```
+
+For example:
+
+```r
+a = 0
+ifelse(a &gt; 0, 1/a, NA)
+```
+
+```
+## [1] NA
+```
+
+--
+
+`ifelse` is particularly useful because it is **vectorized**. For example, to change negative numbers to missing:
+
+```r
+b = c(0, 1, 2, -3, 4)
+ifelse(b &lt; 0, NA, b)
+```
+
+```
+## [1]  0  1  2 NA  4
+```
+
+---
+class: inverse, middle
+name: for-loops
+
+# For-loops
+
+---
+
+# Abstraction
+
+Very often, you will find yourself copying and pasting your code to do the same thing `\(n\)` times, with only a small tweak each time. What's wrong with that?
+--
+
+It's:
+* Annoying (especially if `\(n\)` is large)
+* Hard to change later if needed
+* Prone to errors/bugs
+
+Instead, you can **abstract** your code: define it once, and run it multiple times. The rest of this lecture covers tools for abstraction in different situations.
+
+A good rule to aim for is to **never copy-and-paste more than twice.** If you're pasting more than that, abstract it instead!
+
+---
+
+# For-loops
+
+A for-loop is a simple tool that is used for **iteration**. It just repeats the same code for different values of a variable (entries of a vector):
+
+
+```r
+for (i in 1:5) {
+  print(i)
+}
+```
+
+```
+## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+```
+
+---
+
+# For-loops
+
+Suppose we want to calculate the mean of the numeric columns in the `murders` data frame? And we also want the mean murder *rate*.
+
+We could copy and paste:
+
+```r
+library(dslabs)
+data(murders)
+murders2 = cbind(murders, rate = murders$total / murders$population * 1e5)
+
+mean(murders2$total)
+```
+
+```
+## [1] 184.3725
+```
+
+```r
+mean(murders2$population)
+```
+
+```
+## [1] 6075769
+```
+
+```r
+mean(murders$rate)
+```
+
+```
+## [1] NA
+```
+
+--
+
+Oops! What's the problem?
+
+---
+
+# For-loops
+
+Instead of risking errors with copy-and-paste, we could put this into a for-loop:
+
+
+```r
+columns = c("total", "population", "rate")
+for(var in columns) {
+  print(mean(murders2[[var]]))
+}
+```
+
+```
+## [1] 184.3725
+## [1] 6075769
+## [1] 2.779125
+```
+
+
+---
+
+# For-loops
+
+Instead of printing the output, we can populate a vector:
+
+
+```r
+columns = c("total", "population", "rate")
+murder_means = vector()
+for(var in columns) {
+  murder_means[[var]] = mean(murders2[[var]])
+}
+murder_means
+```
+
+```
+##        total   population         rate 
+## 1.843725e+02 6.075769e+06 2.779125e+00
+```
+
+--
+
+&lt;/br&gt;
+
+There is one technical problem with this code. The vector storing the output "grows" at each iteration, which can make the loop very slow.
+
+---
+
+# For-loops
+
+To make the loop more efficient, give your empty vector the right length before starting the loop:
+
+
+```r
+columns = c("total", "population", "rate")
+murder_numbers = murders2[columns]
+murder_means = vector("numeric", length = length(murder_numbers))
+for(i in 1:length(murder_numbers)) {
+  murder_means[[i]] = mean(murder_numbers[[i]])
+}
+names(murder_means) = columns
+murder_means
+```
+
+```
+##        total   population         rate 
+## 1.843725e+02 6.075769e+06 2.779125e+00
+```
+
+---
+
+# For-loops
+
+For-loops are actually discouraged in R programming.
+
+* We're covering them because they are foundational throughout all of programming.
+
+* But R has nicer ways to iterate, called **vectorization.**
+
+* Before getting to vectorization, we have to cover functions.
+
+
+---
+class: inverse, middle
+name: functions
+
+# Functions
+
+---
+
+# Functions
+
+Suppose I want to **standardize**, or calculate the Z-score of, a numeric variable.
+
+```r
+z_population = (murders$population - mean(murders$population)) / sd(murders$population)
+```
+
+--
+
+This works, but:
+* It's hard to read what's actually going on
+* If I ever wanted to standardize a different vector, I would have to retype everything
+
+---
+
+# Functions
+
+We can abstract this calculation by writing our own **function.**
+
+```r
+calculate_z = function(x) {
+  z = (x - mean(x)) / sd(x)
+  return(z)
+}
+```
+
+What's going on:
+* `calculate_z` is the name of the new function.
+* `x` is an argument of this function (information that changes each time you run it).
+* The stuff to be done is contained within curly brackets `{}`.
+* The `return()` function defines what the result of the function is.
+
+---
+
+# Functions
+
+Now we can use this function:
+
+```r
+calculate_z = function(x) {
+  z = (x - mean(x)) / sd(x)
+  return(z)
+}
+z_population = calculate_z(murders$population)
+head(z_population)
+```
+
+```
+## [1] -0.18890769 -0.78207215  0.04609577 -0.46057478  4.54448196 -0.15254681
+```
+Isn't this better? Compare readability.
+
+--
+
+Also, we now have the function available to use in different contexts:
+
+
+```r
+z_population = calculate_z(murders$population)
+
+z_rate = calculate_z(murders2$rate)
+
+z_seq = calculate_z(seq(1:100))
+```
+
+---
+
+# Functions
+
+**When would we want to use a function vs. a for-loop?**
+
+
+---
+
+# Challenge
+
+**Write a function `average(x, median = FALSE)` that calculates the mean of an input vector `x`, unless the optional argument `median = TRUE` is specified.**
+
+Hint: Use a conditional (if/else) statement.
+
+Test it (for example, with `c(1, 9, 10)`) to make sure it works.
+
+--
+
+
+```r
+average = function(x, median = FALSE) {
+  avg = ifelse(median == TRUE, median(x), mean(x))
+  return(avg)
+}
+average(c(1, 9, 10))
+```
+
+```
+## [1] 6.666667
+```
+
+```r
+average(c(1, 9, 10), median = TRUE)
+```
+
+```
+## [1] 9
+```
+
+---
+
+# Challenge
+
+**Write a function `average(x, median = FALSE)` that calculates the mean of an input vector `x`, unless the argument `median = TRUE` is specified.**
+
+Hint: Use a conditional (if/else) statement.
+
+
+```r
+average = function(x, median = FALSE) {
+  if (median == TRUE) {
+    avg = median(x)
+  } else {
+    avg = mean(x)
+  }
+  return(avg)
+}
+average(c(1, 9, 10))
+```
+
+```
+## [1] 6.666667
+```
+
+```r
+average(c(1, 9, 10), median = TRUE)
+```
+
+```
+## [1] 9
+```
+
+
+
+---
+class: inverse, middle
+name: vectorization
+
+# Vectorization
+
+---
+
+
+---
+class: inverse, middle
+name: parallelization
+
+# Parallelization
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,376 @@
+---
+title: "Lecture 2: Programming"
+subtitle: ""
+author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Based on materials by [Rafael Irizarry](https://rafalab.github.io/dsbook/r-basics.html) under a CC license."
+
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      fig_caption: true
+
+---
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	cache = FALSE,
+	dpi = 300,
+  warning = F,
+  message = F,
+	fig.height = 5,
+	out.width = "80%"
+)
+```
+
+
+# Programming
+
+You can do a lot of data analysis in R without knowing much programming.
+
+But knowing some basic concepts of programming can make you a better data analyst.
+
+</br>
+
+1. [If/else statements](#if-else)
+
+1. [For-loops](#for-loops)
+
+1. [Functions](#functions)
+
+1. [Vectorization](#vectorization)
+
+1. [Parallelization](#parallelization)
+
+
+---
+class: inverse, middle
+name: if-else
+
+# If/else statements
+
+---
+
+# If/else statements
+
+If/else statements are a type of **conditional expression**.
+
+**Example:** Print the reciprocal of `a`, unless `a` is 0.
+
+```{r}
+a = 0
+
+if(a != 0) {
+  
+  print(1 / a)
+  
+} else{
+  
+  print("Reciprocal does not exist.")
+  
+}
+```
+
+--
+
+Statements like this are used for **control flow** of your code.
+* They are used all the time in software development.
+* You probably won't use them much in data analysis, until you start writing your own functions and packages.
+
+---
+
+# If/else statements
+
+Here's a related function that you *will* use all the time in data analysis: `ifelse`. Its syntax is:
+```{r, eval=F}
+ifelse(test, yes, no)
+```
+
+For example:
+```{r}
+a = 0
+ifelse(a > 0, 1/a, NA)
+```
+
+--
+
+`ifelse` is particularly useful because it is **vectorized**. For example, to change negative numbers to missing:
+```{r}
+b = c(0, 1, 2, -3, 4)
+ifelse(b < 0, NA, b)
+```
+
+---
+class: inverse, middle
+name: for-loops
+
+# For-loops
+
+---
+
+# Abstraction
+
+Very often, you will find yourself copying and pasting your code to do the same thing $n$ times, with only a small tweak each time. What's wrong with that?
+--
+
+It's:
+* Annoying (especially if $n$ is large)
+* Hard to change later if needed
+* Prone to errors/bugs
+
+Instead, you can **abstract** your code: define it once, and run it multiple times. The rest of this lecture covers tools for abstraction in different situations.
+
+A good rule to aim for is to **never copy-and-paste more than twice.** If you're pasting more than that, abstract it instead!
+
+---
+
+# For-loops
+
+A for-loop is a simple tool that is used for **iteration**. It just repeats the same code for different values of a variable (entries of a vector):
+
+```{r}
+for (i in 1:5) {
+  print(i)
+}
+```
+
+---
+
+# For-loops
+
+Suppose we want to calculate the mean of the numeric columns in the `murders` data frame? And we also want the mean murder *rate*.
+
+We could copy and paste:
+```{r}
+library(dslabs)
+data(murders)
+murders2 = cbind(murders, rate = murders$total / murders$population * 1e5)
+
+mean(murders2$total)
+mean(murders2$population)
+mean(murders$rate)
+```
+
+--
+
+Oops! What's the problem?
+
+---
+
+# For-loops
+
+Instead of risking errors with copy-and-paste, we could put this into a for-loop:
+
+```{r}
+columns = c("total", "population", "rate")
+for(var in columns) {
+  print(mean(murders2[[var]]))
+}
+```
+
+
+---
+
+# For-loops
+
+Instead of printing the output, we can populate a vector:
+
+```{r}
+columns = c("total", "population", "rate")
+murder_means = vector()
+for(var in columns) {
+  murder_means[[var]] = mean(murders2[[var]])
+}
+murder_means
+```
+
+--
+
+</br>
+
+There is one technical problem with this code. The vector storing the output "grows" at each iteration, which can make the loop very slow.
+
+---
+
+# For-loops
+
+To make the loop more efficient, give your empty vector the right length before starting the loop:
+
+```{r}
+columns = c("total", "population", "rate")
+murder_numbers = murders2[columns]
+murder_means = vector("numeric", length = length(murder_numbers))
+for(i in 1:length(murder_numbers)) {
+  murder_means[[i]] = mean(murder_numbers[[i]])
+}
+names(murder_means) = columns
+murder_means
+```
+
+---
+
+# For-loops
+
+For-loops are actually discouraged in R programming.
+
+* We're covering them because they are foundational throughout all of programming.
+
+* But R has nicer ways to iterate, called **vectorization.**
+
+* Before getting to vectorization, we have to cover functions.
+
+
+---
+class: inverse, middle
+name: functions
+
+# Functions
+
+---
+
+# Functions
+
+Suppose I want to **standardize**, or calculate the Z-score of, a numeric variable.
+```{r}
+z_population = (murders$population - mean(murders$population)) / sd(murders$population)
+```
+
+--
+
+This works, but:
+* It's hard to read what's actually going on
+* If I ever wanted to standardize a different vector, I would have to retype everything
+
+---
+
+# Functions
+
+We can abstract this calculation by writing our own **function.**
+```{r}
+calculate_z = function(x) {
+  z = (x - mean(x)) / sd(x)
+  return(z)
+}
+```
+
+What's going on:
+* `calculate_z` is the name of the new function.
+* `x` is an argument of this function (information that changes each time you run it).
+* The stuff to be done is contained within curly brackets `{}`.
+* The `return()` function defines what the result of the function is.
+
+---
+
+# Functions
+
+Now we can use this function:
+```{r}
+calculate_z = function(x) {
+  z = (x - mean(x)) / sd(x)
+  return(z)
+}
+z_population = calculate_z(murders$population)
+head(z_population)
+```
+Isn't this better? Compare readability.
+
+--
+
+Also, we now have the function available to use in different contexts:
+
+```{r, eval=F}
+z_population = calculate_z(murders$population)
+
+z_rate = calculate_z(murders2$rate)
+
+z_seq = calculate_z(seq(1:100))
+```
+
+---
+
+# Functions
+
+**When would we want to use a function vs. a for-loop?**
+
+
+---
+
+# Challenge
+
+**Write a function `average(x, median = FALSE)` that calculates the mean of an input vector `x`, unless the optional argument `median = TRUE` is specified.**
+
+Hint: Use a conditional (if/else) statement.
+
+Test it (for example, with `c(1, 9, 10)`) to make sure it works.
+
+---
+
+# Challenge
+
+**Write a function `average(x, median = FALSE)` that calculates the mean of an input vector `x`, unless the argument `median = TRUE` is specified.**
+
+Hint: Use a conditional (if/else) statement.
+
+Test it (for example, with `c(1, 9, 10)`) to make sure it works.
+
+
+
+---
+class: inverse, middle
+name: vectorization
+
+# Vectorization
+
+---
+
+
+---
+class: inverse, middle
+name: parallelization
+
+# Parallelization
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
