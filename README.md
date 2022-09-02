@@ -25,7 +25,7 @@ Fall 2022
 * Vectors
 * Indexing
 
-[**Lecture 2: Programming in R**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/02-Programming/01-Programming.html)
+[**Lecture 2: Programming in R**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/02-Programming/02-Programming.html)
 
 * If/else statements
 * For-loops
