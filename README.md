@@ -23,9 +23,15 @@ Fall 2022
 * Objects and functions
 * Data frames
 * Vectors
-* Miscellaneous tips and tricks
+* Indexing
 
 [**Lecture 2: Programming in R**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/02-Programming/01-Programming.html)
+
+* If/else statements
+* For-loops
+* Functions
+* Vectorization
+* Parallelization
 
 **Lecture 3: Productivity Tools**
 
