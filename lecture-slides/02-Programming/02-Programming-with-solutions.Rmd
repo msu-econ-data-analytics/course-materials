@@ -95,7 +95,7 @@ if(a != 0) {
   
   print(1 / a)
   
-} else{
+} else {
   
   print("Reciprocal does not exist.")
   
@@ -285,10 +285,13 @@ calculate_z = function(x) {
 ```
 
 What's going on:
-* `calculate_z` is the name of the new function.
-* `x` is an argument of this function (information that changes each time you run it).
-* The stuff to be done is contained within curly brackets `{}`.
-* The `return()` function defines what the result of the function is.
+* `calculate_z` is the **name** of the new function.
+* `x` is an **argument** of this function (information that changes each time you run it).
+  - When using the function, the user will supply the value of `x`
+  - Within the function, `x` is now an object you can use for calculations.
+* The **stuff the function does** is contained within curly brackets `{}`.
+* The `return()` function defines what the **result** of the function is.
+* Objects defined within a function, like `z`, exist only within the function.
 
 ---
 
@@ -335,15 +338,35 @@ When might we prefer to use a function vs. a for-loop?
 
 # Challenge
 
-**Write a function `average(x, median)` that:**
-* Calculates the mean of an input vector `x` if the argument `median` is `FALSE`.
-* Calculates the median of `x` if `median` is `TRUE`.
+1. **Write a function `average(x)` that returns the mean of an input vector `x`.**
 
-Hint: Use a conditional (if/else) statement.
+2. **Write a function `average(x, median)` that calculates a different kind of average depending on the value of the argument `median`:**
+* If `median` is `FALSE`, the function returns the **mean** of `x`.
+* If `median` is `TRUE`, the function returns the **median** of `x`.
 
-Test it (for example, with `c(1, 9, 10)`) to make sure it works.
+Test it to make sure it works, for example, with `c(1, 9, 10)`.
 
 --
+
+```{r}
+average = function(x) {
+  avg = mean(x)
+  return(avg)
+}
+average(c(1, 9, 10))
+```
+
+---
+
+# Challenge
+
+1. **Write a function `average(x)` that returns the mean of an input vector `x`.**
+
+2. **Write a function `average(x, median)` that calculates a different kind of average depending on the value of the argument `median`:**
+* If `median` is `FALSE`, the function returns the **mean** of `x`.
+* If `median` is `TRUE`, the function returns the **median** of `x`.
+
+Test it to make sure it works, for example, with `c(1, 9, 10)`.
 
 ```{r}
 average = function(x, median) {
@@ -351,18 +374,18 @@ average = function(x, median) {
   return(avg)
 }
 average(c(1, 9, 10), median = TRUE)
-average(c(1, 9, 10), median = TRUE)
+average(c(1, 9, 10), median = FALSE)
 ```
 
 ---
 
 # Challenge
 
-**Write a function `average(x, median)` that:**
-* Calculates the mean of an input vector `x` if the argument `median` is `FALSE`.
-* Calculates the median of `x` if `median` is `TRUE`.
+1. **Write a function `average(x)` that returns the mean of an input vector `x`.**
 
-Hint: Use a conditional (if/else) statement.
+2. **Write a function `average(x, median)` that calculates a different kind of average depending on the value of the argument `median`:**
+* If `median` is `FALSE`, the function returns the **mean** of `x`.
+* If `median` is `TRUE`, the function returns the **median** of `x`.
 
 ```{r}
 average = function(x, median) {
@@ -374,7 +397,7 @@ average = function(x, median) {
   return(avg)
 }
 average(c(1, 9, 10), median = TRUE)
-average(c(1, 9, 10), median = TRUE)
+average(c(1, 9, 10), median = FALSE)
 ```
 
 
