@@ -523,7 +523,7 @@ murders_z = list()
 for(col in names(murder_numbers)) {
   murders_z[[col]] = calculate_z(murder_numbers[[col]])
 }
-head(as.data.frame((murders_z)))
+head(as.data.frame(murders_z))
 ```
 
 ```
@@ -549,7 +549,7 @@ Instead, we can do the same thing in 1 line with `sapply`:
 
 ```r
 murders_z = sapply(murder_numbers, calculate_z)
-head(as.data.frame((murders_z)))
+head(as.data.frame(murders_z))
 ```
 
 ```
@@ -656,7 +656,7 @@ toc()
 ```
 
 ```
-## 1.78 sec elapsed
+## 1.8 sec elapsed
 ```
 
 Much less time! We've engaged not just one core, but all of them.

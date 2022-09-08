@@ -1,0 +1,89 @@
+---
+title: "My Incredible HTML File"
+author: "Nick Hagerty"
+date: "9/14/2021"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Biggest header
+
+## Less big header
+
+### Smaller header
+
+#### Small header
+
+**Bold** text. *Italic* text. Link to [Google](http://www.google.com).
+
+
+Bulleted list of things:
+
+* One thing
+* Another thing
+  + Sub-thing
+  + Sub-thing
+* A final thing
+
+
+Numbered list:
+
+1. Get up
+1. Shower
+1. Eat breakfast
+   a. Drink coffee too
+1. Get out the door
+
+
+Here is a **code chunk** with the default options. It prints both the code and the output:
+
+```{r}
+2+2
+
+```
+
+If you want to hide the code, but print the output, use ` ```{r, echo=FALSE}`.
+
+```{r, echo=FALSE}
+2+2
+
+```
+
+If you want to hide both the code and the output, but still run it in the background, use ` ```{r, include=FALSE}`.
+
+```{r, include=FALSE}
+2+2
+
+```
+
+If you want to print the code, but not run it, use ` ```{r, eval=FALSE}`.
+
+```{r, eval=FALSE}
+2+2
+
+```
+
+
+A horizontal line follows.
+
+***
+
+## Latex code
+
+You can write math formulas inline like this: $2 \times 3 = 6$ or on their own line like this:
+
+$$y_i = \alpha + \beta x_i + \epsilon_i$$
+
+Easy!
+
+If you don't leave a blank line in between paragraphs, it won't give you a line break.
+Unless you put a backslash at the end of the line...\
+Then it will!
+
+
