@@ -35,15 +35,14 @@ Fall 2022
 
 **Lecture 3: Productivity Tools**
 
-* Version control
-* R Markdown
-* R Projects
+* [Version control](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/03-Productivity/Git_and_GitHub.pdf)
+* [R Markdown](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/03-Productivity/R-Markdown-example.Rmd)
 
 **Lecture 4: Data Wrangling**
 
 **Lecture 5: Data Cleaning**
 
-[**Data Cleaning Checklist**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf)
+* [Data Cleaning Checklist](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf)
 
 **Lecture 6: Webscraping**
 
