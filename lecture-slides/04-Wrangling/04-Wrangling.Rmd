@@ -1,5 +1,5 @@
 ---
-title: "Week 6: Data Wrangling in the Tidyverse"
+title: "Lecture 4: Data Wrangling in the Tidyverse"
 author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
 date: "<br> *Based on materials by [Grant McDermott](https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html) under an MIT license."
 output:
