@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Week 6: Data Wrangling in the Tidyverse</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty*   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Week 6: Data Wrangling in the Tidyverse
+]
+.author[
+### Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Based on materials by <a href="https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html">Grant McDermott</a> under an MIT license.
+]
+
+---
+
+name: toc
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.small {
+  font-size: 90%;
+}
+.smaller {
+  font-size: 80%;
+}
+
+&lt;/style&gt;
+
+
+
+# Agenda for the next 2-3 weeks
+
+**Where we've been:**
+
+1. R Basics
+
+1. Programming
+
+1. Productivity tools
+
+&lt;br&gt;
+**Where we're going:**
+
+1. Data wrangling in the tidyverse
+
+1. Data cleaning
+
+1. Introduce the term project
+
+1. Data acquisition &amp; webscraping
+
+---
+
+# Table of contents
+
+1. [Tidyverse basics](#basics)
+
+1. [Data wrangling with dplyr](#dplyr)
+
+1. [Joining data with dplyr](#joins)
+
+1. [Data tidying with tidyr](#tidyr)
+
+1. [Summary](#summary)
+
+
+---
+class: inverse, middle
+name: basics
+
+# Tidyverse basics
+
+---
+
+# The tidyverse
+
+**A whole "universe" of functions within R**
+- The most powerful, intuitive, and popular approach to data cleaning, wrangling, and visualization in R
+
+**Advantages:**
+- Consistent philosophy and syntax
+- "Verb" based approach makes it more familiar to users of Stata/SAS/SPSS
+- Serves as the front-end for many other big data and ML tools
+
+**Why did I make you learn base R to start with?**
+- The tidyverse can't do everything
+- The best solution to many problems involves a combination of tidyverse and base R
+- Ultimately you want to learn about many tools and choose the best one for the job
+
+.footnote[
+Note: Another approach with many fans is [**data.table**](http://r-datatable.com/), which you can learn about on your own!
+]
+
+---
+
+# Tidyverse vs. base R
+
+There is often a direct correspondence between a tidyverse command and its base R equivalent. 
+
+| tidyverse  |  base |
+|---|---|
+| `?readr::read_csv`  | `?utils::read.csv` |
+|  `?dplyr::if_else` |  `?base::ifelse` |
+|  `?tibble::tibble` |  `?base::data.frame` |
+
+Notice these generally follow a `tidyverse::snake_case` vs `base::period.case` rule.
+
+The tidyverse alternative typically offers some enhancements or other useful options (and sometimes restrictions) over its base counterpart.
+- Remember: There are always multiple ways to achieve a single goal in R.
+
+
+---
+
+# Tidying Data
+
+The two most important properties of tidy data are:
+
+1. Each column is a variable.
+2. Each row is an observation.
+
+![](img/tidy-1.png)
+
+Tidy data is easier to work with, because you have a consistent way of referring to variables and observations. It then becomes easy to manipulate, visualize, and model.
+
+---
+
+# Wide vs. Long Formats
+
+Both of these data sets display information on heart rate observed in individuals across 3 different time periods:
+
+
+```
+##      name time1 time2 time3
+## 1  Wilbur    67    56    70
+## 2 Petunia    80    90    67
+## 3 Gregory    64    50   101
+```
+
+```
+##      name time heartrate
+## 1  Wilbur    1        67
+## 2 Petunia    1        80
+## 3 Gregory    1        64
+## 4  Wilbur    2        56
+## 5 Petunia    2        90
+## 6 Gregory    2        50
+## 7  Wilbur    3        70
+## 8 Petunia    3        67
+## 9 Gregory    3        10
+```
+
+Which dataframe is in *tidy* format?
+
+---
+
+# Wide vs. Long Formats
+
+**Wide** data:
+- Row = patient. Columns = repeated observations over time.
+- Often easier to take in at a glance (as in a spreadsheet).
+
+**Long** data:
+- Row = one observation. Columns = ID variables + observed variable.
+- Usually easier to clean, merge with other data, and avoid errors.
+
+Tidy data is more likely to be **long**.
+- Most R packages have been written assuming your data is in long format.
+
+"Tidy datasets are all alike but every messy dataset is messy in its own way." \
+– Hadley Wickham
+
+
+---
+
+# Tidyverse packages
+
+We need to install and load a couple of packages. Run these preliminaries:
+
+
+```r
+install.packages('tidyverse')
+install.packages('nycflights13')
+library(tidyverse)
+```
+
+
+--
+
+We see that we have actually loaded a number of packages (which could also be loaded individually): **ggplot2**, **tibble**, **dplyr**, etc.
+- We can also see information about the package versions and some [namespace conflicts](https://raw.githack.com/uo-ec607/lectures/master/04-rlang/04-rlang.html#59).
+
+---
+
+# Tidyverse packages
+
+The tidyverse actually comes with a lot more packages than those that are just loaded automatically.
+
+```r
+tidyverse_packages()
+```
+
+```
+##  [1] "broom"         "cli"           "crayon"        "dbplyr"       
+##  [5] "dplyr"         "dtplyr"        "forcats"       "googledrive"  
+##  [9] "googlesheets4" "ggplot2"       "haven"         "hms"          
+## [13] "httr"          "jsonlite"      "lubridate"     "magrittr"     
+## [17] "modelr"        "pillar"        "purrr"         "readr"        
+## [21] "readxl"        "reprex"        "rlang"         "rstudioapi"   
+## [25] "rvest"         "stringr"       "tibble"        "tidyr"        
+## [29] "xml2"          "tidyverse"
+```
+
+All of these are super useful
+- **lubridate** helps us work with dates
+- **rvest** is for webscraping
+
+This lecture will focus on two that are automatically loaded: **dplyr** and **tidyr**.
+
+---
+
+# Pipes: |&gt; or %&gt;%
+
+Pipes take the **output** of one function and feed it into the **first argument** of the next (which you then skip).
+
+`dataframe |&gt; filter(condition)` is equivalent to `filter(dataframe, condition)`.
+
+Note: `|&gt;` on these slides is generated by the two characters `| &gt;`, without the space.
+
+--
+
+&lt;br&gt;
+**Older version** of the pipe: `%&gt;%`
+* From the `magrittr` package loaded with the tidyverse
+* Works identically to `|&gt;` in most situations.
+
+&lt;br&gt;
+**Keyboard shortcut:** Ctl/Cmd + Shift + M
+
+* Have to turn on a setting in RStudio options to make `|&gt;` the default
+
+---
+
+# Pipes: |&gt; or %&gt;%
+
+Pipes can dramatically improve the experience of reading and writing code. Compare:
+
+.small[
+
+```r
+## These next two lines of code do exactly the same thing.
+
+mpg |&gt; filter(manufacturer=="audi") |&gt; group_by(model) |&gt; summarize(hwy_mean = mean(hwy))
+
+summarize(group_by(filter(mpg, manufacturer=="audi"), model), hwy_mean = mean(hwy))
+```
+]
+
+The first line reads from left to right, exactly how you think about the operations.
+
+The second line totally inverts this logical order (the final operation comes first!) 
+
+---
+
+# Pipes: |&gt; or %&gt;%
+
+Best practice is to put each function on its own line and indent. Look how much more readable this is:
+
+
+```r
+mpg |&gt; 
+  filter(manufacturer == "audi") |&gt; 
+  group_by(model) |&gt; 
+  summarize(hwy_mean = mean(hwy))
+```
+
+```
+## # A tibble: 3 × 2
+##   model      hwy_mean
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 a4             28.3
+## 2 a4 quattro     25.8
+## 3 a6 quattro     24
+```
+
+Vertical space costs nothing and makes for much more readable/writable code than cramming things horizontally.
+
+All together, this multi-line line of code is called a **pipeline**.
+
+
+---
+class: inverse, middle
+name: dplyr
+
+# dplyr
+
+---
+
+# Key dplyr verbs
+
+**There are five key dplyr verbs that you need to learn.**
+
+1. `filter`: Filter (i.e. subset) rows based on their values.
+
+2. `arrange`: Arrange (i.e. reorder) rows based on their values.
+
+3. `select`: Select (i.e. subset) columns by their names: 
+
+4. `mutate`: Create new columns.
+
+5. `summarize`: Collapse multiple rows into a single summary value.&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Many sources spell `summarise` with an "s" -- either one works!
+]
+
+--
+
+&lt;/br&gt;
+
+Let's practice these functions together using the `starwars` data frame that comes pre-packaged with dplyr. 
+
+---
+
+# 1) dplyr::filter
+
+![](img/filter.png)
+
+
+---
+
+# 1) dplyr::filter
+
+We can chain multiple filter commands with the pipe (`|&gt;`), or just separate them within a single filter command using commas.
+
+```r
+starwars |&gt; 
+  filter( 
+    species == "Human", 
+    height &gt;= 190
+    ) 
+```
+
+```
+## # A tibble: 4 × 14
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
+## 2 Qui-Gon Jinn    193    89 brown   fair    blue       92   male  mascu… &lt;NA&gt;   
+## 3 Dooku           193    80 white   fair    brown     102   male  mascu… Serenno
+## 4 Bail Presto…    191    NA black   tan     brown      67   male  mascu… Aldera…
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `colnames()` to see all variable names
+```
+
+---
+
+# 1) dplyr::filter
+
+Regular expressions work well too.
+
+```r
+starwars |&gt; 
+  filter(grepl("Skywalker", name))
+```
+
+```
+## # A tibble: 3 × 14
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Luke Skywal…    172    77 blond   fair    blue       19   male  mascu… Tatooi…
+## 2 Anakin Skyw…    188    84 blond   fair    blue       41.9 male  mascu… Tatooi…
+## 3 Shmi Skywal…    163    NA black   fair    brown      72   fema… femin… Tatooi…
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `colnames()` to see all variable names
+```
+
+---
+
+# 1) dplyr::filter
+
+A very common `filter` use case is identifying (or removing) missing data cases. 
+
+```r
+starwars |&gt; 
+  filter(is.na(height))
+```
+
+```
+## # A tibble: 6 × 14
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Arvel Crynyd     NA    NA brown   fair    brown        NA male  mascu… &lt;NA&gt;   
+## 2 Finn             NA    NA black   dark    dark         NA male  mascu… &lt;NA&gt;   
+## 3 Rey              NA    NA brown   light   hazel        NA fema… femin… &lt;NA&gt;   
+## 4 Poe Dameron      NA    NA brown   light   brown        NA male  mascu… &lt;NA&gt;   
+## 5 BB8              NA    NA none    none    black        NA none  mascu… &lt;NA&gt;   
+## 6 Captain Pha…     NA    NA unknown unknown unknown      NA &lt;NA&gt;  &lt;NA&gt;   &lt;NA&gt;   
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `colnames()` to see all variable names
+```
+
+--
+
+To remove missing observations, simply use negation: `filter(!is.na(height))`.\
+Try this yourself.
+
+---
+
+# 2) dplyr::arrange
+
+![](img/arrange.png)
+
+---
+
+# 2) dplyr::arrange
+
+`arrange` sorts your data frame by a particular column (numerically, or alphabetically)
+
+
+```r
+starwars |&gt; 
+  arrange(birth_year)
+```
+
+```
+## # A tibble: 87 × 14
+##    name        height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##    &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+##  1 Wicket Sys…     88  20   brown   brown   brown       8   male  mascu… Endor  
+##  2 IG-88          200 140   none    metal   red        15   none  mascu… &lt;NA&gt;   
+##  3 Luke Skywa…    172  77   blond   fair    blue       19   male  mascu… Tatooi…
+##  4 Leia Organa    150  49   brown   light   brown      19   fema… femin… Aldera…
+##  5 Wedge Anti…    170  77   brown   fair    hazel      21   male  mascu… Corell…
+##  6 Plo Koon       188  80   none    orange  black      22   male  mascu… Dorin  
+##  7 Biggs Dark…    183  84   black   light   brown      24   male  mascu… Tatooi…
+##  8 Han Solo       180  80   brown   fair    brown      29   male  mascu… Corell…
+##  9 Lando Calr…    177  79   black   dark    brown      31   male  mascu… Socorro
+## 10 Boba Fett      183  78.2 black   fair    brown      31.5 male  mascu… Kamino 
+## # … with 77 more rows, 4 more variables: species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated variable names
+## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+```
+
+---
+
+# 2) dplyr::arrange
+
+We can also arrange items in descending order using `arrange(desc())`.
+
+```r
+starwars |&gt; 
+  arrange(desc(birth_year))
+```
+
+```
+## # A tibble: 87 × 14
+##    name        height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##    &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+##  1 Yoda            66    17 white   green   brown       896 male  mascu… &lt;NA&gt;   
+##  2 Jabba Desi…    175  1358 &lt;NA&gt;    green-… orange      600 herm… mascu… Nal Hu…
+##  3 Chewbacca      228   112 brown   unknown blue        200 male  mascu… Kashyy…
+##  4 C-3PO          167    75 &lt;NA&gt;    gold    yellow      112 none  mascu… Tatooi…
+##  5 Dooku          193    80 white   fair    brown       102 male  mascu… Serenno
+##  6 Qui-Gon Ji…    193    89 brown   fair    blue         92 male  mascu… &lt;NA&gt;   
+##  7 Ki-Adi-Mun…    198    82 white   pale    yellow       92 male  mascu… Cerea  
+##  8 Finis Valo…    170    NA blond   fair    blue         91 male  mascu… Corusc…
+##  9 Palpatine      170    75 grey    pale    yellow       82 male  mascu… Naboo  
+## 10 Cliegg Lars    183    NA brown   fair    blue         82 male  mascu… Tatooi…
+## # … with 77 more rows, 4 more variables: species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated variable names
+## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+```
+
+---
+
+# 3) dplyr::select
+
+![](img/select.png)
+
+---
+
+# 3) dplyr::select
+
+Use commas to select multiple columns out of a data frame. (You can also use "first:last" for consecutive columns). Deselect a column with "-".
+
+```r
+starwars |&gt; 
+  select(name:skin_color, species, -height)
+```
+
+```
+## # A tibble: 87 × 5
+##    name                mass hair_color    skin_color  species
+##    &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;  
+##  1 Luke Skywalker        77 blond         fair        Human  
+##  2 C-3PO                 75 &lt;NA&gt;          gold        Droid  
+##  3 R2-D2                 32 &lt;NA&gt;          white, blue Droid  
+##  4 Darth Vader          136 none          white       Human  
+##  5 Leia Organa           49 brown         light       Human  
+##  6 Owen Lars            120 brown, grey   light       Human  
+##  7 Beru Whitesun lars    75 brown         light       Human  
+##  8 R5-D4                 32 &lt;NA&gt;          white, red  Droid  
+##  9 Biggs Darklighter     84 black         light       Human  
+## 10 Obi-Wan Kenobi        77 auburn, white fair        Human  
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 3) dplyr::select
+
+You can also rename some (or all) of your selected variables in place.
+
+```r
+starwars |&gt;
+  select(alias=name, crib=homeworld) 
+```
+
+```
+## # A tibble: 87 × 2
+##    alias              crib    
+##    &lt;chr&gt;              &lt;chr&gt;   
+##  1 Luke Skywalker     Tatooine
+##  2 C-3PO              Tatooine
+##  3 R2-D2              Naboo   
+##  4 Darth Vader        Tatooine
+##  5 Leia Organa        Alderaan
+##  6 Owen Lars          Tatooine
+##  7 Beru Whitesun lars Tatooine
+##  8 R5-D4              Tatooine
+##  9 Biggs Darklighter  Tatooine
+## 10 Obi-Wan Kenobi     Stewjon 
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+--
+
+If you just want to rename columns without subsetting them, you can use `rename`. Try this!
+
+---
+
+# 3) dplyr::select
+
+The `select(contains(PATTERN))` option provides a nice shortcut in relevant cases.
+
+```r
+starwars |&gt; 
+  select(name, contains("color"))
+```
+
+```
+## # A tibble: 87 × 4
+##    name               hair_color    skin_color  eye_color
+##    &lt;chr&gt;              &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
+##  1 Luke Skywalker     blond         fair        blue     
+##  2 C-3PO              &lt;NA&gt;          gold        yellow   
+##  3 R2-D2              &lt;NA&gt;          white, blue red      
+##  4 Darth Vader        none          white       yellow   
+##  5 Leia Organa        brown         light       brown    
+##  6 Owen Lars          brown, grey   light       blue     
+##  7 Beru Whitesun lars brown         light       blue     
+##  8 R5-D4              &lt;NA&gt;          white, red  red      
+##  9 Biggs Darklighter  black         light       brown    
+## 10 Obi-Wan Kenobi     auburn, white fair        blue-gray
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 4) dplyr::mutate
+
+![](img/mutate.png)
+
+---
+
+# 4) dplyr::mutate
+
+You can create new columns from scratch, or (more commonly) as transformations of existing columns.
+
+```r
+starwars |&gt; 
+  select(name, birth_year) |&gt;
+  mutate(dog_years = birth_year * 7) |&gt;
+  mutate(comment = paste0(name, " is ", dog_years, " in dog years."))
+```
+
+```
+## # A tibble: 87 × 4
+##    name               birth_year dog_years comment                              
+##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                                
+##  1 Luke Skywalker           19        133  Luke Skywalker is 133 in dog years.  
+##  2 C-3PO                   112        784  C-3PO is 784 in dog years.           
+##  3 R2-D2                    33        231  R2-D2 is 231 in dog years.           
+##  4 Darth Vader              41.9      293. Darth Vader is 293.3 in dog years.   
+##  5 Leia Organa              19        133  Leia Organa is 133 in dog years.     
+##  6 Owen Lars                52        364  Owen Lars is 364 in dog years.       
+##  7 Beru Whitesun lars       47        329  Beru Whitesun lars is 329 in dog yea…
+##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
+##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year…
+## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+
+# 4) dplyr::mutate
+
+*Note:* `mutate` is order aware. So you can chain multiple mutates in a single call.
+
+```r
+starwars |&gt; 
+  select(name, birth_year) |&gt;
+  mutate(
+    dog_years = birth_year * 7,     # Separate with a comma
+    comment = paste0(name, " is ", dog_years, " in dog years.")
+    )
+```
+
+```
+## # A tibble: 87 × 4
+##    name               birth_year dog_years comment                              
+##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                                
+##  1 Luke Skywalker           19        133  Luke Skywalker is 133 in dog years.  
+##  2 C-3PO                   112        784  C-3PO is 784 in dog years.           
+##  3 R2-D2                    33        231  R2-D2 is 231 in dog years.           
+##  4 Darth Vader              41.9      293. Darth Vader is 293.3 in dog years.   
+##  5 Leia Organa              19        133  Leia Organa is 133 in dog years.     
+##  6 Owen Lars                52        364  Owen Lars is 364 in dog years.       
+##  7 Beru Whitesun lars       47        329  Beru Whitesun lars is 329 in dog yea…
+##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
+##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year…
+## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 4) dplyr::mutate
+
+Boolean, logical and conditional operators all work well with `mutate` too.
+
+```r
+starwars |&gt; 
+  select(name, height) |&gt;
+  filter(name %in% c("Luke Skywalker", "Anakin Skywalker")) |&gt; 
+  mutate(tall1 = height &gt; 180) |&gt;
+  mutate(tall2 = ifelse(height &gt; 180, "Tall", "Short"))
+```
+
+```
+## # A tibble: 2 × 4
+##   name             height tall1 tall2
+##   &lt;chr&gt;             &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;
+## 1 Luke Skywalker      172 FALSE Short
+## 2 Anakin Skywalker    188 TRUE  Tall
+```
+
+---
+
+# 4) dplyr::mutate
+
+Lastly, combining `mutate` with `across` allows you to easily perform the same operation on a subset of variables.
+
+
+```r
+starwars |&gt; 
+  select(name:eye_color) |&gt; 
+  mutate(across(where(is.character), toupper))
+```
+
+```
+## # A tibble: 87 × 6
+##    name               height  mass hair_color    skin_color  eye_color
+##    &lt;chr&gt;               &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
+##  1 LUKE SKYWALKER        172    77 BLOND         FAIR        BLUE     
+##  2 C-3PO                 167    75 &lt;NA&gt;          GOLD        YELLOW   
+##  3 R2-D2                  96    32 &lt;NA&gt;          WHITE, BLUE RED      
+##  4 DARTH VADER           202   136 NONE          WHITE       YELLOW   
+##  5 LEIA ORGANA           150    49 BROWN         LIGHT       BROWN    
+##  6 OWEN LARS             178   120 BROWN, GREY   LIGHT       BLUE     
+##  7 BERU WHITESUN LARS    165    75 BROWN         LIGHT       BLUE     
+##  8 R5-D4                  97    32 &lt;NA&gt;          WHITE, RED  RED      
+##  9 BIGGS DARKLIGHTER     183    84 BLACK         LIGHT       BROWN    
+## 10 OBI-WAN KENOBI        182    77 AUBURN, WHITE FAIR        BLUE-GRAY
+## # … with 77 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 5) dplyr::summarize
+
+![](img/summarize.png)
+![](img/group_by.png)
+
+
+---
+
+# 5) dplyr::summarize
+
+Particularly useful in combination with the `group_by` command.
+
+```r
+starwars |&gt; 
+  group_by(species) |&gt; 
+  summarize(mean_height = mean(height))
+```
+
+```
+## # A tibble: 38 × 2
+##    species   mean_height
+##    &lt;chr&gt;           &lt;dbl&gt;
+##  1 Aleena            79 
+##  2 Besalisk         198 
+##  3 Cerean           198 
+##  4 Chagrian         196 
+##  5 Clawdite         168 
+##  6 Droid             NA 
+##  7 Dug              112 
+##  8 Ewok              88 
+##  9 Geonosian        183 
+## 10 Gungan           209.
+## # … with 28 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 5) dplyr::summarize
+
+Notice that some of these summarized values are missing. If we want to ignore missing values, use `na.rm = T`:
+
+```r
+## Much better
+starwars |&gt; 
+  group_by(species) |&gt; 
+  summarize(mean_height = mean(height, na.rm = T))
+```
+
+```
+## # A tibble: 38 × 2
+##    species   mean_height
+##    &lt;chr&gt;           &lt;dbl&gt;
+##  1 Aleena            79 
+##  2 Besalisk         198 
+##  3 Cerean           198 
+##  4 Chagrian         196 
+##  5 Clawdite         168 
+##  6 Droid            131.
+##  7 Dug              112 
+##  8 Ewok              88 
+##  9 Geonosian        183 
+## 10 Gungan           209.
+## # … with 28 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# 5) dplyr::summarize
+
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. For example:
+
+
+```r
+starwars |&gt; 
+  group_by(species) |&gt; 
+  summarize(across(where(is.numeric), mean, na.rm=T))
+```
+
+```
+## # A tibble: 38 × 4
+##    species   height  mass birth_year
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Aleena       79   15        NaN  
+##  2 Besalisk    198  102        NaN  
+##  3 Cerean      198   82         92  
+##  4 Chagrian    196  NaN        NaN  
+##  5 Clawdite    168   55        NaN  
+##  6 Droid       131.  69.8       53.3
+##  7 Dug         112   40        NaN  
+##  8 Ewok         88   20          8  
+##  9 Geonosian   183   80        NaN  
+## 10 Gungan      209.  74         52  
+## # … with 28 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Other dplyr goodies
+
+`ungroup`: For ungrouping after using `group_by`.
+- Use after doing your grouped `summarize` or `mutate` operation, or everything else you do will be super slow.
+
+--
+
+`slice`: Subset rows by position rather than filtering by values.
+- E.g. `starwars |&gt; slice(1:10)`
+
+--
+
+`pull`: Extract a column from as a data frame as a vector or scalar.
+- E.g. `starwars |&gt; filter(sex=="female") |&gt; pull(height)`
+
+--
+
+`count` and `distinct`: Number and isolate unique observations.
+- E.g. `starwars |&gt; count(species)`, or `starwars |&gt; distinct(species)`
+- You could also use `group_by` and `summarize` with `n()`:
+
+
+```r
+starwars |&gt; group_by(species) |&gt; summarize(num = n())
+```
+
+
+---
+
+# Challenge
+
+Take a few minutes to try this on your own:
+
+**List the most common eye colors among female Star Wars characters in descending order of frequency.**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;!-- No really, try it on your own before scrolling further!! --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+As usual, there are multiple solutions.
+
+.pull-left[
+
+```r
+starwars |&gt;
+  filter(sex == "female") |&gt;
+  count(eye_color) |&gt;
+  arrange(desc(n))
+```
+
+```
+## # A tibble: 5 × 2
+##   eye_color     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 blue          6
+## 2 brown         5
+## 3 black         2
+## 4 hazel         2
+## 5 yellow        1
+```
+]
+.pull-right[
+
+```r
+starwars |&gt; 
+  filter(sex == "female") |&gt;
+  group_by(eye_color) |&gt; 
+  summarize(n = n()) |&gt;
+  arrange(desc(n))
+```
+
+```
+## # A tibble: 5 × 2
+##   eye_color     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 blue          6
+## 2 brown         5
+## 3 black         2
+## 4 hazel         2
+## 5 yellow        1
+```
+]
+
+---
+
+# Storing results in memory
+
+So far we haven't been saving the dataframes that result from our code in memory. Usually, we will want to use them for the next task.
+
+Solution: Create a new object each time you write a pipeline.
+
+
+```r
+women = starwars |&gt; filter(sex == "female")
+brown_eyed_women = women |&gt; filter(eye_color == "brown")
+```
+
+Sometimes it's convenient to use the same object name, to avoid cluttering up your data environment. But I don't recommend doing this with the the original dataframe (this is called **clobbering**).
+
+
+```r
+# DON'T do this
+starwars = starwars |&gt; filter(sex == "female")
+```
+
+--
+
+By keeping multiple copies of very similar dataframes, will you waste your computer's memory? Nope -- R is smart and stores only the changes between objects.
+
+---
+class: inverse, middle
+name: joins
+
+# Joins
+
+---
+
+# Joining operations
+
+Most data analysis requires combining information from multiple data tables. To combine tables, we use **joins** (similar to `base::merge()`).
+
+![](img/join-inner.png)
+
+--
+
+There are multiple types of joins.
+
+An **inner join** returns a dataframe of all rows that appear in both x and y.
+- It keeps *only* rows that appear in both tables.
+
+---
+
+# Joining operations
+
+.pull-left[
+An **inner join** returns a dataframe of all rows that appear in both x and y.
+- It keeps *only* rows that appear in both tables.
+
+A **left join** keeps all rows in x.
+- For matched rows, it merges in the values of y
+- For unmatched rows, it fills in NA values for the variables coming from y.
+
+A **right join** keeps all rows in y.
+- Same as a left join, just reversed.
+
+A **full join** keeps all rows in x and y.
+]
+.pull-right[
+![](img/join-outer.png)
+]
+
+---
+
+# Joining operations
+
+**Left joins are safer than inner joins**
+- It's too easy to lose observations with inner joins
+- Left joins preserve all the original observations
+
+**Use the left join** unless you have a strong reason to prefer another.
+
+--
+
+&lt;/br&gt;
+
+For the examples that I'm going to show here, we'll need some data sets that come bundled with the [**nycflights13**](http://github.com/hadley/nycflights13) package. 
+- Load it now and then inspect these data frames on your own (click on them in your Environment pane).
+- Pay attention to what the `year` column means in each data frame.
+
+
+
+```r
+library(nycflights13)
+data(flights)
+data(planes)
+```
+
+---
+
+# Joining operations
+
+Let's perform a left join on the flights and planes datasets.
+
+
+```r
+flights |&gt; 
+  left_join(planes)
+```
+
+```
+## Joining, by = c("year", "tailnum")
+```
+
+```
+## # A tibble: 336,776 × 10
+##     year month   day dep_time arr_time carrier flight tailnum type  model
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
+##  1  2013     1     1      517      830 UA        1545 N14228  &lt;NA&gt;  &lt;NA&gt; 
+##  2  2013     1     1      533      850 UA        1714 N24211  &lt;NA&gt;  &lt;NA&gt; 
+##  3  2013     1     1      542      923 AA        1141 N619AA  &lt;NA&gt;  &lt;NA&gt; 
+##  4  2013     1     1      544     1004 B6         725 N804JB  &lt;NA&gt;  &lt;NA&gt; 
+##  5  2013     1     1      554      812 DL         461 N668DN  &lt;NA&gt;  &lt;NA&gt; 
+##  6  2013     1     1      554      740 UA        1696 N39463  &lt;NA&gt;  &lt;NA&gt; 
+##  7  2013     1     1      555      913 B6         507 N516JB  &lt;NA&gt;  &lt;NA&gt; 
+##  8  2013     1     1      557      709 EV        5708 N829AS  &lt;NA&gt;  &lt;NA&gt; 
+##  9  2013     1     1      557      838 B6          79 N593JB  &lt;NA&gt;  &lt;NA&gt; 
+## 10  2013     1     1      558      753 AA         301 N3ALAA  &lt;NA&gt;  &lt;NA&gt; 
+## # … with 336,766 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Joining operations
+
+(*continued from previous slide*)
+
+Note that dplyr made a reasonable guess about which columns to join on (i.e. columns that share the same name). It also told us its choices: 
+
+```
+*## Joining, by = c("year", "tailnum")
+```
+
+**What's the problem here?**
+
+--
+
+The variable "year" does not have a consistent meaning across our joining datasets!
+- In one it refers to the *year of flight*, in the other it refers to *year of construction*.
+
+--
+
+Luckily, there's an easy way to avoid this problem. 
+- Can you figure it out? Try `?dplyr::join`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Joining operations
+
+(*continued from previous slide*)
+
+You just need to be more explicit in your join call by using the `by = ` argument.
+- You can also rename any ambiguous columns to avoid confusion. 
+
+```r
+flights %&gt;% 
+  left_join(
+    planes |&gt; rename(year_built = year),
+    by = "tailnum"
+    )
+```
+
+```
+## # A tibble: 3 × 11
+##    year month   day dep_time arr_time carrier flight tailnum year_…¹ type  model
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
+## 1  2013     1     1      517      830 UA        1545 N14228     1999 Fixe… 737-…
+## 2  2013     1     1      533      850 UA        1714 N24211     1998 Fixe… 737-…
+## 3  2013     1     1      542      923 AA        1141 N619AA     1990 Fixe… 757-…
+## # … with abbreviated variable name ¹​year_built
+```
+
+
+---
+class: inverse, middle
+name: tidyr
+
+# tidyr
+
+---
+
+# Key tidyr verbs
+
+1. `pivot_longer`: Pivot wide data into long format.
+
+2. `pivot_wider`: Pivot long data into wide format.
+
+3. `separate`: Separate (i.e. split) one column into multiple columns.
+
+4. `unite`: Unite (i.e. combine) multiple columns into one.
+
+--
+
+&lt;/br&gt;
+
+Which of `pivot_longer` vs `pivot_wider` produces "tidy" data?
+  
+---
+
+# 1) tidyr::pivot_longer
+
+
+```r
+stocks = data.frame( ## Could use "tibble" instead of "data.frame" if you prefer
+  time = as.Date('2009-01-01') + 0:1,
+  X = rnorm(2, 10, 1),
+  Y = rnorm(2, 10, 2),
+  Z = rnorm(2, 10, 5)
+  )
+stocks
+```
+
+```
+##         time         X        Y         Z
+## 1 2009-01-01  9.554226 9.548096  5.758423
+## 2 2009-01-02 11.904350 6.706767 10.119018
+```
+
+```r
+tidy_stocks = stocks |&gt; 
+  pivot_longer(cols=X:Z, names_to="stock", values_to="price")
+tidy_stocks
+```
+
+```
+## # A tibble: 6 × 3
+##   time       stock price
+##   &lt;date&gt;     &lt;chr&gt; &lt;dbl&gt;
+## 1 2009-01-01 X      9.55
+## 2 2009-01-01 Y      9.55
+## 3 2009-01-01 Z      5.76
+## 4 2009-01-02 X     11.9 
+## 5 2009-01-02 Y      6.71
+## 6 2009-01-02 Z     10.1
+```
+
+---
+
+# 2) tidyr::pivot_wider
+
+Now we can use pivot_wider to go back to the original dataframe:
+
+
+```r
+tidy_stocks |&gt; pivot_wider(names_from=stock, values_from=price)
+```
+
+```
+## # A tibble: 2 × 4
+##   time           X     Y     Z
+##   &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 2009-01-01  9.55  9.55  5.76
+## 2 2009-01-02 11.9   6.71 10.1
+```
+
+Or, we can put it into a new ("transposed") format, in which the observations are stocks and the columns are dates:
+
+
+```r
+tidy_stocks |&gt; pivot_wider(names_from=time, values_from=price)
+```
+
+```
+## # A tibble: 3 × 3
+##   stock `2009-01-01` `2009-01-02`
+##   &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+## 1 X             9.55        11.9 
+## 2 Y             9.55         6.71
+## 3 Z             5.76        10.1
+```
+
+
+---
+
+# 3) tidyr::separate
+
+`separate` helps when you have more than one value in a single column:
+
+
+```r
+economists = data.frame(name = c("Adam_Smith", "Paul_Samuelson", "Milton_Friedman"))
+economists
+```
+
+```
+##              name
+## 1      Adam_Smith
+## 2  Paul_Samuelson
+## 3 Milton_Friedman
+```
+
+```r
+economists |&gt; separate(name, c("first_name", "last_name")) 
+```
+
+```
+##   first_name last_name
+## 1       Adam     Smith
+## 2       Paul Samuelson
+## 3     Milton  Friedman
+```
+
+--
+
+This command is pretty smart. But to avoid ambiguity, you can also specify the separation character with the `sep` argument:
+
+
+```r
+economists |&gt; separate(name, c("first_name", "last_name"), sep = "_")
+```
+
+
+---
+
+# 3) tidyr::separate
+
+A related function is `separate_rows`, for splitting up cells that contain multiple fields or observations:
+
+```r
+jobs = data.frame(
+  name = c("Jack", "Jill"),
+  occupation = c("Homemaker", "Philosopher, Philanthropist, Troublemaker")
+  ) 
+jobs
+```
+
+```
+##   name                                occupation
+## 1 Jack                                 Homemaker
+## 2 Jill Philosopher, Philanthropist, Troublemaker
+```
+
+```r
+# Now split out Jill's various occupations into different rows
+jobs |&gt; separate_rows(occupation)
+```
+
+```
+## # A tibble: 4 × 2
+##   name  occupation    
+##   &lt;chr&gt; &lt;chr&gt;         
+## 1 Jack  Homemaker     
+## 2 Jill  Philosopher   
+## 3 Jill  Philanthropist
+## 4 Jill  Troublemaker
+```
+
+---
+
+# 4) tidyr::unite
+
+
+```r
+gdp = data.frame(
+  yr = rep(2016, times = 4),
+  mnth = rep(1, times = 4),
+  dy = 1:4,
+  gdp = rnorm(4, mean = 100, sd = 2)
+  )
+gdp 
+```
+
+```
+##     yr mnth dy      gdp
+## 1 2016    1  1 97.73034
+## 2 2016    1  2 98.36142
+## 3 2016    1  3 96.84536
+## 4 2016    1  4 99.87013
+```
+
+```r
+## Combine "yr", "mnth", and "dy" into one "date" column
+gdp |&gt; unite(date, c("yr", "mnth", "dy"), sep = "-")
+```
+
+```
+##       date      gdp
+## 1 2016-1-1 97.73034
+## 2 2016-1-2 98.36142
+## 3 2016-1-3 96.84536
+## 4 2016-1-4 99.87013
+```
+
+---
+
+# 4) tidyr::unite
+
+Note that `unite` will automatically create a character variable. You can see this better if we convert it to a tibble. 
+
+```r
+gdp_u = gdp |&gt; unite(date, c("yr", "mnth", "dy"), sep = "-") |&gt; as_tibble()
+gdp_u
+```
+
+```
+## # A tibble: 4 × 2
+##   date       gdp
+##   &lt;chr&gt;    &lt;dbl&gt;
+## 1 2016-1-1  97.7
+## 2 2016-1-2  98.4
+## 3 2016-1-3  96.8
+## 4 2016-1-4  99.9
+```
+
+---
+
+# 4) tidyr::unite
+
+If you want to convert it to something else (e.g. date or numeric) then you will need to modify it using `mutate`. This example uses the [lubridate](https://lubridate.tidyverse.org/) package's super helpful date conversion functions.
+
+
+```r
+library(lubridate)
+gdp_u |&gt; mutate(date = ymd(date))
+```
+
+```
+## # A tibble: 4 × 2
+##   date         gdp
+##   &lt;date&gt;     &lt;dbl&gt;
+## 1 2016-01-01  97.7
+## 2 2016-01-02  98.4
+## 3 2016-01-03  96.8
+## 4 2016-01-04  99.9
+```
+
+
+---
+
+# Challenge
+
+**Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
+
+Hint: Recall that you can tabulate summary statistics using `group_by` and `summarize`:
+
+```r
+flights |&gt; 
+  group_by(carrier) |&gt; 
+  summarize(avg_late = mean(arr_delay, na.rm=T))
+```
+
+```
+## # A tibble: 16 × 2
+##    carrier avg_late
+##    &lt;chr&gt;      &lt;dbl&gt;
+##  1 9E         7.38 
+##  2 AA         0.364
+##  3 AS        -9.93 
+##  4 B6         9.46 
+##  5 DL         1.64 
+##  6 EV        15.8  
+##  7 F9        21.9  
+##  8 FL        20.1  
+##  9 HA        -6.92 
+## 10 MQ        10.8  
+## 11 OO        11.9  
+## 12 UA         3.56 
+## 13 US         2.13 
+## 14 VX         1.76 
+## 15 WN         9.65 
+## 16 YV        15.6
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;!-- Hey! Don't look! --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Challenge
+
+**Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
+
+Solution:
+
+```r
+delay_long = flights |&gt; 
+  group_by(carrier, day) |&gt; 
+  summarize(avg_late = mean(arr_delay, na.rm=T))
+delay_wide = delay_long |&gt; 
+  pivot_wider(names_from=carrier, values_from=avg_late)
+head(delay_wide, 4)
+```
+
+```
+## # A tibble: 4 × 17
+##     day  `9E`     AA     AS      B6     DL    EV    F9    FL    HA    MQ    OO
+##   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1  7.21 -1.23   -5.96 11.9     0.866 21.3  21.7  22.7  -15.4 12.9   NA  
+## 2     2  7.35 -0.905 -13.7   9.90    3.05  18.0   7.71 20.9  -16.1  9.04 NaN  
+## 3     3  5.80 -3.09  -20.8   5.26   -0.204 15.3  18.0  19.6  -16.8 13.7    0.5
+## 4     4 -2.11 -5.80  -22.3  -0.0939 -6.24   3.87 14.5   4.38 -15.2  3.82 -12  
+## # … with 5 more variables: UA &lt;dbl&gt;, US &lt;dbl&gt;, VX &lt;dbl&gt;, WN &lt;dbl&gt;, YV &lt;dbl&gt;
+## # ℹ Use `colnames()` to see all variable names
+```
+
+Is this data frame tidy?
+
+---
+class: inverse, middle
+name: summary
+
+# Summary
+
+---
+
+# Key verbs
+
+.pull-left[
+### dplyr
+1. `filter`
+2. `arrange`
+3. `select`
+4. `mutate`
+5. `summarize`
+]
+.pull-right[
+### tidyr
+1. `pivot_longer`
+2. `pivot_wider`
+3. `separate`
+4. `unite`
+]
+
+&lt;/br&gt;
+
+### Also
+* Pipes (`|&gt;`)
+* Grouping (`group_by`)
+* Joining (`left_join`)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

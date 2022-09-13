@@ -38,7 +38,12 @@ Fall 2022
 * [Version control](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/03-Productivity/Git_and_GitHub.pdf)
 * [R Markdown](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/03-Productivity/R-Markdown-example.Rmd)
 
-**Lecture 4: Data Wrangling**
+[**Lecture 4: Data Wrangling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/04-Wrangling/04-Wrangling.html)
+
+* Philosophy of tidy data
+* Wrangling data with **dplyr**
+* Joining data with **dplyr**
+* Tidying data with **tidyr**
 
 **Lecture 5: Data Cleaning**
 
