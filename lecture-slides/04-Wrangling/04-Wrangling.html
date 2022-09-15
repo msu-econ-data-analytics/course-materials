@@ -1162,7 +1162,7 @@ You just need to be more explicit in your join call by using the `by = ` argumen
 - You can also rename any ambiguous columns to avoid confusion. 
 
 ```r
-flights %&gt;% 
+flights |&gt;
   left_join(
     planes |&gt; rename(year_built = year),
     by = "tailnum"
@@ -1716,9 +1716,9 @@ Is it Montana?
 
 
 ```r
-dat2 = dat %&gt;%
-  group_by(state) %&gt;%
-  summarize(tot_cases = sum(cases)) %&gt;%
+dat2 = dat |&gt;
+  group_by(state) |&gt;
+  summarize(tot_cases = sum(cases)) |&gt;
   arrange(tot_cases)
 dat2
 ```

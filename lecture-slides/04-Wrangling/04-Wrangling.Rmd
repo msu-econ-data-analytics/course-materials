@@ -805,7 +805,7 @@ Luckily, there's an easy way to avoid this problem.
 You just need to be more explicit in your join call by using the `by = ` argument.
 - You can also rename any ambiguous columns to avoid confusion. 
 ```{r join3, eval=F}
-flights %>% 
+flights |>
   left_join(
     planes |> rename(year_built = year),
     by = "tailnum"
@@ -1165,9 +1165,9 @@ Is it Montana?
 
 
 ```{r}
-dat2 = dat %>%
-  group_by(state) %>%
-  summarize(tot_cases = sum(cases)) %>%
+dat2 = dat |>
+  group_by(state) |>
+  summarize(tot_cases = sum(cases)) |>
   arrange(tot_cases)
 dat2
 ```
