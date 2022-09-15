@@ -44,6 +44,7 @@ Fall 2022
 * Wrangling data with **dplyr**
 * Joining data with **dplyr**
 * Tidying data with **tidyr**
+* Importing data with **readr**
 
 **Lecture 5: Data Cleaning**
 

@@ -36,10 +36,12 @@ options(htmltools.dir.version = FALSE)
 library(knitr)
 knitr::opts_chunk$set(
 	fig.align = "center",
-	cache = TRUE,
+	cache = T,
 	dpi = 300
 )
+opts_knit$set(root.dir = "C:/git/covid-example")
 ```
+
 
 # Agenda for the next 2-3 weeks
 
@@ -73,6 +75,8 @@ knitr::opts_chunk$set(
 1. [Joining data with dplyr](#joins)
 
 1. [Data tidying with tidyr](#tidyr)
+
+1. [Importing data with readr](#readr)
 
 1. [Summary](#summary)
 
@@ -1028,6 +1032,170 @@ head(delay_wide, 4)
 
 Is this data frame tidy?
 
+
+---
+class: inverse, middle
+name: readr
+
+# Importing data with readr
+
+---
+
+# Download this data
+
+Most data does not come nicely in R packages! You will download it from somewhere and load it in R.
+
+**Go here:** <https://github.com/nytimes/covid-19-data/tree/master/colleges>   
+and click on the **Raw CSV** link.
+
+* This is a list of Covid-19 case counts reported at U.S. colleges and universities between July 2020 and May 2021.
+
+In your browser, **save** this file somewhere sensible on your computer (perhaps a folder you already created to put your work for this class).
+
+Your computer stores all its programs, files, and information in a **filesystem** consisting of a set of nested **folders** or **directories.**
+
+---
+
+# Paths and directories
+
+The **working directory** is your "current location" in the filesystem. What's your current working directory?
+```{r}
+getwd()
+```
+
+* This is an example of a **full path.** It starts with `C:/` on Windows or `/` on Mac.
+
+**Relative paths** are defined relative to the full path of the working directory.
+* Let's say your working directory is `"C:/git/ecns-560/"`
+* If you had a file saved at `"C:/git/ecns-560/assignment-3/assignment-3.Rmd"`
+* Its relative path would be `"assignment-3/assignment-3.Rmd"`
+
+In R you can use either a full or relative path in any given situation, but relative paths are usually easier to work with.
+
+---
+  
+# Setting the working directory
+  
+You can change your working directory with `setwd(dir)`. Now:
+
+1. **Find the location you saved your CSV file and copy the filepath.**
+
+2. **Use the console in R to set your working directory to that location.**
+
+For example:
+```{r, eval=F}
+setwd("C:/git/covid-example")
+```
+
+**Do not use `setwd()` in scripts.** Setting the working directory is one of the few exceptions to the rule that you should always write all your code in scripts.
+
+* Someone else's working directory will be different from yours!
+* You want your code to be portable.
+
+---
+
+# Read in data with readr
+
+The tidyverse package `readr` provides lots of options to read data into R. Read in the college Covid data like this:
+
+```{r, message = F}
+dat = read_csv("colleges.csv")
+```
+
+`View` this data to take a look at it. It automatically formatted everything as a nice and neat data frame!
+```{r}
+str(dat)
+```
+
+---
+
+# Challenge
+
+**Which state had the least total reported Covid-19 cases at colleges and universities?**
+
+Is it Montana?
+
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+dat2 = dat %>%
+  group_by(state) %>%
+  summarize(tot_cases = sum(cases)) %>%
+  arrange(tot_cases)
+dat2
+```
+
+
+
+---
+
+# Other tips for importing data
+
+* Many things can go wrong with CSV files. When this happens, `read_csv` has many options -- look at the help file.
+
+* You can read files directly from the internet without downloading them first (but you usually shouldn't!):
+.smaller[
+```{r, eval=F}
+url = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/colleges/colleges.csv"
+dat = read_csv(url)
+```
+]
+
+* `write_csv` outputs a dataframe as a CSV to your computer.
+
+* `readxl::read_excel` reads directly from Excel spreadsheets.
+
+* `googlesheets4::read_sheet` reads directly from Google Sheets.
+
+* `haven::read_dta` reads directly from Stata files! (Stata can't read R files....)
+
+
 ---
 class: inverse, middle
 name: summary
@@ -1036,7 +1204,7 @@ name: summary
 
 ---
 
-# Key verbs
+# Key tidyverse functions
 
 .pull-left[
 ### dplyr
@@ -1056,7 +1224,14 @@ name: summary
 
 </br>
 
-### Also
-* Pipes (`|>`)
-* Grouping (`group_by`)
-* Joining (`left_join`)
+.pull-left[
+### Miscellaneous
+1. Pipes (`|>`)
+2. Grouping (`group_by`)
+3. Joining (`left_join`)
+]
+.pull-right[
+### Importing data
+1. `getwd` & `setwd`
+1. `read_csv`
+]
