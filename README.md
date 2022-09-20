@@ -46,8 +46,13 @@ Fall 2022
 * Tidying data with **tidyr**
 * Importing data with **readr**
 
-**Lecture 5: Data Cleaning**
+[**Lecture 5: Data Cleaning**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/05-Cleaning/05-Cleaning.html)
 
+* More on joins
+* Keys and relational data
+* Variables & Values
+* Factors
+* Strings
 * [Data Cleaning Checklist](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf)
 
 **Lecture 6: Webscraping**
