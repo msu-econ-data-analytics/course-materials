@@ -1,0 +1,1165 @@
+---
+title: "Lecture 5: Data Wrangling in the Tidyverse"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      fig_caption: true
+---
+name: toc
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	cache = TRUE,
+	dpi = 300
+)
+```
+
+# Table of contents
+
+1. [Another join example](#join)
+
+1. [Keys and relational data](#keys)
+
+1. [Variables & Values](#variables-values)
+
+1. [Factors](#factors)
+
+1. [Strings](#strings)
+
+1. [Data Cleaning Checklist](#checklist)
+
+
+
+---
+class: inverse, middle
+name: join
+
+# Another join example
+
+---
+
+# Join example
+
+Let's try something. Load the **nycflights13** package again.
+
+```{r include=FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+I want to calculate the average air time, distance, and number of seats for flights in this dataset. Number of seats is in the `planes` dataframe, so I have to join `planes` to `flights`.
+
+Here is my code and output:
+
+```{r}
+flights_planes = inner_join(
+  flights,
+  planes |> rename(year_built = year),
+  by = "tailnum"
+  )
+flights_planes |> summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+
+```
+
+Can you find the problem here? Try to figure out how it arises and why.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Correcting the problem
+
+```{r}
+inner_flights_planes = flights |>
+  inner_join(planes |> rename(year_built = year), by="tailnum")
+inner_flights_planes |> 
+  summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+```
+```{r}
+left_flights_planes = flights |>
+  left_join(planes |> rename(year_built = year), by="tailnum")
+left_flights_planes |> 
+  summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+
+```
+
+Fixing it is the easy part. Why do the joins produce different answers?
+
+---
+
+# Diagnosing the problem
+
+How many observations do we have in each dataset?
+```{r}
+nrow(flights)
+nrow(inner_flights_planes)
+nrow(left_flights_planes)
+```
+* Not all rows of `flights` matched rows in `planes`.
+* Inner join completely dropped these rows, even though they still had useful data for `air_time` and `distance`.
+* So the mean was taken over a different set of observations after the inner join than after the left join.
+
+---
+
+# Diagnosing the problem
+
+Why exactly did these rows not match?
+
+Let's take a closer look at the variable we joined by, `tailnum`, in the original `flights` dataset:
+
+```{r}
+summary(flights$tailnum)
+```
+That doesn't tell us much, since `tailnum` is a character variable.
+
+---
+
+# Diagnosing the problem
+
+Why exactly did these rows not match?
+
+Let's check more explicitly for missing values:
+
+```{r}
+flights |> 
+  mutate(na_tailnum = is.na(tailnum)) |> 
+  count(na_tailnum)
+```
+
+Hmm. Some rows have missing values, but 334k are non-missing, which is more than the 284k rows remaining in the inner-joined dataframe.
+* So about 50,000 of these flights must have values of `tailnum` that just aren't found in `planes`.
+
+---
+
+# Diagnosing the problem
+
+To see what happened even more carefully, we can add a `keep=T` option when we join.
+```{r}
+flights_planes = flights |>
+  left_join(planes |> rename(year_built = year),
+            by="tailnum",
+            keep=TRUE
+  )
+
+# How many rows of flights matched a row in planes?
+flights_planes |> filter(tailnum.x == tailnum.y) |> nrow()
+
+# How many rows failed to match because tailnum was missing in flights?
+flights_planes |> filter(is.na(tailnum.x)) |> nrow()
+
+# How many rows failed to match because tailnum was not found in planes?
+flights_planes |> filter(!is.na(tailnum.x) & is.na(tailnum.y)) |> nrow()
+
+```
+
+---
+
+# Diagnosing the problem
+
+Why is the mean of `seats` not affected?
+
+--
+.pull-left[
+```{r}
+inner_flights_planes |> 
+  mutate(na_seats = is.na(seats)) |> 
+  count(na_seats)
+```
+]
+.pull-right[
+```{r}
+left_flights_planes |> 
+  mutate(na_seats = is.na(seats)) |> 
+  count(na_seats)
+```
+]
+
+* `seats` does have missing values in the left-joined dataset, from rows of `flights` that did not match `planes`.
+
+* But the non-missing values are the same ones, and when we took means, we specifically removed the missing values using `na.rm=T`.
+
+
+---
+
+# A note on Stata
+
+(If you don't use Stata and have no plans to, you can ignore this slide!)
+
+Already we can see some of the biggest advantages of R over Stata:
+
+* Holds multiple dataframes in memory at the same time -- allowing us to easily examine, compare, and switch between them.
+  * In Stata, you have to constantly use tempfiles along with `save` and `use`
+  * Or sometimes you can get by with `preserve`/`restore`
+
+* Holds multiple versions/stages of your data in memory at the same time.
+  * In Stata, you cannot go back and look at an intermediate stage of your data without re-running everything.
+
+* You can easily see all of your objects in the Environment tab.
+  * Stata can hold non-dataframe variables (locals and globals, collectively "macros")
+  * But it does not make them easy to find
+
+---
+
+# A note on Stata
+
+(If you don't use Stata and have no plans to, you can ignore this slide!)
+
+Already we can see some of the biggest advantages of R over Stata:
+
+* Missing values are treated in a safe and sensible way.
+  * NA's propagate through calculations unless you specifically choose to set `na.rm=TRUE`.
+  * In Stata, missing values equal $+\infty$ (with `. < .a < .b < .c < ...`).
+  * In Stata, `drop if x > 1000` will **drop all observations with missing values of x**!
+  * (To fix this, ALWAYS add `drop if x>1000 & !missing(x)` to all your `if` conditions.)
+
+
+---
+
+class: inverse, middle
+name: keys
+
+# Keys & Relational Data
+
+This section is drawn partly from [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 13.
+
+---
+
+# Relational data
+
+**Relational data**: multiple tables of data that have relations to each other (i.e., that you might join).
+
+* Relational data is most often discussed in the context of *databases* like SQL, which we will (try to!) cover briefly at the end of the course.
+
+* But we also use it when doing any form of data wrangling that involves joins, so it's helpful to think more formally about it.
+
+---
+
+# Relationships in nycflights
+
+```{r, out.width="60%", echo=F}
+include_graphics("img/relational-nycflights.png")
+```
+
+-   `flights` connects to `planes` via a single variable, `tailnum`.
+-   `flights` connects to `airlines` through the `carrier` variable.
+-   `flights` connects to `airports` in two ways: via the `origin` and `dest` variables.
+-   `flights` connects to `weather` via `origin` (the location), and `year`, `month`, `day` and `hour` (the time).
+
+What is the relationship between `weather` and `airports`?
+
+---
+
+# Keys
+
+A **key** is a variable (or set of variables) that uniquely identifies an observation.
+
+* In `planes`, the key is `tailnum`.
+* In `weather`, the key consists of 5 variables: (`year`, `month`, `day`, `hour`, `origin`).
+
+There are two types of keys:
+
+* A **primary key** uniquely identifies an observation in its own data frame.
+  * `planes$tailnum` is a primary key because it uniquely identifies each plane in the `planes` data frame.
+
+* A **foreign key** uniquely identifies an observation in another data frame.
+  * `flights$tailnum` is a foreign key because it appears in the `flights` data frame where it matches each flight to a unique plane.
+
+A variable can be both a primary key *and* a foreign key.
+For example, `origin` is part of the `weather` primary key, and is also a foreign key for the `airports` data frame.
+
+---
+
+# Keys
+
+The primary key is the **first thing** you need to know about a new data frame.
+
+Once you think you know the primary key, **verify it.** Here's one way to do that:
+```{r}
+planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+```
+
+---
+
+# Keys
+
+You can write a **unit test** into your code to make sure this is true before proceeding:
+```{r, error=TRUE}
+dups_planes = planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+stopifnot(nrow(dups_planes) == 0)
+
+dups_weather = weather |> 
+  count(year, month, day, hour, origin) |> 
+  filter(n > 1)
+stopifnot(nrow(dups_weather) == 0)
+```
+
+---
+
+# Surrogate keys
+
+What's the primary key in the `flights` data frame? Take a minute to investigate/verify.
+
+--
+
+You might think it would be the date + the carrier + the flight or tail number, but neither of those are unique:
+
+```{r}
+flights |> 
+  count(year, month, day, carrier, flight) |> 
+  filter(n > 1)
+```
+
+
+---
+
+# Surrogate keys
+
+If a data frame lacks a primary key, but it is tidy (each row is an observation), it's often useful to add in **surrogate key**:
+```{r}
+flights2 = flights |>
+  arrange(year, month, day, carrier, flight, sched_dep_time) |>
+  mutate(id = row_number()) |>
+  relocate(id)
+flights2
+  
+```
+
+---
+
+# Relations
+
+A primary key and the corresponding foreign key in another data frame form a **relation**.
+
+In general, relations are **1-to-many**: Each flight has one plane, but each plane has many flights.
+
+* Sometimes you'll see a **1-to-1** relation, but you can think of this as a special case of 1-to-many.
+
+* You can also find **many-to-many** relations, but you can think of these as two 1-to-many relations going in each direction.
+  * There's a many-to-many relationship between airlines and airports: each airline flies to many airports; each airport hosts many airlines.
+
+</br>
+
+**Note on Stata: NEVER USE `merge m:m`. JUST DON'T DO IT.** There is no scenario in which it will give you what you want. This syntax should not exist. If you are tempted, you are probably either confused or looking for `joinby`.
+
+---
+
+# Relations
+
+`join` does **not** think about whether your key is unique, or what type of relation you have. Instead, it simply returns all possible combinations of observations in your two dataframes:
+
+
+```{r, out.width="50%", echo=F}
+include_graphics("img/join-one-to-many.png")
+```
+```{r, out.width="60%", echo=F}
+include_graphics("img/join-many-to-many.png")
+```
+
+---
+
+# Duplicate keys
+
+What if you join by a key that is not actually unique, when you think it is?
+
+You'll get extra rows:
+
+```{r}
+flights_weather = flights |> 
+  left_join(weather, by=c("year", "month", "day", "origin"))
+nrow(flights_weather)
+```
+
+Now you no longer have a dataframe of flights.
+
+```{r}
+nrow(flights)
+```
+
+
+---
+
+# A better way to join
+
+Here's an example of a good (safe) way to join `flights` and `planes`:
+
+```{r eval=FALSE}
+
+# Confirm that tailnum is the primary key (unique ID) of planes
+dups_planes = planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+stopifnot(nrow(dups_planes) == 0)
+
+# Join, keeping the join keys from both datasets
+flights_planes = flights |>
+  left_join(planes |> rename(year_built = year), by="tailnum", keep=TRUE) |>
+  rename(tailnum = tailnum.x, tailnum_planes = tailnum.y)
+
+# Confirm the join was 1:many
+stopifnot(nrow(flights) == nrow(flights_planes))
+
+```
+
+
+---
+class: inverse, middle
+name: variables-values
+
+# Variables & Values
+
+
+---
+
+# Variable types
+
+What types of variables might you encounter in a raw dataset?
+
+* Quantitative variables (`numeric` or `integer`).
+
+* Dates and times (a special, reformatted type of integer).
+
+* Categorical variables (`factor`).
+  - Values are discrete and have a specific interpretation.
+
+* Binary variables (`logical` or `integer`).
+  - TRUE/FALSE or 0/1.
+  - Can be thought of as a special type of categorical variable.
+
+* Strings (`character`)
+  - A sequence of letters, numbers, symbols, or other characters.
+
+
+---
+
+# Floating point problems
+
+Simplify this expression: $1-\frac{1}{49}*49$
+
+It's obviously 0. Now ask R:
+
+```{r, eval=F}
+1 - (1/49)*49
+```
+--
+
+```{r echo=FALSE}
+1 - (1/49)*49
+```
+
+This is called a **floating point** problem. It arises from the way computers store numbers.
+
+R doesn't notice that $49/49$ simplifies to 1. It just follows the order of operations. So the first thing it does is calculate:
+```{r}
+(1/49)
+```
+Which is an irrational number. So R rounds it to 53 significant digits before multiplying by 49.
+
+---
+
+# Floating point problems
+
+Most of the time, 53 digits is plenty of precision. But sometimes it creates problems.
+
+Note: This explanation is actually too simple. The floating-point issue goes deeper than just irrational numbers. Here's another example:
+
+```{r}
+1 - 0.9 - 0.1
+```
+
+--
+
+In 1996, a floating-point error caused a European Space Agency rocket to self-destruct 37 seconds after it was launched.
+
+---
+
+# Avoiding floating-point errors
+
+Pay attention to the data type of your variables.
+
+Avoid using logical conditions like `height==180` for numeric variables.
+* `height` may even read as `180` in the `View` window
+* But under the hood, it might still be stored as `180.000000000000173...`.
+
+What you can do instead:
+* Use `>` and `<` comparisons, or `between(height, 179.9, 180.1)`.
+* Convert in place: `as.integer(height)==180`
+* Or with finer control: `round(height, digits=6)==180`
+* If all values are integers, store the variable as an integer in the first place.
+
+
+---
+
+# How to store a number?
+
+**Numeric** variables are stored in scientific notation.
+* Use to represent a single value, for which digits decrease in importance from left to right.
+* Example: My height is `182.2469405113283` cm.
+
+**Integer** variables lack decimal places.
+* Saves memory relative to numeric variables.
+* Stores values exactly, avoiding some floating-point problems.
+
+**Character** variables store the full sequence of digits literally.
+* Use when digits lack quantitative information, and each digit is equally important.
+* Phone numbers, credit card numbers, etc.
+* No chance of the right-most digits getting lost or corrupted.
+
+---
+
+# Memory space
+
+Memory space quickly becomes a problem when you work with large datasets.
+* But R does a reasonably good job of handling storage efficiently.
+
+Logical variables are smaller than integers, which are smaller than numeric.
+
+Factors: Does it save memory to store a variable as a factor instead of a string?
+* This used to be true: factor variables only store the factor labels once.
+* But no longer: R uses a global string pool -- each unique string is only stored once.
+
+`pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
+
+---
+
+# Converting variable types
+
+Note: The rest of the examples in this section are illustrative and not actually executable.
+
+</br>
+
+Convert variable to numeric:
+```{r, eval=F}
+data |> mutate(height = as.numeric(height))
+```
+
+Convert variable to integer:
+```{r, eval=F}
+data |> mutate(id_num = as.integer(id_num))
+```
+
+Convert all numeric variables to factors:
+```{r, eval=F}
+data |> mutate(across(is.numeric, as.factor))
+```
+
+---
+
+# Converting values
+
+Replace values with `recode`:
+```{r, eval=FALSE}
+students |>
+  mutate(stu_label = recode(student, \`0` = NA_character_,
+                                     \`1` = "law",
+                                     \`2` = "medicine",
+                                .default = "student"))
+```
+`.default` matches all values not otherwise matched.
+Otherwise, unmatched values are left unchanged.
+
+You have to enclose in backticks the numeric values you're trying to match.
+
+---
+
+# Converting values
+
+Set a certain value to missing: `dplyr::na_if`
+```{r, eval=FALSE}
+students |>
+  mutate(student = na_if(student, 0))
+```
+
+</br>
+
+Set missing values to a certain value: `tidyr::replace_na`
+```{r, eval=FALSE}
+students |>
+  mutate(student = replace_na(student, 0))
+```
+
+---
+
+# Appending data
+
+Use `dplyr::bind_rows` to append two datasets with the same variables.
+```{r, eval=FALSE}
+bind_rows(x, y)
+```
+
+
+---
+class: inverse, middle
+name: factors
+
+# Factors
+
+This section is drawn partly from [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 15.
+
+
+---
+
+# Factors
+
+Using `forcats`, part of the tidyverse.
+* "cats" = categories
+* "forcats" is an anagram of "factors"
+
+Imagine that you have a variable that records month:
+
+```{r}
+x1 = c("Dec", "Apr", "Jan", "Mar")
+```
+
+Using a string to record this variable has two problems:
+
+1.  There are only twelve possible months, and there's nothing saving you from typos:
+
+```{r}
+x2 = c("Dec", "Apr", "Jam", "Mar")
+```
+
+2.  It doesn't sort in a useful way:
+
+```{r}
+sort(x1)
+```
+
+---
+
+# Creating factors
+
+You can fix both of these problems with a factor.
+To create a factor you must start by creating a list of the valid **levels**:
+
+```{r}
+month_levels = c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+```
+
+Now you can create a factor:
+
+```{r}
+y1 = factor(x1, levels = month_levels)
+y1
+sort(y1)
+```
+
+---
+
+# Creating factors
+
+And any values not in the set will be silently converted to NA:
+
+```{r}
+y2 = factor(x2, levels = month_levels)
+y2
+```
+
+You can also skip the step of defining the levels. If you omit the second argument, R will just take the levels from your variable. The catch is that they'll be in alphabetical order.
+
+```{r}
+factor(x1)
+```
+
+---
+
+# Creating factors
+
+If you'd prefer that the order of the levels match the order of the first appearance in the data, you can set levels to `unique(x)`, or after the fact, with `fct_inorder()`:
+
+```{r}
+f1 = factor(x1, levels = unique(x1))
+f1
+```
+
+If you ever need to access the set of valid levels directly, you can do so with `levels()`:
+
+```{r}
+levels(f1)
+```
+
+
+---
+class: inverse, middle
+name: strings
+
+# Strings
+
+This section is drawn from the JHU Data Science Lab's [Tidyverse Skills for Data Science](https://jhudatascience.org/tidyversecourse/), section 3.7, and [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 14.
+
+
+---
+
+
+# Basics of working with strings 
+
+`stringr` is a core tidyverse package that helps a lot with strings.
+
+Get length of strings: `str_length()`
+```{r}
+A = c("Hello.", "Hi", "Howdy")
+str_length(A)
+```
+
+--
+
+.pull-left[
+Combine strings: `str_c()`
+```{r}
+str_c("Good", "Morning")
+str_c("Good", "Morning", sep=" ")
+```
+]
+
+--
+
+.pull-right[
+Subset strings: `str_sub()`
+```{r}
+object = c("Good", "Morning")
+str_sub(object, 1, 3)
+str_sub(object, -3, -1)
+```
+]
+
+---
+
+# Regular expressions
+
+Regular expressions are code to describe patterns within strings. They are not specific to R but work across basically all programming languages.
+
+Count matches of a specified pattern: `str_count()`
+```{r}
+names = c("Keisha", "Mohammed", "Jane", "Mathieu")
+
+
+# Identify strings that CONTAIN a lowercase "h"
+str_count(names, "h")
+
+# Identify strings that START with a capital "M"
+str_count(names, "^M")
+```
+
+---
+
+# Regular expressions
+
+```{r}
+names = c("Keisha", "Mohammed", "Jane", "Mathieu")
+
+
+# Identify strings that END with an uppercase "a"
+str_count(names, "A$")
+
+# Identify strings that END with a lowercase "a"
+str_count(names, "a$")
+
+```
+</br>
+
+`^` and `$` are called **anchors**.
+
+---
+
+# Regular expressions
+
+Extract the portion of strings that match a specified pattern: `str_extract()`
+```{r}
+str_extract(names, "^M")
+```
+</br>
+
+Replace matches: `str_replace()`
+```{r}
+str_replace(names, "^M", "_")
+```
+
+---
+
+# Common regular expressions
+
+.pull-left[
+```{r}
+# Match all lowercase vowels
+str_view_all(names, "[aeiou]")
+```
+]
+.pull-right[
+```{r}
+# Match anything NOT a lowercase vowel
+str_view_all(names, "[^aeiou]")
+```
+]
+
+---
+
+# Common regular expressions
+
+```{r}
+addresses = c("1234 Main Street", 
+               "1600 Pennsylvania Ave.", 
+               "Brick Building")
+```
+.pull-left[
+```{r}
+# Match any character (except newlines)
+str_view_all(addresses, ".")
+```
+]
+
+--
+
+.pull-right[
+```{r}
+# Match a period (escape with "\\")
+str_view_all(addresses, "\\.")
+```
+]
+
+--
+
+.pull-left[
+```{r}
+# Match any digit
+str_view_all(addresses, "\\d")
+```
+]
+.pull-right[
+```{r}
+# Match any whitespace
+str_view_all(addresses, "\\s")
+```
+]
+---
+
+# Common regular expressions
+
+.pull-left[
+```{r}
+# Match when n shows up 1+ times
+str_view_all(addresses, "n+")
+```
+]
+.pull-right[
+```{r}
+# Match when n shows up 2 times
+str_view_all(addresses, "n{2}")
+```
+]
+
+---
+
+# Common regular expressions
+
+```{r}
+g = c("grey", "gray")
+```
+.pull-left[
+```{r}
+# Use a vertical bar to alternate
+str_view(g, "grey|gray")
+```
+]
+.pull-right[
+```{r}
+# And parentheses to clarify precedence
+str_view(g, "gr(e|a)y")
+```
+]
+
+--
+
+</br>
+
+```{r}
+l = c("labor", "labour")
+
+# Match "labor" if it contains either 0 or 1 "u"
+str_view(l, "labo(u?)r")
+
+```
+
+---
+
+# Last remarks on regular expressions
+
+**All kinds of regex cheat sheets and interactive testers are available via a quick Google.**
+
+Regexps are hard to read and troubleshoot. Try not to get too deep into them -- you can often accomplish the same goal by breaking it up into smaller chunks.
+
+> Some people, when confronted with a problem, think "I know, I’ll use regular expressions." Now they have two problems. - Jamie Zawinski
+
+---
+
+# Last remarks on regular expressions
+
+This is (the start of) a real regular expression that checks whether an email address is valid:
+
+`(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*:(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*)(?:,\s*(?:(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\<(?:(?:\r\n)?[ \t])*(?:@(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()<>@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()<>@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\>(?:(?:\r\n)?[ \t])*))*)?;\s*)`
+
+---
+
+# Fixing inconsistent formatting
+
+Note: The rest of the examples in this section are illustrative and not actually executable.
+
+Replace spaces with hyphens:
+```{r, eval=F}
+customers |> 
+  mutate(credit_card_spaces = str_replace_all(credit_card, "-", " "))
+```
+
+Removing all spaces:
+```{r, eval=F}
+customers |> 
+  mutate(credit_card_spaces = str_remove_all(credit_card, " "))
+```
+
+Finding invalid credit card numbers:
+```{r, eval=F}
+customers |> 
+  filter(str_length(credit_card) != 16)
+```
+
+--
+
+</br>
+
+Why is a credit card number stored as a string/character?
+
+
+---
+
+# Fixing inconsistent categories
+
+Often we want to categorize values into groups. To do that, we need to make sure values that should be the same, actually are.
+
+These should all be the same:
+* `"mammal"`
+* `" mammal "`
+* `"MAMMAL"`
+* `"Mammal "`
+
+Fix case inconsistency:
+```{r, eval=F}
+animals |> mutate(type_upper = str_to_upper(type))
+
+```
+
+Fix whitespace inconsistency:
+```{r, eval=F}
+animals |> mutate(type_trimmed = str_trim(type))
+
+```
+
+
+---
+class: inverse, middle
+name: checklist
+
+# Data Cleaning Checklist
+
+
+---
+
+# Data Cleaning Checklist
+
+**Part A.** Get to know your data frame.
+
+***
+
+1. **Convert file formats**, as necessary.
+
+1. **Import data and wrangle into a tidy layout.**
+
+1. **Remove irrelevant, garbage, or empty** columns and rows.
+
+1. **Identify the primary key**, or define a surrogate key.
+
+1. **Resolve duplicates** (remove true duplicates, or redefine the primary key).
+
+1. **Understand the definition, origin, and units** of each variable, and document as necessary.
+
+1. **Rename variables** as necessary, to be succinct and descriptive.
+
+---
+
+# Data Cleaning Checklist
+
+**Part B.** Check your variables.
+
+***
+
+1. **Understand patterns of missing values.**
+  - Find out why they're missing.
+  - Make sure they are not more widespread than you expect.
+  - Convert other intended designations (i.e., -1 or -999) to NA.
+  - Distinguish between missing values and true zeros.
+
+1. **Convert to numeric** when variables are inappropriately stored as strings. Correct typos as necessary.
+
+1. **Convert to date/time** format where appropriate.
+
+1. **Recode binary variables** as 0/1 as necessary. (Often stored as "Yes"/"No" or 1/2.)
+
+1. **Convert to factors** when strings take a limited set of possible values.
+
+
+---
+
+# Data Cleaning Checklist
+
+**Part C.** Check the values of your quantitative variables.
+
+***
+
+1. **Make units and scales consistent.** Avoid having in the same variable:
+  - Some values in meters and others in feet.
+  - Some values in USD and others in GBP.
+  - Some percentages as 40% and others as 0.4.
+  - Some values as millions and others as billions.
+
+1. **Perform logical checks on quantitative variables:**
+  - Define any range restrictions each variable should satisfy, and check them.
+  - Correct any violations that are indisputable data entry mistakes.
+  - Create a flag variable to mark remaining violations.
+
+---
+
+# Data Cleaning Checklist
+
+**Part D.** Check the rest of your values.
+
+***
+
+1. **Clean string variables.** Some common operations:
+  - Make entirely uppercase or lowercase
+  - Remove punctuation
+  - Trim spaces (extra, starting, ending)
+  - Ensure order of names is consistent
+  - Remove uninformative and possibly words like "the" and "a"
+  - Correct spelling inconsistencies (consider text clustering packages)
+
+1. **Literally look at your data** tables every step of the way, to spot issues you haven't thought of, and to make sure you're actually doing what you think you're doing.
+
+
+---
+
+# Data Cleaning Checklist
+
+**Part E.** Finish up the cleaning phase.
+
+***
+
+1. **Save your clean data** to disk before further manipulation (merging dataframes, transforming variables, restricting the sample). Think of the whole wrangling/cleaning/analysis pipeline as 2 big phases:
+
+  - Taking messy data from external sources and making a nice, neat table that you are likely to use for multiple purposes in analysis.
+  - Taking that nice, neat table and doing all kinds of new things with it.
+
+1. **Record all steps in a script.**
+  
+1. **Never overwrite the original raw data file.**
+
+
+---
+
+# Data cleaning tips
+
+Whenever possible, make changes to values ONLY by logical conditions on one or more substantive variables -- not by observation ID or (even worse) row number.
+
+You want the changes you make to be rule-based, for 2 reasons:
+
+* So that they're general -- able to handle upstream changes to the data.
+* So that they're principled -- no one can accuse you of cherry-picking.
+
+
+---
+
+# Summary
+
+1. [Another join example](#join)
+
+1. [Keys and relational data](#keys)
+
+1. [Variables & Values](#variables-values)
+
+1. [Factors](#factors)
+
+1. [Strings](#strings)
+
+1. [Data Cleaning Checklist](#checklist)
+
+
