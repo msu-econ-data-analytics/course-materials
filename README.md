@@ -50,10 +50,9 @@ Fall 2022
 
 * More on joins
 * Keys and relational data
-* Variables & Values
-* Factors
-* Strings
-* [Data Cleaning Checklist](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf)
+* String cleaning
+* Number storage
+* Data Cleaning Checklist ([pdf version](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf))
 
 **Lecture 6: Webscraping**
 
@@ -148,6 +147,7 @@ This is a list of further resources that you may find helpful throughout (and af
   - [Joining data with dplyr](https://learn.datacamp.com/courses/introduction-to-the-tidyverse)
 
 ### Data cleaning
+* [*Tidyverse Skills for Data Science* Chapter 3](https://jhudatascience.org/tidyversecourse/wrangle-data.html) (Carrie Wright, Shannon E. Ellis, Stephanie C. Hicks and Roger D. Peng). Covers the basics of working with factors, dates and times, strings, and text as data.
 * *R for Data Science* (Hadley Wickham):
   - [Chapter 14: Strings](https://r4ds.had.co.nz/strings.html)
   - [Chapter 15: Factors](https://r4ds.had.co.nz/factors.html)

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 5: Data Wrangling in the Tidyverse</title>
+    <title>Lecture 5: Data Cleaning</title>
     <meta charset="utf-8" />
     <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -17,7 +17,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 5: Data Wrangling in the Tidyverse
+# Lecture 5: Data Cleaning
 ]
 .author[
 ### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
@@ -34,6 +34,16 @@ name: toc
     display: block !important;
   }
 }
+.small {
+  font-size: 90%;
+}
+.smaller {
+  font-size: 80%;
+}
+.xsmall {
+  font-size: 50%
+}
+
 &lt;/style&gt;
 
 
@@ -44,11 +54,9 @@ name: toc
 
 1. [Keys and relational data](#keys)
 
-1. [Variables &amp; Values](#variables-values)
+1. [String cleaning](#strings)
 
-1. [Factors](#factors)
-
-1. [Strings](#strings)
+1. [Number storage](#numbers)
 
 1. [Data Cleaning Checklist](#checklist)
 
@@ -378,7 +386,7 @@ name: keys
 
 # Keys &amp; Relational Data
 
-This section is drawn partly from [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 13.
+This section is based partly on [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 13.
 
 ---
 
@@ -620,10 +628,11 @@ stopifnot(nrow(flights) == nrow(flights_planes))
 
 ---
 class: inverse, middle
-name: variables-values
+name: strings
 
-# Variables &amp; Values
+# String cleaning
 
+This section is based partly on materials by [Rafael Irizarry](https://rafalab.github.io/dsbook/string-processing.html) under a CC license.
 
 ---
 
@@ -645,6 +654,578 @@ What types of variables might you encounter in a raw dataset?
 * Strings (`character`)
   - A sequence of letters, numbers, symbols, or other characters.
 
+---
+
+# String cleaning example
+
+Let's clean this raw data, the result of a web form in which students were asked for their height in inches:
+
+```r
+library(dslabs)
+data(reported_heights)
+str(reported_heights)
+```
+
+```
+## 'data.frame':	1095 obs. of  3 variables:
+##  $ time_stamp: chr  "2014-09-02 13:40:36" "2014-09-02 13:46:59" "2014-09-02 13:59:20" "2014-09-02 14:51:53" ...
+##  $ sex       : chr  "Male" "Male" "Male" "Male" ...
+##  $ height    : chr  "75" "70" "68" "74" ...
+```
+
+Unfortunately `height` is not numeric. Can we coerce it to numeric?
+
+```r
+heights2 = reported_heights |&gt;
+  mutate(height_num = as.numeric(height))
+```
+
+```
+## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+```
+
+```r
+sum(is.na(heights2$height_num))
+```
+
+```
+## [1] 81
+```
+
+---
+
+# String cleaning example
+
+Yes, but we lose a lot of information. Let's see some examples of non-numeric entries:
+
+```r
+heights_probs = filter(heights2, is.na(height_num))
+View(heights_probs)
+x = heights_probs$height
+x
+```
+
+```
+##  [1] "5' 4\""                 "165cm"                  "5'7"                   
+##  [4] "&gt;9000"                  "5'7\""                  "5'3\""                 
+##  [7] "5 feet and 8.11 inches" "5'11"                   "5'9''"                 
+## [10] "5'10''"                 "5,3"                    "6'"                    
+## [13] "6,8"                    "5' 10"                  "Five foot eight inches"
+## [16] "5'5\""                  "5'2\""                  "5,4"                   
+## [19] "5'3"                    "5'10''"                 "5'3''"                 
+## [22] "5'7''"                  "5'12"                   "2'33"                  
+## [25] "5'11"                   "5'3\""                  "5,8"                   
+## [28] "5'6''"                  "5'4"                    "1,70"                  
+## [31] "5'7.5''"                "5'7.5''"                "5'2\""                 
+## [34] "5' 7.78\""              "yyy"                    "5'5"                   
+## [37] "5'8"                    "5'6"                    "5 feet 7inches"        
+## [40] "6*12"                   "5 .11"                  "5 11"                  
+## [43] "5'4"                    "5'8\""                  "5'5"                   
+## [46] "5'7"                    "5'6"                    "5'11\""                
+## [49] "5'7\""                  "5'7"                    "5'8"                   
+## [52] "5' 11\""                "6'1\""                  "69\""                  
+## [55] "5' 7\""                 "5'10''"                 "5'10"                  
+## [58] "5'10"                   "5ft 9 inches"           "5 ft 9 inches"         
+## [61] "5'2"                    "5'11"                   "5'11''"                
+## [64] "5'8\""                  "708,661"                "5 feet 6 inches"       
+## [67] "5'10''"                 "5'8"                    "6'3\""                 
+## [70] "649,606"                "728,346"                "6 04"                  
+## [73] "5'9"                    "5'5''"                  "5'7\""                 
+## [76] "6'4\""                  "5'4"                    "170 cm"                
+## [79] "7,283,465"              "5'6"                    "5'6"
+```
+
+---
+
+# String cleaning example
+
+Many of these entries have valuable information, so let's try to salvage as much as we can.
+
+**The general way to proceed is:**
+1. Identify the most common patterns among the problematic entries.
+2. Write an algorithm to correct these.
+3. Review results to make sure your algorithm worked correctly.
+4. Look at the remaining problematic entries. Tweak your algorithm or add another one.
+5. Stop when all useful information is corrected (or when MB &lt; MC).
+
+**What are the most common patterns?**
+
+--
+* Strings of the form `x'y` or `x'y"` where `x` is feet and `y` is inches.
+* Strings of the form `x ft y inches`, except that "ft" and "inches" are inconsistent.
+
+**My approach is going to be to:**
+1. Try to convert everything to the pattern `x y`.
+2. `separate` the feet and inches values.
+3. Calculate total inches from feet and inches.
+
+---
+
+# String cleaning example
+
+Start by replacing 4 punctuation marks with spaces (note we have to **escape** the "):
+
+```r
+x2 = x |&gt;
+  str_replace_all("'", " ") |&gt;
+  str_replace_all(",", " ") |&gt;
+  str_replace_all("\"", " ") |&gt;
+  str_replace_all(",", " ")
+x2
+```
+
+```
+##  [1] "5  4 "                  "165cm"                  "5 7"                   
+##  [4] "&gt;9000"                  "5 7 "                   "5 3 "                  
+##  [7] "5 feet and 8.11 inches" "5 11"                   "5 9  "                 
+## [10] "5 10  "                 "5 3"                    "6 "                    
+## [13] "6 8"                    "5  10"                  "Five foot eight inches"
+## [16] "5 5 "                   "5 2 "                   "5 4"                   
+## [19] "5 3"                    "5 10  "                 "5 3  "                 
+## [22] "5 7  "                  "5 12"                   "2 33"                  
+## [25] "5 11"                   "5 3 "                   "5 8"                   
+## [28] "5 6  "                  "5 4"                    "1 70"                  
+## [31] "5 7.5  "                "5 7.5  "                "5 2 "                  
+## [34] "5  7.78 "               "yyy"                    "5 5"                   
+## [37] "5 8"                    "5 6"                    "5 feet 7inches"        
+## [40] "6*12"                   "5 .11"                  "5 11"                  
+## [43] "5 4"                    "5 8 "                   "5 5"                   
+## [46] "5 7"                    "5 6"                    "5 11 "                 
+## [49] "5 7 "                   "5 7"                    "5 8"                   
+## [52] "5  11 "                 "6 1 "                   "69 "                   
+## [55] "5  7 "                  "5 10  "                 "5 10"                  
+## [58] "5 10"                   "5ft 9 inches"           "5 ft 9 inches"         
+## [61] "5 2"                    "5 11"                   "5 11  "                
+## [64] "5 8 "                   "708 661"                "5 feet 6 inches"       
+## [67] "5 10  "                 "5 8"                    "6 3 "                  
+## [70] "649 606"                "728 346"                "6 04"                  
+## [73] "5 9"                    "5 5  "                  "5 7 "                  
+## [76] "6 4 "                   "5 4"                    "170 cm"                
+## [79] "7 283 465"              "5 6"                    "5 6"
+```
+
+---
+
+# String cleaning example
+
+We can make this more concise by using **regular expressions** (more on this soon):
+
+```r
+x2 = x |&gt;
+  str_replace_all("'|,|\"|,", " ")
+x2
+```
+
+```
+##  [1] "5  4 "                  "165cm"                  "5 7"                   
+##  [4] "&gt;9000"                  "5 7 "                   "5 3 "                  
+##  [7] "5 feet and 8.11 inches" "5 11"                   "5 9  "                 
+## [10] "5 10  "                 "5 3"                    "6 "                    
+## [13] "6 8"                    "5  10"                  "Five foot eight inches"
+## [16] "5 5 "                   "5 2 "                   "5 4"                   
+## [19] "5 3"                    "5 10  "                 "5 3  "                 
+## [22] "5 7  "                  "5 12"                   "2 33"                  
+## [25] "5 11"                   "5 3 "                   "5 8"                   
+## [28] "5 6  "                  "5 4"                    "1 70"                  
+## [31] "5 7.5  "                "5 7.5  "                "5 2 "                  
+## [34] "5  7.78 "               "yyy"                    "5 5"                   
+## [37] "5 8"                    "5 6"                    "5 feet 7inches"        
+## [40] "6*12"                   "5 .11"                  "5 11"                  
+## [43] "5 4"                    "5 8 "                   "5 5"                   
+## [46] "5 7"                    "5 6"                    "5 11 "                 
+## [49] "5 7 "                   "5 7"                    "5 8"                   
+## [52] "5  11 "                 "6 1 "                   "69 "                   
+## [55] "5  7 "                  "5 10  "                 "5 10"                  
+## [58] "5 10"                   "5ft 9 inches"           "5 ft 9 inches"         
+## [61] "5 2"                    "5 11"                   "5 11  "                
+## [64] "5 8 "                   "708 661"                "5 feet 6 inches"       
+## [67] "5 10  "                 "5 8"                    "6 3 "                  
+## [70] "649 606"                "728 346"                "6 04"                  
+## [73] "5 9"                    "5 5  "                  "5 7 "                  
+## [76] "6 4 "                   "5 4"                    "170 cm"                
+## [79] "7 283 465"              "5 6"                    "5 6"
+```
+
+---
+
+# String cleaning example
+
+Also get rid of some common words, and **trim** extra spaces:
+
+```r
+x2 = x |&gt;
+  str_replace_all("'|,|\"|,|ft|feet|inches|and", " ") |&gt;
+  str_trim()
+x2
+```
+
+```
+##  [1] "5  4"            "165cm"           "5 7"             "&gt;9000"          
+##  [5] "5 7"             "5 3"             "5     8.11"      "5 11"           
+##  [9] "5 9"             "5 10"            "5 3"             "6"              
+## [13] "6 8"             "5  10"           "Five foot eight" "5 5"            
+## [17] "5 2"             "5 4"             "5 3"             "5 10"           
+## [21] "5 3"             "5 7"             "5 12"            "2 33"           
+## [25] "5 11"            "5 3"             "5 8"             "5 6"            
+## [29] "5 4"             "1 70"            "5 7.5"           "5 7.5"          
+## [33] "5 2"             "5  7.78"         "yyy"             "5 5"            
+## [37] "5 8"             "5 6"             "5   7"           "6*12"           
+## [41] "5 .11"           "5 11"            "5 4"             "5 8"            
+## [45] "5 5"             "5 7"             "5 6"             "5 11"           
+## [49] "5 7"             "5 7"             "5 8"             "5  11"          
+## [53] "6 1"             "69"              "5  7"            "5 10"           
+## [57] "5 10"            "5 10"            "5  9"            "5   9"          
+## [61] "5 2"             "5 11"            "5 11"            "5 8"            
+## [65] "708 661"         "5   6"           "5 10"            "5 8"            
+## [69] "6 3"             "649 606"         "728 346"         "6 04"           
+## [73] "5 9"             "5 5"             "5 7"             "6 4"            
+## [77] "5 4"             "170 cm"          "7 283 465"       "5 6"            
+## [81] "5 6"
+```
+
+---
+
+# String cleaning example
+
+Also remove extra spaces **within** a string:
+
+```r
+x2 = x |&gt;
+  str_replace_all("'|,|\"|,|ft|feet|inches|and", " ") |&gt;
+  str_squish()
+x2
+```
+
+```
+##  [1] "5 4"             "165cm"           "5 7"             "&gt;9000"          
+##  [5] "5 7"             "5 3"             "5 8.11"          "5 11"           
+##  [9] "5 9"             "5 10"            "5 3"             "6"              
+## [13] "6 8"             "5 10"            "Five foot eight" "5 5"            
+## [17] "5 2"             "5 4"             "5 3"             "5 10"           
+## [21] "5 3"             "5 7"             "5 12"            "2 33"           
+## [25] "5 11"            "5 3"             "5 8"             "5 6"            
+## [29] "5 4"             "1 70"            "5 7.5"           "5 7.5"          
+## [33] "5 2"             "5 7.78"          "yyy"             "5 5"            
+## [37] "5 8"             "5 6"             "5 7"             "6*12"           
+## [41] "5 .11"           "5 11"            "5 4"             "5 8"            
+## [45] "5 5"             "5 7"             "5 6"             "5 11"           
+## [49] "5 7"             "5 7"             "5 8"             "5 11"           
+## [53] "6 1"             "69"              "5 7"             "5 10"           
+## [57] "5 10"            "5 10"            "5 9"             "5 9"            
+## [61] "5 2"             "5 11"            "5 11"            "5 8"            
+## [65] "708 661"         "5 6"             "5 10"            "5 8"            
+## [69] "6 3"             "649 606"         "728 346"         "6 04"           
+## [73] "5 9"             "5 5"             "5 7"             "6 4"            
+## [77] "5 4"             "170 cm"          "7 283 465"       "5 6"            
+## [81] "5 6"
+```
+
+---
+
+# String cleaning example
+
+A few more tweaks:
+
+```r
+x2 = x |&gt;
+  str_replace_all("'|,|\"|,|\\*|ft|feet|inches|and", " ") |&gt;
+  str_squish() |&gt;
+  str_replace(" \\.", " ")
+x2
+```
+
+```
+##  [1] "5 4"             "165cm"           "5 7"             "&gt;9000"          
+##  [5] "5 7"             "5 3"             "5 8.11"          "5 11"           
+##  [9] "5 9"             "5 10"            "5 3"             "6"              
+## [13] "6 8"             "5 10"            "Five foot eight" "5 5"            
+## [17] "5 2"             "5 4"             "5 3"             "5 10"           
+## [21] "5 3"             "5 7"             "5 12"            "2 33"           
+## [25] "5 11"            "5 3"             "5 8"             "5 6"            
+## [29] "5 4"             "1 70"            "5 7.5"           "5 7.5"          
+## [33] "5 2"             "5 7.78"          "yyy"             "5 5"            
+## [37] "5 8"             "5 6"             "5 7"             "6 12"           
+## [41] "5 11"            "5 11"            "5 4"             "5 8"            
+## [45] "5 5"             "5 7"             "5 6"             "5 11"           
+## [49] "5 7"             "5 7"             "5 8"             "5 11"           
+## [53] "6 1"             "69"              "5 7"             "5 10"           
+## [57] "5 10"            "5 10"            "5 9"             "5 9"            
+## [61] "5 2"             "5 11"            "5 11"            "5 8"            
+## [65] "708 661"         "5 6"             "5 10"            "5 8"            
+## [69] "6 3"             "649 606"         "728 346"         "6 04"           
+## [73] "5 9"             "5 5"             "5 7"             "6 4"            
+## [77] "5 4"             "170 cm"          "7 283 465"       "5 6"            
+## [81] "5 6"
+```
+
+---
+
+# String cleaning example
+
+This looks pretty good, so let's apply this code to the original data:
+
+```r
+heights3 = reported_heights |&gt;
+  # Preserve original height column
+  rename(original = height) |&gt;
+  mutate(clean = original) |&gt;
+  # Clean height values
+  mutate(
+    clean = str_replace_all(clean, "'|,|\"|,|\\*|ft|feet|inches|and", " "),
+    clean = str_squish(clean),
+    clean = str_replace_all(clean, " \\.", " ")
+    )
+
+# Calculate total inches
+heights4 = heights3 |&gt;
+  # Separate feet and inches into 2 columns
+  separate(clean, sep = " ", into = c("feet", "inches"), fill = "left") |&gt;
+  # Coerce them to numeric
+  mutate(across(c(feet, inches), as.numeric)) |&gt;
+  # Replace NAs in feet with 0's
+  mutate(feet = replace_na(feet, 0)) |&gt;
+  # Calculate new height
+  mutate(clean = feet * 12 + inches)
+```
+
+```
+## Warning: Expected 2 pieces. Additional pieces discarded in 2 rows [311, 1082].
+```
+
+```
+## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+
+## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+```
+
+---
+
+# String cleaning example
+
+Great. Now let's go back and look at the remaining non-numeric values:
+
+```r
+filter(heights4, is.na(clean))
+```
+
+```
+##            time_stamp    sex               original feet inches clean
+## 1 2014-09-02 15:16:37 Female                  165cm    0     NA    NA
+## 2 2014-09-02 15:16:56   Male                  &gt;9000    0     NA    NA
+## 3 2014-10-08 19:19:33 Female Five foot eight inches    0     NA    NA
+## 4 2015-05-12 19:23:51 Female                    yyy    0     NA    NA
+## 5 2017-06-19 04:20:32   Male                 170 cm  170     NA    NA
+```
+
+Only 5 left. We could do a bit more with them, but let's set them aside for now.
+
+Next, look at the numerical range of height values. Do they make sense?
+
+```r
+summary(heights4$clean)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##     0.0    65.0    69.0   117.2    72.0 11111.0       5
+```
+
+---
+
+# String cleaning example
+
+If you `View` the data (I recommend sorting with `arrange(clean)`), you'll find:
+* Many values between 5 and 7 which are clearly in **feet** instead of inches.
+* Many values between 150 and 214 which are clearly in **cm** instead of inches.
+
+
+```r
+heights5 = heights4 |&gt;
+  mutate(clean = case_when(
+    # Convert values in feet
+    clean &gt;= 5 &amp; clean &lt;= 7 ~ clean * 12,
+    # Convert values in cm
+    between(clean, 150, 214) ~ clean / 2.54,
+    # Otherwise keep same value
+    TRUE ~ clean
+  )) |&gt;
+  arrange(clean)
+```
+
+---
+
+# String cleaning example
+
+Now, how many values are outside of plausible values?
+
+```r
+heights5 |&gt;
+  mutate(ok = between(clean, 3.5*12, 7.5*12)) |&gt;
+  count(ok)
+```
+
+```
+##      ok    n
+## 1 FALSE   30
+## 2  TRUE 1060
+## 3    NA    5
+```
+
+1. Some of these remaining values may still contain interpretable information. **There may be more cleaning to do.**
+
+1. Some of them may not, in which case we probably won't use them for analysis. **But don't discard them yet!** We'll come back to extreme values (aka outliers) in a couple of weeks.
+
+1. You'll find there are also a few instances where our cleaned value appears sensible, but the original value does not. **You may need to tweak the algorithm further.**
+
+
+---
+
+# Regular expressions
+
+Regular expressions are code to describe patterns within strings. They are not specific to R but work across basically all programming languages.
+
+
+```r
+names = c("Python", "SPSS", "Stata", "Julia")
+
+# Match strings that CONTAIN a lowercase "t"
+str_view_all(names, "t")
+```
+
+<div id="htmlwidget-589fd784096d9bee82a9" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-589fd784096d9bee82a9">{"x":{"html":"<ul>\n  <li>Py<span class='match'>t<\/span>hon<\/li>\n  <li>SPSS<\/li>\n  <li>S<span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# Common regular expressions
+
+.pull-left[
+Match strings that START with a capital "S":
+
+```r
+str_view_all(names, "^S")
+```
+
+<div id="htmlwidget-6a63b9ef67d61d14f4be" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6a63b9ef67d61d14f4be">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>S<\/span>PSS<\/li>\n  <li><span class='match'>S<\/span>tata<\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+.pull-right[
+Match strings that END with a lowercase "a":
+
+```r
+str_view_all(names, "a$")
+```
+
+<div id="htmlwidget-85fd57498c2a69370238" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-85fd57498c2a69370238">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li>SPSS<\/li>\n  <li>Stat<span class='match'>a<\/span><\/li>\n  <li>Juli<span class='match'>a<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+
+`^` and `$` are called **anchors**.
+
+---
+
+# Common regular expressions
+
+.pull-left[
+Match all lowercase vowels:
+
+```r
+str_view_all(names, "[aeiou]")
+```
+
+<div id="htmlwidget-78cd131e4d3bb3cbe933" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-78cd131e4d3bb3cbe933">{"x":{"html":"<ul>\n  <li>Pyth<span class='match'>o<\/span>n<\/li>\n  <li>SPSS<\/li>\n  <li>St<span class='match'>a<\/span>t<span class='match'>a<\/span><\/li>\n  <li>J<span class='match'>u<\/span>l<span class='match'>i<\/span><span class='match'>a<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+
+.pull-right[
+Match everything BUT lowercase vowels:
+
+```r
+str_view_all(names, "[^aeiou]")
+```
+
+<div id="htmlwidget-081f7df4c4ebfef0fbc0" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-081f7df4c4ebfef0fbc0">{"x":{"html":"<ul>\n  <li><span class='match'>P<\/span><span class='match'>y<\/span><span class='match'>t<\/span><span class='match'>h<\/span>o<span class='match'>n<\/span><\/li>\n  <li><span class='match'>S<\/span><span class='match'>P<\/span><span class='match'>S<\/span><span class='match'>S<\/span><\/li>\n  <li><span class='match'>S<\/span><span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/li>\n  <li><span class='match'>J<\/span>u<span class='match'>l<\/span>ia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+# Common regular expressions
+
+
+```r
+g = c("grey", "gray")
+```
+
+.pull-left[
+Use a vertical bar for "or":
+
+```r
+str_view_all(names, "Stata|SPSS")
+```
+
+<div id="htmlwidget-d602ebe81ed336fb1627" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d602ebe81ed336fb1627">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>SPSS<\/span><\/li>\n  <li><span class='match'>Stata<\/span><\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+
+.pull-right[
+And parentheses to clarify:
+
+```r
+str_view_all(names, "S(tata|PSS)")
+```
+
+<div id="htmlwidget-1c996af763ecb7ab5773" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1c996af763ecb7ab5773">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>SPSS<\/span><\/li>\n  <li><span class='match'>Stata<\/span><\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+# Last remarks on regular expressions
+
+**All kinds of regex cheat sheets and interactive testers are available via a quick Google.**
+
+Regexps are hard to read and troubleshoot. Try not to get too deep into them -- you can often accomplish the same goal by breaking it up into smaller chunks.
+
+&gt; Some people, when confronted with a problem, think "I know, I’ll use regular expressions." Now they have two problems. - Jamie Zawinski
+
+---
+
+# Last remarks on regular expressions
+
+This is (the start of) a real regular expression that checks whether an email address is valid:
+
+`(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*)|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*:(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*)(?:,\s*(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*))*)?;\s*)`
+
+
+---
+
+# Some useful functions for cleaning data
+
+`stringr` functions we've used here:
+* `str_replace` and `str_replace_all`: Replace parts of strings.
+* `str_trim` and `str_squish`: Remove extra spaces.
+* `str_view_all`: Illustrates matches, to help develop regular expressions.
+
+Other tidyverse functions we've used:
+* `between`: Test whether values fall within a numerical range.
+* `case_when`: Multiple conditional expressions.
+* `replace_na`: Set missing values to a certain value.
+
+Other useful `stringr` functions:
+* `str_sub`: Subset strings by position of characters.
+* `str_detect`: Test whether a string matches a pattern.
+
+Other useful tidyverse functions:
+* `na_if`: Set a certain value to missing.
+* `bind_rows`: Append two datasets that have the same variable structure.
+
+
+---
+class: inverse, middle
+name: numbers
+
+# Number storage
 
 ---
 
@@ -735,6 +1316,17 @@ What you can do instead:
 
 ---
 
+# More variable formats
+
+**Dates and times** allow you to easily do math and logic on dates and times.
+* See tidyverse package `lubridate`.
+
+**Factors** allow you to store values as numbers, but *display* them as strings.
+* This is useful for sorting things like month names: "Jan", "Feb", "Mar", "Apr"....
+* See tidyverse packages `forcats`.
+
+---
+
 # Memory space
 
 Memory space quickly becomes a problem when you work with large datasets.
@@ -742,606 +1334,11 @@ Memory space quickly becomes a problem when you work with large datasets.
 
 Logical variables are smaller than integers, which are smaller than numeric.
 
-Factors: Does it save memory to store a variable as a factor instead of a string?
+Does it save memory to store a variable as a factor instead of a string?
 * This used to be true: factor variables only store the factor labels once.
 * But no longer: R uses a global string pool -- each unique string is only stored once.
 
 `pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
-
----
-
-# Converting variable types
-
-Note: The rest of the examples in this section are illustrative and not actually executable.
-
-&lt;/br&gt;
-
-Convert variable to numeric:
-
-```r
-data |&gt; mutate(height = as.numeric(height))
-```
-
-Convert variable to integer:
-
-```r
-data |&gt; mutate(id_num = as.integer(id_num))
-```
-
-Convert all numeric variables to factors:
-
-```r
-data |&gt; mutate(across(is.numeric, as.factor))
-```
-
----
-
-# Converting values
-
-Replace values with `recode`:
-
-```r
-students |&gt;
-  mutate(stu_label = recode(student, \`0` = NA_character_,
-                                     \`1` = "law",
-                                     \`2` = "medicine",
-                                .default = "student"))
-```
-`.default` matches all values not otherwise matched.
-Otherwise, unmatched values are left unchanged.
-
-You have to enclose in backticks the numeric values you're trying to match.
-
----
-
-# Converting values
-
-Set a certain value to missing: `dplyr::na_if`
-
-```r
-students |&gt;
-  mutate(student = na_if(student, 0))
-```
-
-&lt;/br&gt;
-
-Set missing values to a certain value: `tidyr::replace_na`
-
-```r
-students |&gt;
-  mutate(student = replace_na(student, 0))
-```
-
----
-
-# Appending data
-
-Use `dplyr::bind_rows` to append two datasets with the same variables.
-
-```r
-bind_rows(x, y)
-```
-
-
----
-class: inverse, middle
-name: factors
-
-# Factors
-
-This section is drawn partly from [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 15.
-
-
----
-
-# Factors
-
-Using `forcats`, part of the tidyverse.
-* "cats" = categories
-* "forcats" is an anagram of "factors"
-
-Imagine that you have a variable that records month:
-
-
-```r
-x1 = c("Dec", "Apr", "Jan", "Mar")
-```
-
-Using a string to record this variable has two problems:
-
-1.  There are only twelve possible months, and there's nothing saving you from typos:
-
-
-```r
-x2 = c("Dec", "Apr", "Jam", "Mar")
-```
-
-2.  It doesn't sort in a useful way:
-
-
-```r
-sort(x1)
-```
-
-```
-## [1] "Apr" "Dec" "Jan" "Mar"
-```
-
----
-
-# Creating factors
-
-You can fix both of these problems with a factor.
-To create a factor you must start by creating a list of the valid **levels**:
-
-
-```r
-month_levels = c(
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-)
-```
-
-Now you can create a factor:
-
-
-```r
-y1 = factor(x1, levels = month_levels)
-y1
-```
-
-```
-## [1] Dec Apr Jan Mar
-## Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-```
-
-```r
-sort(y1)
-```
-
-```
-## [1] Jan Mar Apr Dec
-## Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-```
-
----
-
-# Creating factors
-
-And any values not in the set will be silently converted to NA:
-
-
-```r
-y2 = factor(x2, levels = month_levels)
-y2
-```
-
-```
-## [1] Dec  Apr  &lt;NA&gt; Mar 
-## Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-```
-
-You can also skip the step of defining the levels. If you omit the second argument, R will just take the levels from your variable. The catch is that they'll be in alphabetical order.
-
-
-```r
-factor(x1)
-```
-
-```
-## [1] Dec Apr Jan Mar
-## Levels: Apr Dec Jan Mar
-```
-
----
-
-# Creating factors
-
-If you'd prefer that the order of the levels match the order of the first appearance in the data, you can set levels to `unique(x)`, or after the fact, with `fct_inorder()`:
-
-
-```r
-f1 = factor(x1, levels = unique(x1))
-f1
-```
-
-```
-## [1] Dec Apr Jan Mar
-## Levels: Dec Apr Jan Mar
-```
-
-If you ever need to access the set of valid levels directly, you can do so with `levels()`:
-
-
-```r
-levels(f1)
-```
-
-```
-## [1] "Dec" "Apr" "Jan" "Mar"
-```
-
-
----
-class: inverse, middle
-name: strings
-
-# Strings
-
-This section is drawn from the JHU Data Science Lab's [Tidyverse Skills for Data Science](https://jhudatascience.org/tidyversecourse/), section 3.7, and [*R for Data Science*](https://r4ds.had.co.nz/index.html), chapter 14.
-
-
----
-
-
-# Basics of working with strings 
-
-`stringr` is a core tidyverse package that helps a lot with strings.
-
-Get length of strings: `str_length()`
-
-```r
-A = c("Hello.", "Hi", "Howdy")
-str_length(A)
-```
-
-```
-## [1] 6 2 5
-```
-
---
-
-.pull-left[
-Combine strings: `str_c()`
-
-```r
-str_c("Good", "Morning")
-```
-
-```
-## [1] "GoodMorning"
-```
-
-```r
-str_c("Good", "Morning", sep=" ")
-```
-
-```
-## [1] "Good Morning"
-```
-]
-
---
-
-.pull-right[
-Subset strings: `str_sub()`
-
-```r
-object = c("Good", "Morning")
-str_sub(object, 1, 3)
-```
-
-```
-## [1] "Goo" "Mor"
-```
-
-```r
-str_sub(object, -3, -1)
-```
-
-```
-## [1] "ood" "ing"
-```
-]
-
----
-
-# Regular expressions
-
-Regular expressions are code to describe patterns within strings. They are not specific to R but work across basically all programming languages.
-
-Count matches of a specified pattern: `str_count()`
-
-```r
-names = c("Keisha", "Mohammed", "Jane", "Mathieu")
-
-
-# Identify strings that CONTAIN a lowercase "h"
-str_count(names, "h")
-```
-
-```
-## [1] 1 1 0 1
-```
-
-```r
-# Identify strings that START with a capital "M"
-str_count(names, "^M")
-```
-
-```
-## [1] 0 1 0 1
-```
-
----
-
-# Regular expressions
-
-
-```r
-names = c("Keisha", "Mohammed", "Jane", "Mathieu")
-
-
-# Identify strings that END with an uppercase "a"
-str_count(names, "A$")
-```
-
-```
-## [1] 0 0 0 0
-```
-
-```r
-# Identify strings that END with a lowercase "a"
-str_count(names, "a$")
-```
-
-```
-## [1] 1 0 0 0
-```
-&lt;/br&gt;
-
-`^` and `$` are called **anchors**.
-
----
-
-# Regular expressions
-
-Extract the portion of strings that match a specified pattern: `str_extract()`
-
-```r
-str_extract(names, "^M")
-```
-
-```
-## [1] NA  "M" NA  "M"
-```
-&lt;/br&gt;
-
-Replace matches: `str_replace()`
-
-```r
-str_replace(names, "^M", "_")
-```
-
-```
-## [1] "Keisha"   "_ohammed" "Jane"     "_athieu"
-```
-
----
-
-# Common regular expressions
-
-.pull-left[
-
-```r
-# Match all lowercase vowels
-str_view_all(names, "[aeiou]")
-```
-
-<div id="htmlwidget-329a2d4fa4a27560ced3" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-329a2d4fa4a27560ced3">{"x":{"html":"<ul>\n  <li>K<span class='match'>e<\/span><span class='match'>i<\/span>sh<span class='match'>a<\/span><\/li>\n  <li>M<span class='match'>o<\/span>h<span class='match'>a<\/span>mm<span class='match'>e<\/span>d<\/li>\n  <li>J<span class='match'>a<\/span>n<span class='match'>e<\/span><\/li>\n  <li>M<span class='match'>a<\/span>th<span class='match'>i<\/span><span class='match'>e<\/span><span class='match'>u<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-.pull-right[
-
-```r
-# Match anything NOT a lowercase vowel
-str_view_all(names, "[^aeiou]")
-```
-
-<div id="htmlwidget-2b6c446fa171365c406a" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2b6c446fa171365c406a">{"x":{"html":"<ul>\n  <li><span class='match'>K<\/span>ei<span class='match'>s<\/span><span class='match'>h<\/span>a<\/li>\n  <li><span class='match'>M<\/span>o<span class='match'>h<\/span>a<span class='match'>m<\/span><span class='match'>m<\/span>e<span class='match'>d<\/span><\/li>\n  <li><span class='match'>J<\/span>a<span class='match'>n<\/span>e<\/li>\n  <li><span class='match'>M<\/span>a<span class='match'>t<\/span><span class='match'>h<\/span>ieu<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-
----
-
-# Common regular expressions
-
-
-```r
-addresses = c("1234 Main Street", 
-               "1600 Pennsylvania Ave.", 
-               "Brick Building")
-```
-.pull-left[
-
-```r
-# Match any character (except newlines)
-str_view_all(addresses, ".")
-```
-
-<div id="htmlwidget-69f4967d8acf6f7fd8bd" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-69f4967d8acf6f7fd8bd">{"x":{"html":"<ul>\n  <li><span class='match'>1<\/span><span class='match'>2<\/span><span class='match'>3<\/span><span class='match'>4<\/span><span class='match'> <\/span><span class='match'>M<\/span><span class='match'>a<\/span><span class='match'>i<\/span><span class='match'>n<\/span><span class='match'> <\/span><span class='match'>S<\/span><span class='match'>t<\/span><span class='match'>r<\/span><span class='match'>e<\/span><span class='match'>e<\/span><span class='match'>t<\/span><\/li>\n  <li><span class='match'>1<\/span><span class='match'>6<\/span><span class='match'>0<\/span><span class='match'>0<\/span><span class='match'> <\/span><span class='match'>P<\/span><span class='match'>e<\/span><span class='match'>n<\/span><span class='match'>n<\/span><span class='match'>s<\/span><span class='match'>y<\/span><span class='match'>l<\/span><span class='match'>v<\/span><span class='match'>a<\/span><span class='match'>n<\/span><span class='match'>i<\/span><span class='match'>a<\/span><span class='match'> <\/span><span class='match'>A<\/span><span class='match'>v<\/span><span class='match'>e<\/span><span class='match'>.<\/span><\/li>\n  <li><span class='match'>B<\/span><span class='match'>r<\/span><span class='match'>i<\/span><span class='match'>c<\/span><span class='match'>k<\/span><span class='match'> <\/span><span class='match'>B<\/span><span class='match'>u<\/span><span class='match'>i<\/span><span class='match'>l<\/span><span class='match'>d<\/span><span class='match'>i<\/span><span class='match'>n<\/span><span class='match'>g<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-
---
-
-.pull-right[
-
-```r
-# Match a period (escape with "\\")
-str_view_all(addresses, "\\.")
-```
-
-<div id="htmlwidget-d7ba1e796d236ac72625" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d7ba1e796d236ac72625">{"x":{"html":"<ul>\n  <li>1234 Main Street<\/li>\n  <li>1600 Pennsylvania Ave<span class='match'>.<\/span><\/li>\n  <li>Brick Building<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-
---
-
-.pull-left[
-
-```r
-# Match any digit
-str_view_all(addresses, "\\d")
-```
-
-<div id="htmlwidget-b7b1034dd5f46f2f0314" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b7b1034dd5f46f2f0314">{"x":{"html":"<ul>\n  <li><span class='match'>1<\/span><span class='match'>2<\/span><span class='match'>3<\/span><span class='match'>4<\/span> Main Street<\/li>\n  <li><span class='match'>1<\/span><span class='match'>6<\/span><span class='match'>0<\/span><span class='match'>0<\/span> Pennsylvania Ave.<\/li>\n  <li>Brick Building<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-.pull-right[
-
-```r
-# Match any whitespace
-str_view_all(addresses, "\\s")
-```
-
-<div id="htmlwidget-b38512cfb9930c896134" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b38512cfb9930c896134">{"x":{"html":"<ul>\n  <li>1234<span class='match'> <\/span>Main<span class='match'> <\/span>Street<\/li>\n  <li>1600<span class='match'> <\/span>Pennsylvania<span class='match'> <\/span>Ave.<\/li>\n  <li>Brick<span class='match'> <\/span>Building<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
----
-
-# Common regular expressions
-
-.pull-left[
-
-```r
-# Match when n shows up 1+ times
-str_view_all(addresses, "n+")
-```
-
-<div id="htmlwidget-4117c1fcfd67a519121d" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4117c1fcfd67a519121d">{"x":{"html":"<ul>\n  <li>1234 Mai<span class='match'>n<\/span> Street<\/li>\n  <li>1600 Pe<span class='match'>nn<\/span>sylva<span class='match'>n<\/span>ia Ave.<\/li>\n  <li>Brick Buildi<span class='match'>n<\/span>g<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-.pull-right[
-
-```r
-# Match when n shows up 2 times
-str_view_all(addresses, "n{2}")
-```
-
-<div id="htmlwidget-7708a7ec8af0b016e819" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7708a7ec8af0b016e819">{"x":{"html":"<ul>\n  <li>1234 Main Street<\/li>\n  <li>1600 Pe<span class='match'>nn<\/span>sylvania Ave.<\/li>\n  <li>Brick Building<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-
----
-
-# Common regular expressions
-
-
-```r
-g = c("grey", "gray")
-```
-.pull-left[
-
-```r
-# Use a vertical bar to alternate
-str_view(g, "grey|gray")
-```
-
-<div id="htmlwidget-fb690823e6b33e203da4" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-fb690823e6b33e203da4">{"x":{"html":"<ul>\n  <li><span class='match'>grey<\/span><\/li>\n  <li><span class='match'>gray<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-.pull-right[
-
-```r
-# And parentheses to clarify precedence
-str_view(g, "gr(e|a)y")
-```
-
-<div id="htmlwidget-dd3517e0231a73464f1b" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-dd3517e0231a73464f1b">{"x":{"html":"<ul>\n  <li><span class='match'>grey<\/span><\/li>\n  <li><span class='match'>gray<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-]
-
---
-
-&lt;/br&gt;
-
-
-```r
-l = c("labor", "labour")
-
-# Match "labor" if it contains either 0 or 1 "u"
-str_view(l, "labo(u?)r")
-```
-
-<div id="htmlwidget-36a2a7b77b433652d202" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-36a2a7b77b433652d202">{"x":{"html":"<ul>\n  <li><span class='match'>labor<\/span><\/li>\n  <li><span class='match'>labour<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
-
----
-
-# Last remarks on regular expressions
-
-**All kinds of regex cheat sheets and interactive testers are available via a quick Google.**
-
-Regexps are hard to read and troubleshoot. Try not to get too deep into them -- you can often accomplish the same goal by breaking it up into smaller chunks.
-
-&gt; Some people, when confronted with a problem, think "I know, I’ll use regular expressions." Now they have two problems. - Jamie Zawinski
-
----
-
-# Last remarks on regular expressions
-
-This is (the start of) a real regular expression that checks whether an email address is valid:
-
-`(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*)|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*:(?:(?:\r\n)?[ \t])*(?:(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*)(?:,\s*(?:(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*|(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)*\&lt;(?:(?:\r\n)?[ \t])*(?:@(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*(?:,@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*)*:(?:(?:\r\n)?[ \t])*)?(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|"(?:[^\"\r\\]|\\.|(?:(?:\r\n)?[ \t]))*"(?:(?:\r\n)?[ \t])*))*@(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*)(?:\.(?:(?:\r\n)?[ \t])*(?:[^()&lt;&gt;@,;:\\".\[\] \000-\031]+(?:(?:(?:\r\n)?[ \t])+|\Z|(?=[\["()&lt;&gt;@,;:\\".\[\]]))|\[([^\[\]\r\\]|\\.)*\](?:(?:\r\n)?[ \t])*))*\&gt;(?:(?:\r\n)?[ \t])*))*)?;\s*)`
-
----
-
-# Fixing inconsistent formatting
-
-Note: The rest of the examples in this section are illustrative and not actually executable.
-
-Replace spaces with hyphens:
-
-```r
-customers |&gt; 
-  mutate(credit_card_spaces = str_replace_all(credit_card, "-", " "))
-```
-
-Removing all spaces:
-
-```r
-customers |&gt; 
-  mutate(credit_card_spaces = str_remove_all(credit_card, " "))
-```
-
-Finding invalid credit card numbers:
-
-```r
-customers |&gt; 
-  filter(str_length(credit_card) != 16)
-```
-
---
-
-&lt;/br&gt;
-
-Why is a credit card number stored as a string/character?
-
-
----
-
-# Fixing inconsistent categories
-
-Often we want to categorize values into groups. To do that, we need to make sure values that should be the same, actually are.
-
-These should all be the same:
-* `"mammal"`
-* `" mammal "`
-* `"MAMMAL"`
-* `"Mammal "`
-
-Fix case inconsistency:
-
-```r
-animals |&gt; mutate(type_upper = str_to_upper(type))
-```
-
-Fix whitespace inconsistency:
-
-```r
-animals |&gt; mutate(type_trimmed = str_trim(type))
-```
 
 
 ---
@@ -1472,11 +1469,9 @@ You want the changes you make to be rule-based, for 2 reasons:
 
 1. [Keys and relational data](#keys)
 
-1. [Variables &amp; Values](#variables-values)
+1. [String cleaning](#strings)
 
-1. [Factors](#factors)
-
-1. [Strings](#strings)
+1. [Number storage](#numbers)
 
 1. [Data Cleaning Checklist](#checklist)
 
