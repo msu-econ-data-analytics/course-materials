@@ -1,0 +1,477 @@
+---
+title: "Lecture 6: Data Acquisition"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Based partly on materials by [Grant](https://raw.githack.com/uo-ec607/lectures/master/06-web-css/06-web-css.html) [McDermott](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html) under an MIT license."
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      fig_caption: true
+---
+name: toc
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.small {
+  font-size: 90%;
+}
+.smaller {
+  font-size: 80%;
+}
+.xsmall {
+  font-size: 50%
+}
+
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	cache = TRUE,
+	dpi = 300
+)
+```
+
+# Table of contents
+
+1. [Where data comes from](#sources)
+
+1. [Webscraping](#scraping)
+
+1. [Using APIs](#APIs)
+
+
+---
+class: inverse, middle
+name: sources
+
+# Where data comes from
+
+---
+
+# Where does data come from?
+
+There is a whole spectrum, from DIY to plug-and-chug.
+
+--
+
+**1. Pre-cleaned datasets posted on secondary repositories**
+   - E.g. Harvard Dataverse, Kaggle, GitHub.
+
+**2. Open data libraries (e.g., Data.gov)**
+   - E.g., [Data.gov](https://data.gov/) or [World Bank Open Data](https://data.worldbank.org/).
+
+**3. Websites of primary data providers**
+   - Government agencies; some private companies and NGOs; scientific researchers.
+
+---
+
+# Where does data come from?
+
+There is a whole spectrum, from DIY to plug-and-chug.
+
+**4. Liberate previously inaccessible data**
+   - Build relationships with people in government or the private sector.
+   - Find the right person, cold-email them and ask politely.
+   - File a Freedom of Information Act (FOIA) request (a last resort; very aggressive move).
+
+**5. Compile data yourself**
+   - Assemble systematic information from many disparate sources.
+   - E.g. historical archives, websites, PDF reports.
+
+**6. Collect your own primary data**
+   - Run surveys or experiments.
+
+---
+
+# Where to look for data?
+
+**There is no "one-stop shop".** Where to look entirely depends on your topic.
+
+For economics research:
+
+* **Search the literature:** Find papers related to your topic and check the Data section.
+  - Good for learning the "standard" sources for common things (e.g., weather data).
+* **Find your own data** that the literature hasn't used yet.
+  - It's hard to find a novel use for an already widely-used dataset.
+* **Combine data in new ways:** Most new projects will require joining data from 2+ sources.
+  - E.g. state-level policy changes + household-level outcome data.
+
+A few useful starting points:
+- ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
+- ["Data Sets for Quantitative Research"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+- [Google Dataset Search](https://datasetsearch.research.google.com/).
+
+
+---
+class: inverse, middle
+name: scraping
+
+# Webscraping
+
+---
+
+# Webscraping
+
+**Webscraping** is just one of many ways to get data.
+* Process of converting semi-structured data from the internet to a structured dataset.
+* Useful when information is already online, but not available in a nice CSV file.
+
+Webpages are largely made out of HTML and CSS files that we have to parse.
+
+* **HTML** is a markup language, like R Markdown. It specifies the structure of a webpage.
+
+* **CSS** is language for formatting the appearance of a webpage.
+
+  - CSS **properties** specify *how* to format: what font, what color, how wide.
+
+  - CSS **selectors** specify *what* to format: what structural elements get what rule.
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Application:** Wikipedia table of world records in the [women's 100-meter sprint](https://en.wikipedia.org/wiki/Women%27s_100_metres_world_record_progression).
+
+* Right-click and go to **View page source** to see the underlying HTML.
+
+* Try to find the first table of records and see how it's coded in HTML.
+
+--
+
+Let's scrape this table with `rvest`.
+
+First, read the whole page into R:
+```{r, echo = F}
+library(tidyverse)
+library(rvest)
+```
+```{r}
+url = "http://en.wikipedia.org/wiki/Women%27s_100_metres_world_record_progression"
+page = read_html(url)
+page
+```
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Method 1:** Navigate a list of tables.
+
+Get a list of HTML tables in this page:
+```{r}
+tables = page |> html_elements("table")
+tables
+length(tables)
+```
+
+---
+
+# Application: Women's 100-meter sprint
+
+Convert the second table to a data frame:
+```{r}
+records = tables[[2]] |> html_table()
+records
+```
+
+Amazing!
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Method 2:** Identify CSS selectors via your browser's "inspect web element".
+1. Right click -> Inspect.
+2. Mouse over the list of elements until the table you want is selected.
+3. Right click -> Copy -> Copy selector.
+
+--
+
+```{r}
+selector = "#mw-content-text > div.mw-parser-output > table:nth-child(8) > tbody"
+records2 = page |> 
+  html_elements(selector) |>
+  html_table()
+records2
+```
+
+---
+
+# Challenge
+
+**Scrape the Wikipedia page of world records in the *men's* 100 meter sprint.**
+* Get all 3 main tables:
+  1. Unofficial before IAAF
+  2. Records 1912-1976
+  3. Since 1977
+* Append them with `bind_rows`.
+* Be careful: What happens when cells are merged in the original table?
+* Do enough cleaning to make it useful for analysis. A few tips:
+  * Simplify column names with `janitor::clean_names`.
+  * Convert dates to date format with `lubridate::mdy`.
+  * Separate location into city and country with `tidyr::separate`.
+  * Combine columns when names are inconsistent.
+  * Discard columns that lack useful information or aren't available in all 3 tables.
+* Make a graph of the progression of the world record over time.
+
+
+---
+
+# More advanced webscraping
+
+Not all information is so lucky as to be encoded in a nice HTML table.
+
+* `rvest` has much more functionality to handle complex situations.
+
+* Start with `vignette("rvest")`. (Most packages have a helpful vignette!)
+
+* If you start doing a lot of webscraping, you'll want to learn more about HTML and CSS.
+
+
+---
+
+# Webscraping many pages
+
+The benefits of webscraping become clear with more than one table.
+* With one table, you could just copy and paste into Excel and save as a .csv.
+* But what if you want data on all world records in track & field?
+
+**Scrape multiple pages** by combining webscraping with programming tools
+* For loops, `lapply`, `purrr:map`.
+* Find links and follow them programmatically.
+
+**Caution:** scraping many pages can easily overwhelm web servers.
+* This is not nice, plus you might get blocked.
+
+**Solution:** Follow a few guidelines.
+* Seek permission before scraping (check the robots.txt).
+* Take slowly (pause a few seconds between requests).
+* Never ask twice (download once, not every time you run a script).
+* The `polite` package helps you do these things.
+
+
+---
+class: inverse, middle
+name: APIs
+
+# Using APIs
+
+---
+
+# APIs
+
+An **API** (Application Programming Interface) is a set of rules that allow different pieces of software to communicate with each other. Some key concepts:
+
+* **Server:** A powerful computer that runs an API.
+* **Client:** A program that exchanges data with a server through an API.
+* **Protocol:** The "etiquette" underlying how computers talk to each other (e.g. HTTP).
+* **Methods:** The "verbs" that clients use to talk with a server.
+  - The main one that we’ll be using is GET (i.e. ask a server to retrieve information).
+  - Other common methods are POST, PUT and DELETE.
+* **Request:** What the client asks of the server (see Methods above).
+* **Response:** The server’s response. This includes:
+  - Status Code (e.g. “404” if not found, or “200” if successful).
+  - Header (i.e. meta-information about the response).
+  - Body (i.e. the actual content that we’re interested in).
+
+---
+
+# FRED
+
+The Federal Reserve Bank of St. Louis maintains an incredible database for macroeconomic statistics and data called **FRED.**
+* You can create graphs on the FRED website and download CSV data.
+* It also helpfully provides an API so that you can load data directly into R.
+
+To use most APIs, you need to obtain an **API key.** A key identifies yourself to the API.
+
+**Treat your API key like a password. Keep it secure and don't share it with others.**
+* You're responsible for following the API's terms & conditions, and you can't control that if you share your key.
+
+**Take a minute to [register for a free account](https://fredaccount.stlouisfed.org/apikey) and [request an API key.](https://fredaccount.stlouisfed.org/apikey)**
+
+---
+
+# Setting environment variables
+
+Don't hard-code your API key in a script, since you might share your script. Instead, define an **environment variable.**
+
+Run this line **IN YOUR CONSOLE** to define an environment variable for the current R session (replacing the fake string with the one you got from the FRED website):
+```{r, eval=F}
+Sys.setenv(FRED_API_KEY = "abcdefghijklmnopqrstuvwxyz0123456789")
+```
+
+You can use an environment variable within a script like this:
+```{r, results=F}
+Sys.getenv("FRED_API_KEY")
+```
+
+---
+
+# Using the FRED API
+
+To learn how to use this API, start with the [FRED API documentation](https://fred.stlouisfed.org/docs/api/fred/). You'll see:
+* There are many types of requests you can make of FRED using the API.
+* If you want the underlying data for a data series, we want to go to **fred/series/observations**.
+
+Clicking the link brings you to the [specific documentation](https://fred.stlouisfed.org/docs/api/fred/series_observations.html) for this request. We can see:
+* The API can return data in several different **file formats.**
+* The exact **syntax** for making a request (for each format).
+* The **parameters** that you can provide (like function arguments).
+
+---
+
+# Using the FRED API
+
+One required parameter is `series_id`.
+* Let's look at the median home listing price in Bozeman.
+* By searching the FRED website, I found that the ID for this series is `MEDLISPRI14580`.
+
+For the `file_type`, you can use either XML or JSON.
+* Both are ways to precisely structure information and can easily be read into R.
+* Let's use **JSON** for this example.
+
+**Try out the API right in your browser.** Paste this into your location bar, replacing the fake API key with your own:
+`https://api.stlouisfed.org/fred/series/observations?series_id=MEDLISPRI14580&api_key=abcdefghijklmnopqrstuvwxyz123456&file_type=json`
+
+---
+
+# Using the FRED API
+
+To use the API in R, we'll use the tidyverse package `httr`. Load it, then define some variables with the information we need:
+```{r}
+library(httr)
+url = "https://api.stlouisfed.org/"
+endpoint = "fred/series/observations"
+params = list(api_key = Sys.getenv("FRED_API_KEY"),
+              file_type = "json", 
+              series_id = "MEDLISPRI14580")
+```
+
+Now we can use the `GET` method to request data from the server:
+```{r, results=F}
+response = httr::GET(url = url, path = endpoint, query = params)
+response
+```
+```
+Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_KEY]
+&file_type=json&series_id=MEDLISPRI14580]
+  Date: 2022-09-27 00:39
+  Status: 200
+  Content-Type: application/json; charset=UTF-8
+  Size: 7.61 kB
+```
+
+---
+
+# Using the FRED API
+
+The response is a complex list object. Extract the JSON content, and convert it to an R object:
+```{r}
+library(jsonlite)
+json = response |>
+  httr::content("text") |>
+  jsonlite::fromJSON()
+```
+
+If you `View` this object you'll find that what we really want is `json$observations`.
+```{r}
+bzn_house_prices = as_tibble(json$observations)
+bzn_house_prices
+```
+
+---
+
+# Using the FRED API
+
+Cleaning up a little bit:
+```{r}
+bzn_house_prices = as_tibble(json$observations) |>
+  mutate(
+    date = ymd(date),
+    median_price = as.numeric(value)
+  ) |>
+  select(date, median_price)
+bzn_house_prices
+```
+
+---
+
+# Using the FRED API
+
+Graph it:
+```{r, out.width = "90%", fig.height = 4}
+ggplot(bzn_house_prices, aes(x = date, y = median_price)) + 
+  geom_line()
+```
+
+---
+
+# Challenge
+
+**How has Bozeman's pandemic housing market compared with other cities?**
+* Get similar data from 2-3 other housing markets you're interested in.
+* Plot time-series graphs for each housing market.
+* More advanced:
+  - Write a function to retrieve each series.
+  - Combine all the results in 1 dataframe (keep it tidy!).
+
+
+---
+
+# Hidden APIs
+
+Sometimes, you can find an open but "hidden" API that a webpage is using to render data.
+* For example, Airbnb uses or has used a hidden API to display search results on its web interface.
+* Grant McDermott has an [example](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html#Application_3:_World_rugby_rankings) of how to find and use hidden APIs.
+
+**Using hidden APIs may present legal risks, so I don't recommend it.**
+* In April 2022 (*HiQ Labs v. LinkedIn*), the Ninth Circuit Court of Appeals held that webscraping is legal in the U.S. so long as the data is publicly available.
+* Do hidden APIs constitute publicly available information? It's not totally clear.
+
+Even if generally legal, webscraping may be a violation of websites' Terms & Conditions.
+* Airbnb's: "Do not use bots, crawlers, scrapers, or other automated means to access or collect data or other content from or otherwise interact with the Airbnb Platform."
+* Your account could be blocked/blacklisted.
+
+
+---
+
+# Some APIs that are free & legal
+
+Some fun APIs:
+* [TikTok (unofficial)](https://github.com/davidteather/TikTok-Api)
+* [Twitter](https://developer.twitter.com/en/docs/twitter-api)
+* [Spotify](https://developer.spotify.com/documentation/web-api/)
+* [YouTube](https://developers.google.com/youtube/v3/getting-started)
+
+This list of [Public APIs](https://github.com/public-apis/public-apis) has many more.
+
+Many **R packages** have been built to make working with APIs easier. Some examples:
+* `tidycensus` for American Community Survey microdata and other Census Bureau data.
+* `Quandl` for Nasdaq and other financial information.
+* `rtweet` for Twitter data.
+* `rnoaa` for NOAA weather data.
+* `rnassqs` for USDA's QuickStats API (agricultural data).
+* `osmdata` for OpenStreetMap spatial data.
+
+---
+
+# Summary
+
+1. [Where data comes from](#sources)
+
+1. [Webscraping](#scraping)
+
+1. [Using APIs](#APIs)

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 6: Data Acquisition</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 6: Data Acquisition
+]
+.author[
+### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Based partly on materials by <a href="https://raw.githack.com/uo-ec607/lectures/master/06-web-css/06-web-css.html">Grant</a> <a href="https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html">McDermott</a> under an MIT license.
+]
+
+---
+
+name: toc
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.small {
+  font-size: 90%;
+}
+.smaller {
+  font-size: 80%;
+}
+.xsmall {
+  font-size: 50%
+}
+
+&lt;/style&gt;
+
+
+
+# Table of contents
+
+1. [Where data comes from](#sources)
+
+1. [Webscraping](#scraping)
+
+1. [Using APIs](#APIs)
+
+
+---
+class: inverse, middle
+name: sources
+
+# Where data comes from
+
+---
+
+# Where does data come from?
+
+There is a whole spectrum, from DIY to plug-and-chug.
+
+--
+
+**1. Pre-cleaned datasets posted on secondary repositories**
+   - E.g. Harvard Dataverse, Kaggle, GitHub.
+
+**2. Open data libraries (e.g., Data.gov)**
+   - E.g., [Data.gov](https://data.gov/) or [World Bank Open Data](https://data.worldbank.org/).
+
+**3. Websites of primary data providers**
+   - Government agencies; some private companies and NGOs; scientific researchers.
+
+---
+
+# Where does data come from?
+
+There is a whole spectrum, from DIY to plug-and-chug.
+
+**4. Liberate previously inaccessible data**
+   - Build relationships with people in government or the private sector.
+   - Find the right person, cold-email them and ask politely.
+   - File a Freedom of Information Act (FOIA) request (a last resort; very aggressive move).
+
+**5. Compile data yourself**
+   - Assemble systematic information from many disparate sources.
+   - E.g. historical archives, websites, PDF reports.
+
+**6. Collect your own primary data**
+   - Run surveys or experiments.
+
+---
+
+# Where to look for data?
+
+**There is no "one-stop shop".** Where to look entirely depends on your topic.
+
+For economics research:
+
+* **Search the literature:** Find papers related to your topic and check the Data section.
+  - Good for learning the "standard" sources for common things (e.g., weather data).
+* **Find your own data** that the literature hasn't used yet.
+  - It's hard to find a novel use for an already widely-used dataset.
+* **Combine data in new ways:** Most new projects will require joining data from 2+ sources.
+  - E.g. state-level policy changes + household-level outcome data.
+
+A few useful starting points:
+- ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
+- ["Data Sets for Quantitative Research"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+- [Google Dataset Search](https://datasetsearch.research.google.com/).
+
+
+---
+class: inverse, middle
+name: scraping
+
+# Webscraping
+
+---
+
+# Webscraping
+
+**Webscraping** is just one of many ways to get data.
+* Process of converting semi-structured data from the internet to a structured dataset.
+* Useful when information is already online, but not available in a nice CSV file.
+
+Webpages are largely made out of HTML and CSS files that we have to parse.
+
+* **HTML** is a markup language, like R Markdown. It specifies the structure of a webpage.
+
+* **CSS** is language for formatting the appearance of a webpage.
+
+  - CSS **properties** specify *how* to format: what font, what color, how wide.
+
+  - CSS **selectors** specify *what* to format: what structural elements get what rule.
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Application:** Wikipedia table of world records in the [women's 100-meter sprint](https://en.wikipedia.org/wiki/Women%27s_100_metres_world_record_progression).
+
+* Right-click and go to **View page source** to see the underlying HTML.
+
+* Try to find the first table of records and see how it's coded in HTML.
+
+--
+
+Let's scrape this table with `rvest`.
+
+First, read the whole page into R:
+
+```
+## 
+## Attaching package: 'rvest'
+```
+
+```
+## The following object is masked from 'package:readr':
+## 
+##     guess_encoding
+```
+
+```r
+url = "http://en.wikipedia.org/wiki/Women%27s_100_metres_world_record_progression"
+page = read_html(url)
+page
+```
+
+```
+## {html_document}
+## &lt;html class="client-nojs" lang="en" dir="ltr"&gt;
+## [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
+## [2] &lt;body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject  ...
+```
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Method 1:** Navigate a list of tables.
+
+Get a list of HTML tables in this page:
+
+```r
+tables = page |&gt; html_elements("table")
+tables
+```
+
+```
+## {xml_nodeset (11)}
+##  [1] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;td bgcolor="#D6ECF3"&gt;ratified\n&lt;/ ...
+##  [2] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;th&gt;Time\n&lt;/th&gt;\n&lt;th&gt;Wind\n&lt;/th&gt; ...
+##  [3] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;th&gt;Time\n&lt;/th&gt;\n&lt;th&gt;Wind\n&lt;/th&gt; ...
+##  [4] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;th&gt;Time\n&lt;/th&gt;\n&lt;th&gt;Wind\n&lt;/th&gt; ...
+##  [5] &lt;table class="nowraplinks mw-collapsible autocollapse navbox-inner" styl ...
+##  [6] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+##  [7] &lt;table class="nowraplinks hlist mw-collapsible autocollapse navbox-inner ...
+##  [8] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+##  [9] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+## [10] &lt;table class="nowraplinks mw-collapsible mw-collapsed navbox-inner" styl ...
+## [11] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+```
+
+```r
+length(tables)
+```
+
+```
+## [1] 11
+```
+
+---
+
+# Application: Women's 100-meter sprint
+
+Convert the second table to a data frame:
+
+```r
+records = tables[[2]] |&gt; html_table()
+records
+```
+
+```
+## # A tibble: 55 × 7
+##    Time       Wind  Auto  Athlete             Nationality    Location      Date 
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;
+##  1 13.6       ""    ""    Marie Mejzlíková II Czechoslovakia Prague, Czec… Augu…
+##  2 12.8       ""    ""    Mary Lines          United Kingdom Paris, France Augu…
+##  3 12.7(110y) ""    ""    Emmi Haux           Germany        Frankfurt, G… May …
+##  4 12.8       ""    ""    Marie Mejzlíková    Czechoslovakia Prague, Czec… May …
+##  5 12.4       ""    ""    Leni Schmidt        Germany        Leipzig, Ger… Augu…
+##  6 12.2(110y) ""    ""    Leni Junker         Germany        Wiesbaden, G… Sept…
+##  7 12.4       ""    ""    Gundel Wittmann     Germany        Braunschweig… Augu…
+##  8 12.2       ""    ""    Leni Junker         Germany        Hanover, Ger… Augu…
+##  9 12.1(110y) ""    ""    Gertrud Gladitsch   Germany        Stuttgart, G… July…
+## 10 12.2       ""    ""    Kinue Hitomi        Japan          Osaka, Japan  May …
+## # … with 45 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+Amazing!
+
+---
+
+# Application: Women's 100-meter sprint
+
+**Method 2:** Identify CSS selectors via your browser's "inspect web element".
+1. Right click -&gt; Inspect.
+2. Mouse over the list of elements until the table you want is selected.
+3. Right click -&gt; Copy -&gt; Copy selector.
+
+--
+
+
+```r
+selector = "#mw-content-text &gt; div.mw-parser-output &gt; table:nth-child(8) &gt; tbody"
+records2 = page |&gt; 
+  html_elements(selector) |&gt;
+  html_table()
+records2
+```
+
+```
+## [[1]]
+## # A tibble: 55 × 7
+##    Time       Wind  Auto  Athlete             Nationality    Location      Date 
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;
+##  1 13.6       ""    ""    Marie Mejzlíková II Czechoslovakia Prague, Czec… Augu…
+##  2 12.8       ""    ""    Mary Lines          United Kingdom Paris, France Augu…
+##  3 12.7(110y) ""    ""    Emmi Haux           Germany        Frankfurt, G… May …
+##  4 12.8       ""    ""    Marie Mejzlíková    Czechoslovakia Prague, Czec… May …
+##  5 12.4       ""    ""    Leni Schmidt        Germany        Leipzig, Ger… Augu…
+##  6 12.2(110y) ""    ""    Leni Junker         Germany        Wiesbaden, G… Sept…
+##  7 12.4       ""    ""    Gundel Wittmann     Germany        Braunschweig… Augu…
+##  8 12.2       ""    ""    Leni Junker         Germany        Hanover, Ger… Augu…
+##  9 12.1(110y) ""    ""    Gertrud Gladitsch   Germany        Stuttgart, G… July…
+## 10 12.2       ""    ""    Kinue Hitomi        Japan          Osaka, Japan  May …
+## # … with 45 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Challenge
+
+**Scrape the Wikipedia page of world records in the *men's* 100 meter sprint.**
+* Get all 3 main tables:
+  1. Unofficial before IAAF
+  2. Records 1912-1976
+  3. Since 1977
+* Append them with `bind_rows`.
+* Be careful: What happens when cells are merged in the original table?
+* Do enough cleaning to make it useful for analysis. A few tips:
+  * Simplify column names with `janitor::clean_names`.
+  * Convert dates to date format with `lubridate::mdy`.
+  * Separate location into city and country with `tidyr::separate`.
+  * Combine columns when names are inconsistent.
+  * Discard columns that lack useful information or aren't available in all 3 tables.
+* Make a graph of the progression of the world record over time.
+
+---
+
+# Challenge
+
+**Scrape the Wikipedia page of world records in the *men's* 100 meter sprint.**
+
+
+```r
+library(janitor)
+```
+
+```
+## 
+## Attaching package: 'janitor'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     chisq.test, fisher.test
+```
+
+```r
+library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+```
+
+```r
+# Scrape 3 main tables and bind them together
+url = "http://en.wikipedia.org/wiki/Men%27s_100_metres_world_record_progression"
+tables_with_records = c(2, 4, 5)
+page_men = read_html(url)
+tables_men = page_men |&gt; html_elements("table")
+dfs_men = lapply(tables_men, html_table)
+records_men = bind_rows(dfs_men[tables_with_records])
+
+# Clean
+men_clean = records_men |&gt;
+  clean_names() |&gt;
+  mutate(
+    date = mdy(date),
+    location = coalesce(location_of_race, location_of_races)
+    ) |&gt;
+  separate(location, into = c("city", "country"), sep = ", ") |&gt;
+  select(time:nationality, date, city, country)
+```
+
+---
+
+# Challenge
+
+**Scrape the Wikipedia page of world records in the *men's* 100 meter sprint.**
+
+Result:
+
+```r
+men_clean
+```
+
+```
+## # A tibble: 99 × 6
+##     time athlete               nationality    date       city           country 
+##    &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt;          &lt;date&gt;     &lt;chr&gt;          &lt;chr&gt;   
+##  1  10.8 Luther Cary           United States  1891-07-04 Paris          France  
+##  2  10.8 Cecil Lee             United Kingdom 1892-09-25 Brussels       Belgium 
+##  3  10.8 Étienne De Ré         Belgium        1893-08-04 Brussels       Belgium 
+##  4  10.8 L. Atcherley          United Kingdom 1895-04-13 Frankfurt/Main Germany 
+##  5  10.8 Harry Beaton          United Kingdom 1895-08-28 Rotterdam      Netherl…
+##  6  10.8 Harald Anderson-Arbin Sweden         1896-08-09 Helsingborg    Sweden  
+##  7  10.8 Isaac Westergren      Sweden         1898-09-11 Gävle          Sweden  
+##  8  10.8 Isaac Westergren      Sweden         1899-09-10 Gävle          Sweden  
+##  9  10.8 Frank Jarvis          United States  1900-07-14 Paris          France  
+## 10  10.8 Walter Tewksbury      United States  1900-07-14 Paris          France  
+## # … with 89 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Challenge
+
+
+```r
+plot(men_clean$date, men_clean$time)
+```
+
+&lt;img src="06-Acquisition-with-solutions_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# More advanced webscraping
+
+Not all information is so lucky as to be encoded in a nice HTML table.
+
+* `rvest` has much more functionality to handle complex situations.
+
+* Start with `vignette("rvest")`. (Most packages have a helpful vignette!)
+
+* If you start doing a lot of webscraping, you'll want to learn more about HTML and CSS.
+
+
+---
+
+# Webscraping many pages
+
+The benefits of webscraping become clear with more than one table.
+* With one table, you could just copy and paste into Excel and save as a .csv.
+* But what if you want data on all world records in track &amp; field?
+
+**Scrape multiple pages** by combining webscraping with programming tools
+* For loops, `lapply`, `purrr:map`.
+* Find links and follow them programmatically.
+
+**Caution:** scraping many pages can easily overwhelm web servers.
+* This is not nice, plus you might get blocked.
+
+**Solution:** Follow a few guidelines.
+* Seek permission before scraping (check the robots.txt).
+* Take slowly (pause a few seconds between requests).
+* Never ask twice (download once, not every time you run a script).
+* The `polite` package helps you do these things.
+
+
+---
+class: inverse, middle
+name: APIs
+
+# Using APIs
+
+---
+
+# APIs
+
+An **API** (Application Programming Interface) is a set of rules that allow different pieces of software to communicate with each other. Some key concepts:
+
+* **Server:** A powerful computer that runs an API.
+* **Client:** A program that exchanges data with a server through an API.
+* **Protocol:** The "etiquette" underlying how computers talk to each other (e.g. HTTP).
+* **Methods:** The "verbs" that clients use to talk with a server.
+  - The main one that we’ll be using is GET (i.e. ask a server to retrieve information).
+  - Other common methods are POST, PUT and DELETE.
+* **Request:** What the client asks of the server (see Methods above).
+* **Response:** The server’s response. This includes:
+  - Status Code (e.g. “404” if not found, or “200” if successful).
+  - Header (i.e. meta-information about the response).
+  - Body (i.e. the actual content that we’re interested in).
+
+---
+
+# FRED
+
+The Federal Reserve Bank of St. Louis maintains an incredible database for macroeconomic statistics and data called **FRED.**
+* You can create graphs on the FRED website and download CSV data.
+* It also helpfully provides an API so that you can load data directly into R.
+
+To use most APIs, you need to obtain an **API key.** A key identifies yourself to the API.
+
+**Treat your API key like a password. Keep it secure and don't share it with others.**
+* You're responsible for following the API's terms &amp; conditions, and you can't control that if you share your key.
+
+**Take a minute to [register for a free account](https://fredaccount.stlouisfed.org/apikey) and [request an API key.](https://fredaccount.stlouisfed.org/apikey)**
+
+---
+
+# Setting environment variables
+
+Don't hard-code your API key in a script, since you might share your script. Instead, define an **environment variable.**
+
+Run this line **IN YOUR CONSOLE** to define an environment variable for the current R session (replacing the fake string with the one you got from the FRED website):
+
+```r
+Sys.setenv(FRED_API_KEY = "abcdefghijklmnopqrstuvwxyz0123456789")
+```
+
+You can use an environment variable within a script like this:
+
+```r
+Sys.getenv("FRED_API_KEY")
+```
+
+---
+
+# Using the FRED API
+
+To learn how to use this API, start with the [FRED API documentation](https://fred.stlouisfed.org/docs/api/fred/). You'll see:
+* There are many types of requests you can make of FRED using the API.
+* If you want the underlying data for a data series, we want to go to **fred/series/observations**.
+
+Clicking the link brings you to the [specific documentation](https://fred.stlouisfed.org/docs/api/fred/series_observations.html) for this request. We can see:
+* The API can return data in several different **file formats.**
+* The exact **syntax** for making a request (for each format).
+* The **parameters** that you can provide (like function arguments).
+
+---
+
+# Using the FRED API
+
+One required parameter is `series_id`.
+* Let's look at the median home listing price in Bozeman.
+* By searching the FRED website, I found that the ID for this series is `MEDLISPRI14580`.
+
+For the `file_type`, you can use either XML or JSON.
+* Both are ways to precisely structure information and can easily be read into R.
+* Let's use **JSON** for this example.
+
+**Try out the API right in your browser.** Paste this into your location bar, replacing the fake API key with your own:
+`https://api.stlouisfed.org/fred/series/observations?series_id=MEDLISPRI14580&amp;api_key=abcdefghijklmnopqrstuvwxyz123456&amp;file_type=json`
+
+---
+
+# Using the FRED API
+
+To use the API in R, we'll use the tidyverse package `httr`. Load it, then define some variables with the information we need:
+
+```r
+library(httr)
+url = "https://api.stlouisfed.org/"
+endpoint = "fred/series/observations"
+params = list(api_key = Sys.getenv("FRED_API_KEY"),
+              file_type = "json", 
+              series_id = "MEDLISPRI14580")
+```
+
+Now we can use the `GET` method to request data from the server:
+
+```r
+response = httr::GET(url = url, path = endpoint, query = params)
+response
+```
+```
+Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_KEY]
+&amp;file_type=json&amp;series_id=MEDLISPRI14580]
+  Date: 2022-09-27 00:39
+  Status: 200
+  Content-Type: application/json; charset=UTF-8
+  Size: 7.61 kB
+```
+
+---
+
+# Using the FRED API
+
+The response is a complex list object. Extract the JSON content, and convert it to an R object:
+
+```r
+library(jsonlite)
+```
+
+```
+## 
+## Attaching package: 'jsonlite'
+```
+
+```
+## The following object is masked from 'package:purrr':
+## 
+##     flatten
+```
+
+```r
+json = response |&gt;
+  httr::content("text") |&gt;
+  jsonlite::fromJSON()
+```
+
+If you `View` this object you'll find that what we really want is `json$observations`.
+
+```r
+bzn_house_prices = as_tibble(json$observations)
+bzn_house_prices
+```
+
+```
+## # A tibble: 74 × 4
+##    realtime_start realtime_end date       value   
+##    &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;   
+##  1 2022-09-26     2022-09-26   2016-07-01 479000.0
+##  2 2022-09-26     2022-09-26   2016-08-01 462450.0
+##  3 2022-09-26     2022-09-26   2016-09-01 449950.0
+##  4 2022-09-26     2022-09-26   2016-10-01 469900.0
+##  5 2022-09-26     2022-09-26   2016-11-01 475000.0
+##  6 2022-09-26     2022-09-26   2016-12-01 495000.0
+##  7 2022-09-26     2022-09-26   2017-01-01 479000.0
+##  8 2022-09-26     2022-09-26   2017-02-01 499000.0
+##  9 2022-09-26     2022-09-26   2017-03-01 499900.0
+## 10 2022-09-26     2022-09-26   2017-04-01 525000.0
+## # … with 64 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Using the FRED API
+
+Cleaning up a little bit:
+
+```r
+bzn_house_prices = as_tibble(json$observations) |&gt;
+  mutate(
+    date = ymd(date),
+    median_price = as.numeric(value)
+  ) |&gt;
+  select(date, median_price)
+bzn_house_prices
+```
+
+```
+## # A tibble: 74 × 2
+##    date       median_price
+##    &lt;date&gt;            &lt;dbl&gt;
+##  1 2016-07-01       479000
+##  2 2016-08-01       462450
+##  3 2016-09-01       449950
+##  4 2016-10-01       469900
+##  5 2016-11-01       475000
+##  6 2016-12-01       495000
+##  7 2017-01-01       479000
+##  8 2017-02-01       499000
+##  9 2017-03-01       499900
+## 10 2017-04-01       525000
+## # … with 64 more rows
+## # ℹ Use `print(n = ...)` to see more rows
+```
+
+---
+
+# Using the FRED API
+
+Graph it:
+
+```r
+ggplot(bzn_house_prices, aes(x = date, y = median_price)) + 
+  geom_line()
+```
+
+&lt;img src="06-Acquisition-with-solutions_files/figure-html/unnamed-chunk-17-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Challenge
+
+**How has Bozeman's pandemic housing market compared with other cities?**
+* Get similar data from 2-3 other housing markets you're interested in.
+* Plot time-series graphs for each housing market.
+* More advanced:
+  - Write a function to retrieve each series.
+  - Combine all the results in 1 dataframe (keep it tidy!).
+
+---
+
+# Challenge
+
+.small[
+
+```r
+# Define function to get a particular series
+get_fred_series = function(series_id) {
+
+  # Define parameters
+  url = "https://api.stlouisfed.org/"
+  endpoint = "fred/series/observations"
+  params = list(
+    api_key = Sys.getenv("FRED_API_KEY"),
+    file_type = "json", 
+    series_id = series_id
+    )
+
+  # Request from API
+  result = httr::GET(url = url, path = endpoint, query = params) |&gt;
+    httr::content("text") |&gt;
+    jsonlite::fromJSON()
+
+  # Clean up
+  house_prices = as_tibble(result$observations) |&gt;
+    mutate(
+      date = ymd(date),
+      value = as.numeric(value)
+    ) |&gt;
+    select(date, value)
+
+  # Return this dataframe
+  return(house_prices)
+}
+```
+]
+
+---
+
+# Challenge
+
+.small[
+
+```r
+# List the markets I want and their FRED IDs
+market_names = list(
+  "Bozeman",
+  "Missoula",
+  "Billings",
+  "Jackson",
+  "Boise",
+  "Salt Lake City",
+  "Portland",
+  "Seattle",
+  "San Francisco"
+)
+market_ids = list(
+  "MEDLISPRI14580",
+  "MEDLISPRI33540",
+  "MEDLISPRI13740",
+  "MEDLISPRI27220",
+  "MEDLISPRI14260",
+  "MEDLISPRI41620",
+  "MEDLISPRI38900",
+  "MEDLISPRI42660",
+  "MEDLISPRI41860"
+)
+names(market_ids) = market_names
+```
+]
+
+---
+
+# Challenge
+
+.small[
+
+```r
+# Get the data for each market
+prices = lapply(market_ids, get_fred_series)
+
+# Unlist to a single data frame
+prices2 = bind_rows(prices, .id = "market")
+
+# Convert prices to an index where 100 = Feb-2020
+base_prices = prices2 |&gt; 
+  filter(date == ymd("2020-02-01")) |&gt;
+  rename(base_price = value) |&gt;
+  select(-date)
+prices3 = prices2 |&gt;
+  left_join(base_prices, by = "market") |&gt;
+  mutate(index = value / base_price * 100)
+
+# Plot all cities on same graph
+graph = ggplot(prices3, aes(x = date, y = index, color = market)) + 
+  geom_line() +
+  scale_y_continuous(labels = scales::comma) +
+  theme_light() +
+  labs(
+    x = "Date",
+    y = "Index value relative to February 2020",
+    title = "Median Listing Price of Housing", 
+    caption="Source: FRED"
+    )
+```
+]
+
+---
+
+# Challenge
+
+
+```r
+graph
+```
+
+&lt;img src="06-Acquisition-with-solutions_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Hidden APIs
+
+Sometimes, you can find an open but "hidden" API that a webpage is using to render data.
+* For example, Airbnb uses or has used a hidden API to display search results on its web interface.
+* Grant McDermott has an [example](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html#Application_3:_World_rugby_rankings) of how to find and use hidden APIs.
+
+**Using hidden APIs may present legal risks, so I don't recommend it.**
+* In April 2022 (*HiQ Labs v. LinkedIn*), the Ninth Circuit Court of Appeals held that webscraping is legal in the U.S. so long as the data is publicly available.
+* Do hidden APIs constitute publicly available information? It's not totally clear.
+
+Even if generally legal, webscraping may be a violation of websites' Terms &amp; Conditions.
+* Airbnb's: "Do not use bots, crawlers, scrapers, or other automated means to access or collect data or other content from or otherwise interact with the Airbnb Platform."
+* Your account could be blocked/blacklisted.
+
+
+---
+
+# Some APIs that are free &amp; legal
+
+Some fun APIs:
+* [TikTok (unofficial)](https://github.com/davidteather/TikTok-Api)
+* [Twitter](https://developer.twitter.com/en/docs/twitter-api)
+* [Spotify](https://developer.spotify.com/documentation/web-api/)
+* [YouTube](https://developers.google.com/youtube/v3/getting-started)
+
+This list of [Public APIs](https://github.com/public-apis/public-apis) has many more.
+
+Many **R packages** have been built to make working with APIs easier. Some examples:
+* `tidycensus` for American Community Survey microdata and other Census Bureau data.
+* `Quandl` for Nasdaq and other financial information.
+* `rtweet` for Twitter data.
+* `rnoaa` for NOAA weather data.
+* `rnassqs` for USDA's QuickStats API (agricultural data).
+* `osmdata` for OpenStreetMap spatial data.
+
+---
+
+# Summary
+
+1. [Where data comes from](#sources)
+
+1. [Webscraping](#scraping)
+
+1. [Using APIs](#APIs)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

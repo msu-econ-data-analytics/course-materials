@@ -54,7 +54,11 @@ Fall 2022
 * Number storage
 * Data Cleaning Checklist ([pdf version](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf))
 
-**Lecture 6: Webscraping**
+[**Lecture 6: Webscraping**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/06-Acquisition/06-Acquisition.html)
+
+* Where data comes from
+* Webscraping
+* Using APIs
 
 **Lecture 7: Best Practices in Scientific Computing**
 
@@ -157,6 +161,13 @@ This is a list of further resources that you may find helpful throughout (and af
   - [Factors with forcats](https://raw.githubusercontent.com/rstudio/cheatsheets/main/factors.pdf)
   - [Dates and Times with lubridate](https://raw.githubusercontent.com/rstudio/cheatsheets/main/lubridate.pdf)
 * [Quartz Guide to Bad Data](https://github.com/Quartz/bad-data-guide).
+
+### Data acquisition and webscraping
+* ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
+* ["Data Sets for Quantitative Research: Public Use Datasets"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+* [*Data Science for Economists* Lecture 6: Webscraping: (1) Server-side and CSS](https://raw.githack.com/uo-ec607/lectures/master/06-web-css/06-web-css.html) (Grant McDermott).
+* [*Data Science for Economists* Lecture 7: Webscraping: (2) Client-side and APIs](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html) (Grant McDermott).
+* ["An Introduction to APIs"](https://zapier.com/learn/apis/) (Zapier).
 
 ### Best practices for coding and workflows
 * [Best Practices for Scientific Computing](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745) (Wilson et al. 2014).
