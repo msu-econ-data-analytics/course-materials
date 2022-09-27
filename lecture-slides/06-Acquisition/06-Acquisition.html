@@ -157,8 +157,12 @@ Webpages are largely made out of HTML and CSS files that we have to parse.
 
 Let's scrape this table with `rvest`.
 
-First, read the whole page into R:
+```r
+library(tidyverse)
+library(rvest)
+```
 
+First, read the whole page into R:
 
 ```r
 url = "http://en.wikipedia.org/wiki/Women%27s_100_metres_world_record_progression"
