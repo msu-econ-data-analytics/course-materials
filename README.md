@@ -54,7 +54,7 @@ Fall 2022
 * Number storage
 * Data Cleaning Checklist ([pdf version](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf))
 
-[**Lecture 6: Webscraping**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/06-Acquisition/06-Acquisition.html)
+[**Lecture 6: Data Acquisition**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/06-Acquisition/06-Acquisition.html)
 
 * Where data comes from
 * Webscraping
@@ -184,7 +184,6 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Introduction to Data Science* Chapters 6-10: Data Visualization](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry).
 * [*Modern Data Science with R* Chapters 2-3](https://mdsr-book.github.io/mdsr2e/ch-vizI.html) (Baumer, Kaplan, and Horton). Chapter 2: Principles of data visualization. Chapter 3: Plotting with ggplot2.
 * [Data Visualization: A practical introduction](https://socviz.co/) (Kieran Healy). Online book for both principles and methods/examples.
-* [*Prediction and Machine Learning* Lab 5: Plotting in R](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/05RPlot/05RPlot.html) (Ed Rubin).
 * [From Data to Viz](https://www.data-to-viz.com/) (Yan Holtz & Conor Healy). "Leads you to the most appropriate graph for your data. It links to the code to build it and lists common caveats you should avoid."
 * [Cheat Sheet: Data visualization with ggplot2](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-visualization.pdf) (RStudio).
 * [An Economist's Guide to Visualizing Data](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) (Jonathan Schwabish, *Journal of Economic Perspectives* 2014.)
