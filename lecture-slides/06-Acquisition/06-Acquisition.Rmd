@@ -379,7 +379,7 @@ Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_
 # Using the FRED API
 
 The response is a complex list object. Extract the JSON content, and convert it to an R object:
-```{r}
+```{r, results = F}
 library(jsonlite)
 json = response |>
   httr::content("text") |>

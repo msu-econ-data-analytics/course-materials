@@ -233,10 +233,11 @@ records2
 
 **Scrape the Wikipedia page of world records in the *men's* 100 meter sprint.**
 
-```{r}
+```{r, results=F}
 library(janitor)
 library(lubridate)
-
+```
+```{r}
 # Scrape 3 main tables and bind them together
 url = "http://en.wikipedia.org/wiki/Men%27s_100_metres_world_record_progression"
 tables_with_records = c(2, 4, 5)
@@ -426,7 +427,7 @@ Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_
 # Using the FRED API
 
 The response is a complex list object. Extract the JSON content, and convert it to an R object:
-```{r}
+```{r, results = F}
 library(jsonlite)
 json = response |>
   httr::content("text") |>
