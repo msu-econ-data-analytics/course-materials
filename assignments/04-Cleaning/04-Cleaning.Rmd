@@ -1,0 +1,21 @@
+---
+title: "Assignment 4: Data Cleaning"
+subtitle: ECNS 491/560 Fall 2022
+date: Due Thursday, September 29
+output: html_document
+---
+
+***
+
+**Investigating subsidy fraud.** For this assignment, use the "MIS Beneficiary List" data included with these instructions. This spreadsheet gives a list of recipients of government subsidies for micro-irrigation systems (MIS) in Gujarat, India, during 2014-15. I downloaded it a few years ago from a publicly accessible government website. (Most governments anonymize individual recipients of benefits; this agency chose to make the names public.) For the following questions, focus on the "MIS Subsidy" column and ignore the "Tribal Subsidy" column.
+
+1. Import this data into R and clean it well, following our data cleaning checklist (provided in the slides or as a standalone pdf on GitHub). Make sure it is in tidy format. Don't forget to pay attention to cleaning strings, especially the Crop variable. Use reasonable effort -- aim to get about 90% of the way and skip, but mention, any remaining tasks that would be extremely time-consuming. Make sure to comment your code well.
+
+2. Assume this data is representative of all micro-irrigation use in Gujarat. What crops account for the most total area under each of drip and sprinkler irrigation? (Think carefully about how to deal with rows that list more than one crop.)
+
+3. Each farmer was only supposed to receive a subsidy once. What percentage of total subsidies disbursed that went to fraudulent claims? Give your best estimate and argue why it is the the best answer. (Think carefully about how to define duplicate farmers in the data, and how to distinguish true duplicate claims from data entry errors. There is no single correct answer, but some are more defensible than others.)
+
+4. An important piece of cultural context is that in Gujarat, "Bhai" and "Ben" are routinely, but not always, added to the end of people's names. They literally mean "brother" and "sister" and are used as titles of respect, like "Mr." and "Ms." in English-speaking countries. Use this additional knowledge to re-estimate the amount of fraud. Explain what you did, how this information affects your answer, and why.
+
+5. *(Required for 560 students; optional but potential bonus for 491 students.)* Another piece of cultural context is that the Gujarati language uses its own script, not the English alphabet. That means that all spellings of Gujarati words and names are only approximate representations (i.e., transliterations), and different people make slightly different choices in how to represent Gujarati sounds in English. For example, Gujarati has a consonant that is in between the English "v" and "w", so the same word can be spelled either way. For another, consonants in Gujarati are always followed by a vowel, but for unstressed syllables, the vowel sound isn't always written down. The result is that, for example, `Galiyavada` and `Galiyawad` actually refer to the same village. `Galiavad` would as well, since diphthongs (compound vowel sounds) can be spelled in multiple ways. There are many more examples like these ones.
+<p>Outline a strategy you could use to address the issue if you had much more time to do a really comprehensive job. How do you view your estimate of the amount of fraud in light of this issue -- is it an overestimate or an underestimate of the true amount of fraud? See if you can gather a little bit of evidence on the magnitude of this problem -- does it seem likely to be huge or inconsequential?
