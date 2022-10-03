@@ -60,7 +60,11 @@ Fall 2022
 * Webscraping
 * Using APIs
 
-**Lecture 7: Best Practices in Scientific Computing**
+[**Lecture 7: Best Practices for Coding and Workflows**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html)
+
+* The perils of bad data cleaning
+* Reproducibility and transparency
+* Best practices (code organization, file organization, version control, abstraction, commenting, unit tests)
 
 **Lecture 8: Distinguishing Goals of Data Analysis**
 
@@ -170,6 +174,7 @@ This is a list of further resources that you may find helpful throughout (and af
 * ["An Introduction to APIs"](https://zapier.com/learn/apis/) (Zapier).
 
 ### Best practices for coding and workflows
+* [Evidence on Research Transparency in Economics](https://pubs.aeaweb.org/doi/pdf/10.1257/jep.35.3.193) (Edward Miguel, *Journal of Economic Perspectives* 2021).
 * [Best Practices for Scientific Computing](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745) (Wilson et al. 2014).
 * [Code and Data for the Social Sciences: A Practitioner's Guide](https://web.stanford.edu/~gentzkow/research/CodeAndData.pdf) (Gentzkow & Shapiro 2014).
 * [Coding for Economists: A Language-Agnostic Guide to Programming for Economists](https://scholar.harvard.edu/files/ristovska/files/coding_for_econs_20190221.pdf) (Ljubica "LJ" Ristovska 2019).
