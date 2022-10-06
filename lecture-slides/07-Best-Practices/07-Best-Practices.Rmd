@@ -54,13 +54,13 @@ name: perils
 
 Published in the *American Economic Review* (2007):
 
-![](img/DG_abstract.png)
+![](img/DG_abstract.PNG)
 
 ---
 
 # The perils of bad data cleaning
 
-![](img/FHRS_abstract.png)
+![](img/FHRS_abstract.PNG)
 
 > *DG's baseline climate measure (dd89_7000) has a value of zero degree days for 163 counties. If correct, this measure implies temperatures do not exceed 8°C (46.4°F) in those counties during the growing season of April through September. Temperatures this low would seem implausible in any state, yet many of these counties are in warm southern states such as Texas.*
 
@@ -69,14 +69,14 @@ Published in the *American Economic Review* (2007):
 # The perils of bad data cleaning
 
 ```{r, out.width="75%", echo=F}
-include_graphics("img/FHRS_maps.png")
+include_graphics("img/FHRS_maps.PNG")
 ```
 
 ---
 
 # The perils of bad data cleaning
 
-![](img/DG_reply.png)
+![](img/DG_reply.PNG)
 
 > *Contrary to the results in DG (2007), the corrected data suggest that an immediate shift to the projected end-of-the-century climate would reduce agricultural profits.*
 
