@@ -66,7 +66,11 @@ Fall 2022
 * Reproducibility and transparency
 * Best practices (code organization, file organization, version control, abstraction, commenting, unit tests)
 
-**Lecture 8: Distinguishing Goals of Data Analysis**
+[**Lecture 8: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Distinguishing-Goals/08-Distinguishing-Goals.html)
+
+* The Data Generating Process
+* Potential outcomes, counterfactuals, and causal inference
+* Descriptive, Predictive, or Causal Analysis?
 
 [**Exploratory Analysis, Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part1-nosolutions.html)
 
@@ -167,11 +171,11 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Quartz Guide to Bad Data](https://github.com/Quartz/bad-data-guide).
 
 ### Data acquisition and webscraping
-* ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
-* ["Data Sets for Quantitative Research: Public Use Datasets"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+* [How to Find Data: Tips for Finding Data](https://davidson.libguides.com/data/tips) (Davidson College Library).
+* [Data Sets for Quantitative Research: Public Use Datasets](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
 * [*Data Science for Economists* Lecture 6: Webscraping: (1) Server-side and CSS](https://raw.githack.com/uo-ec607/lectures/master/06-web-css/06-web-css.html) (Grant McDermott).
 * [*Data Science for Economists* Lecture 7: Webscraping: (2) Client-side and APIs](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html) (Grant McDermott).
-* ["An Introduction to APIs"](https://zapier.com/learn/apis/) (Zapier).
+* [An Introduction to APIs](https://zapier.com/learn/apis/) (Zapier).
 
 ### Best practices for coding and workflows
 * [Evidence on Research Transparency in Economics](https://pubs.aeaweb.org/doi/pdf/10.1257/jep.35.3.193) (Edward Miguel, *Journal of Economic Perspectives* 2021).
@@ -179,6 +183,11 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Code and Data for the Social Sciences: A Practitioner's Guide](https://web.stanford.edu/~gentzkow/research/CodeAndData.pdf) (Gentzkow & Shapiro 2014).
 * [Coding for Economists: A Language-Agnostic Guide to Programming for Economists](https://scholar.harvard.edu/files/ristovska/files/coding_for_econs_20190221.pdf) (Ljubica "LJ" Ristovska 2019).
 * [The tidyverse style guide](https://style.tidyverse.org/) (Hadley Wickham).
+
+### Distinguishing goals of data analysis
+* *Thinking Clearly with Data* (Ethan Bueno de Mesquita and Anthony Fowler 2021, Princeton University Press).
+* [*The Effect: An Introduction to Research Design and Causality* Chapter 5: Identification](https://theeffectbook.net/ch-Identification.html) (Nick Huntington-Klein).
+* [*Causal Inference: The Mixtape* Chapter 4: Potential Outcomes Causal Model](https://mixtape.scunning.com/04-potential_outcomes) (Scott Cunningham).
 
 ### Exploratory analysis
 * [*Introduction to Data Science* Chapter 8: Visualizing data distributions](https://rafalab.github.io/dsbook/distributions.html) (Rafael A. Irizarry). Histograms, density plots, stratification.

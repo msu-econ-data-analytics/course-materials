@@ -1,0 +1,516 @@
+---
+title: "Lecture 8: <br> Distinguishing Goals of Data Analysis"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      fig_caption: true
+---
+name: toc
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.hi {
+  font-weight: 600;
+  color: #e64173 !important;
+}
+.hi-pink {
+  font-weight: 600;
+  color: #e64173 !important;
+}
+.hi-slate {
+  font-weight: 600;
+  color: #314f4f !important;
+}
+.hi-turquoise {
+  font-weight: 600;
+  color: #44C1C4 !important;
+}
+.hi-purple {
+  font-weight: 600;
+  color: #6A5ACD !important;
+}
+.hi-orange {
+  font-weight: 600;
+  color: #FFA500 !important;
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	cache = TRUE,
+	dpi = 300
+)
+```
+
+# Table of contents
+
+1. [The Data Generating Process](#DGP)
+
+1. [The Potential Outcomes Model](#rubin)
+
+1. [Descriptive, Predictive, or Causal Analysis?](#which)
+
+
+---
+
+# Distinguishing goals of data analysis
+
+When we analyze data, what is our ultimate goal?
+
+1. .hi-turquoise[**Description:**] Simply characterize observed patterns in the data.
+2. .hi[**Causation:**] Learn about causal relationships: If we change X, how will Y change?
+3. .hi-purple[**Prediction:**] Be able to guess the value of one variable from other information.
+
+--
+
+Here are a few quick examples of a research question in each category:
+
+1. .hi-turquoise[**Descriptive:**] Is wealth inequality increasing faster in the U.S. than in Europe?
+2. .hi[**Causal:**] Does Medicaid coverage reduce the risk of bankruptcy?
+3. .hi-purple[**Predictive:**] Can nighttime satellite imagery be used as a real-time indicator of GDP?
+
+--
+
+Discerning which type of goal you have is critical for:
+* **Choosing methods:** Distinct approaches are required to achieve different goals.
+* **Interpreting results:** Mistaking one goal for another can lead your audience to make very bad decisions.
+
+
+---
+class: inverse, middle
+name: DGP
+
+# The Data Generating Process
+
+---
+
+# The Data Generating Process
+
+What's shared across all goals of data analysis:
+
+We start with an **outcome variable** called $Y$. We want to know some things:
+* Where do the values of $Y$ come from?
+* How does $Y$ relate to other variables?
+
+The **data generating process** (DGP) in the real world determines the values of $Y$.
+* The true DGP is unknowable, a black box:
+
+```{r, out.width="75%", echo=F}
+include_graphics("img/black-box-general.png")
+```
+
+---
+
+# The Data Generating Process
+
+```{r, out.width="80%", echo=F}
+include_graphics("img/black-box-general.png")
+```
+
+We could write this picture as a function:
+
+$$ Y = f(x_1, x_2, x_3, ... x_N) $$
+
+But some big questions remain:
+- What are all these inputs $x_1, x_2, ...$?
+- What is the functional form? (How does the box work?)
+
+---
+
+# The Data Generating Process
+
+For some questions, the set of inputs and their functional form are discoverable.
+
+**Physics example:** How long does it take for an object to fall from a particular height?
+
+$$ t = \sqrt{2h/g} \approx 0.452 \sqrt{h}  $$
+
+Newton and others did experiments to learn the functional form.
+
+```{r, out.width="85%", echo=F}
+include_graphics("img/black-box-physics1.png")
+```
+
+---
+
+# The Data Generating Process
+
+Even in physics, this is just an approximation to the real world.
+
+```{r, out.width="85%", echo=F}
+include_graphics("img/black-box-physics2.png")
+```
+
+The true DGP is more complicated, but it is still limited to a certain number of factors.
+* We can understand the vast majority of the "duration of free fall" DGP.
+
+---
+
+# The Data Generating Process
+
+**Social science is harder.** People have free will!
+* Inputs? Any outcome is determined by far more than 10 or even 100 inputs.
+  - Many inputs are impossible to measure.
+* Functional form? No universal laws guaranteeing they are simple.
+  - Inputs often interact with each other.
+
+Characterizing the full DGP for *anything* is typically far beyond the realm of possibility.
+
+```{r, out.width="70%", echo=F}
+include_graphics("img/black-box-general.png")
+```
+
+What can we do instead? **Lower our ambitions!**
+
+---
+
+# Types of goals
+
+Most data analysis in economics falls into one of **3 types of goals:**
+
+1. .hi-turquoise[**Descriptive:**] Document or quantify observed relationships between inputs and outputs.
+   - Does not not necessarily tell us about the true DGP.
+   - Helps us understand facts about the world.
+   - Can often inspire questions for further research.
+
+2. .hi[**Causal:**] Try to understand *one piece* of how the box works (the true DGP).
+   - When you *change* one factor, how does it change the result?
+   - Helps us make decisions about what to do (in policy, business, personal life).
+
+3. .hi-purple[**Predictive:**] Create your own box to try to match the output.
+   - Doesn't matter if it works the same, or if you have the correct inputs.
+   - Only matters how closely your box produces the same result.
+   - Helps us know what's likely to happen in a new situation.
+
+--
+
+For more clarity, we need to take a slightly technical detour.
+
+
+---
+class: inverse, middle
+name: rubin
+
+# The Potential Outcomes Model
+
+---
+
+# Causation requires counterfactuals
+
+**Causal effect:** the change in one variable resulting from a change in another.
+- **Treatment** variable $T$. (E.g., taking Advil.)
+- **Outcome** variable $Y$. (E.g., severity of pain.)
+
+**Potential outcomes:** What would happen with and without treatment?
+- $Y^0_i =$ outcome for person $i$ if $T_i = 1$ (take Advil).
+- $Y^1_i =$ outcome for person $i$ if $T_i = 0$ (don't take Advil).
+
+The **treatment effect** for person $i$ is:
+$$\text{Effect} = Y^1_i - Y^0_i.$$
+
+--
+
+**The Fundamental Problem of Causal Inference:** Only one potential outcome is ever observable for each person.
+
+$$Y_{i} =
+\begin{cases}
+Y_{i}^{1} & \text{if } T_{i}=1\\
+Y_{i}^{0} & \text{if } T_{i}=0
+\end{cases}$$
+The other one is a **counterfactual** -- what *would* have happened had $T_i$ been different.
+
+---
+
+# Average Treatment Effect
+
+We can never learn the treatment effect by looking at just one person.
+
+Instead, we'll look at many people and try to estimate the **average treatment effect.**
+
+$$\begin{aligned}
+ATE 
+&= \mathbb{E}[Y^1_i - Y^0_i] \\
+&= \overline{Y^1_i} - \overline{Y^0_i}.
+\end{aligned}$$
+
+* $\overline{Y^1_i}$: average outcome if everyone had $T=1$.
+* $\overline{Y^0_i}$: average outcome if everyone had $T=0$.
+
+--
+
+But these are still just *potential* outcomes. 😢
+
+---
+class: clear, middle
+
+```{r, out.width="55%", echo=F}
+include_graphics("img/potential_outcomes.PNG")
+```
+
+---
+
+# Interpreting mean comparisons
+
+What we *do* have in our data:
+- $\overline{Y_T}$: Average outcome among people who are treated $(T_i=1)$.
+- $\overline{Y_U}$: Average outcome among people who are untreated $(T_i=0)$.
+
+It's often natural to look at the difference in these group means:
+$$\text{Difference in Means} = \overline{Y_T} - \overline{Y_U}$$
+
+How is this different from the ATE? 
+--
+**Treated and untreated people aren't the same.**
+* Means are taken over groups of people who have different potential outcomes.
+- For example: People who take Advil have higher pain than those who don't.
+  * Treatment effect is probably negative, but difference in means is positive.
+
+---
+
+# Interpreting mean comparisons
+
+Let's be more precise about the connection between the ATE and the difference in means.
+
+First, we can rewrite these as potential outcomes:
+$$\begin{aligned}
+\text{Difference in Means}
+&= \overline{Y_T} - \overline{Y_U} \\
+&= \overline{Y_T^1} - \overline{Y_U^0}
+\end{aligned}$$
+
+--
+
+Next, I'll use an algebraic trick -- add and subtract the same term:
+$$\begin{aligned}
+\text{Difference in Means}
+&= \overline{Y_T^1} - \overline{Y_U^0} + 0\\
+&= \overline{Y_T^1} - \overline{Y_U^0} + \Big( \overline{Y_T^0} - \overline{Y_T^0} \Big)
+\end{aligned}$$
+
+--
+
+Rearranging, we get:
+$$\text{Difference in Means} = \underbrace{
+  \Big(\overline{Y_T^1} - \overline{Y_T^0}\Big)
+  }_\text{treatment effect} + \underbrace{
+  \Big(\overline{Y_T^0} - \overline{Y_U^0}\Big)
+  }_\text{selection bias}$$
+
+---
+
+# Correlation is causation plus selection
+
+$$\text{Difference in Means} = \underbrace{
+  \Big(\overline{Y_T^1} - \overline{Y_T^0}\Big)
+  }_\text{treatment effect} + \underbrace{
+  \Big(\overline{Y_T^0} - \overline{Y_U^0}\Big)
+  }_\text{selection bias}$$
+
+The difference in means is a result of 2 processes:
+- **Treatment:** The true causal effect of the treatment variable. (Taking Advil reduces pain.)
+- **Selection:** Differences in the types of people who are treated. (People who take Advil are in more pain.)
+
+The central challenge of causal inference is to disentangle treatment from selection.
+
+---
+
+# Selection bias
+
+Note:
+
+1. Don't confuse selection bias with sampling bias.
+   * **Sampling bias:** We've collected a sample that is unrepresentative of a broader population.
+   * **Selection bias:** Within our sample, the people with $T=1$ have different potential outcomes from people with $T=0$.
+
+--
+2. Selection bias is an all-encompassing category for several sources of bias:
+   - Omitted variables bias
+   - Reverse causality
+   - Selection on gains
+
+--
+3. To eliminate selection bias and estimate the treatment effect, we need an **identification strategy.** Examples:
+   - Experimentally vary $T$.
+   - Control for enough other variables (eliminate "bad" variation in $T$.).
+   - Find an instrumental variable (isolate "good" variation in $T$).
+
+
+---
+class: inverse, middle
+name: which
+
+# Descriptive, Predictive, or Causal?
+
+---
+
+# Types of goals
+
+Now we can revisit our 3 goals of data analysis.
+
+For sake of illustration, consider a simple linear model:
+
+$$\begin{aligned}
+Y_i
+&= f(T_i, x_{1i}, ..., x_{Ni}) \\
+&= \beta_0 T_{i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i
+\end{aligned}$$
+
+All 3 goals are trying to model the DGP, but with different emphases and interpretations.
+
+<br>
+
+Three key differences among the goals:
+1. Focus: outcome vs. coefficients.
+2. Whether selection bias matters.
+3. Interpretation.
+
+
+---
+
+# Diff 1. Focus: outcome vs. coefficients.
+
+$$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$
+
+.hi-turquoise[**Description:**] Want to estimate a few coefficients: $\beta_0, \beta_1, \beta_2$.
+- Focus on showing relationships among a few variables: $\color{#6A5ACD}{\hat{Y_{i}}}, x_{0i}, x_{1i}, x_{2i}.$
+- Give up goal of *correctly* modeling the true DGP. Just show patterns as they are.
+- Give up goal of understanding all inputs to $\color{#6A5ACD}{Y_{i}}$.
+
+.hi-purple[**Prediction:**] Want to estimate $\color{#6A5ACD}{\hat{Y_{i}}}$.
+- Focus on predicting $\color{#6A5ACD}{\hat{Y_{i}}}$ given observed data $x_{0i}, x_{1i}, x_{2i}, ....$
+- Find a model that *works*, by any possible means.
+- Give up goal of *correctly* modeling the true DGP.
+
+.hi[**Causal inference:**] Want to estimate one coefficient $\color{#e64173}{\hat{\beta_0}}$, the effect of a treatment variable $x_{0i}$.
+- Give up goal of understanding effects of any other factors $x_{1i}, x_{2i}, ....$
+- Give up goal of explaining the overall level of $\color{#6A5ACD}{Y_{i}}$.
+  - Only how much it changes in response to a change in $x_{0i}$.
+
+---
+# Diff 2. Whether selection bias matters.
+
+$$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$
+
+.hi-turquoise[**Description:**] **No.** Only want to infer patterns from observed data.
+- The reasons why patterns exist is an entirely separate question.
+
+.hi-purple[**Prediction:**] **No.** Only want to infer patterns from observed data. Selection gives us valuable information to predict $\color{#6A5ACD}{Y_i}$.
+- **Given** that a student attends summer school, what is their GPA?
+- **Given** how many people are wearing shorts, will an ice cream truck show up?
+- **Given** the size of its police department, how much crime does a city have?
+
+.hi[**Causal inference:**] **Yes.** Want to infer the result of active intervention. Must eliminate selection bias to estimate the treatment effect.
+- **If** a student attends summer school, how will their GPA change?
+- **If** someone chooses to wear shorts, will it make an ice cream truck show up?
+- **If** a city adds more police officers, will crime decrease?
+
+---
+# Diff 3. Interpretation.
+
+$$\color{#6A5ACD}{Y_i} = f(T_i, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} T_{i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$
+
+.hi-turquoise[**Description:**] $\beta_0$ represents an **association** between $x_{0i}$ and $\color{#6A5ACD}{Y_i}$.
+- It says how the average value of $\color{#6A5ACD}{Y_i}$ changes as we look at different values of $x_{0i}$.
+- Only a statement about the data, not about the reasons behind the pattern.
+
+.hi-purple[**Prediction:**] Model does **not** need to be interpretable.
+- Coefficients $\beta$ are informative only of predictive power, not causal effects.
+- $\color{#e64173}{\beta_0}$ might reflect the treatment effect of $X_0$, *or* the effects of omitted variables for which $X_0$ happens to be a good proxy.
+- Generally, the model can be treated as a black box.
+
+.hi[**Causal inference:**] $\color{#e64173}{\beta_0}$ is a **causal effect** of $X_{0i}$.
+- Under stated assumptions (of the identification strategy).
+- Other coefficients generally lack interpretability.
+
+<!-- 1. **Descriptive:** Document or quantify observed relationships between $x$'s and $Y$. -->
+<!--    - Regardless of whether those relationships arise from treatment or selection. -->
+
+<!-- 2. **Causal.** Estimate how one specific $x_0$ affects $Y$. -->
+<!--    - Find ways to eliminate selection bias and isolate the treatment effect. -->
+<!--    - Requires additional assumptions about where the variation comes from. -->
+
+<!-- 3. **Predictive.** Find the most likely value of $Y$ given available data. -->
+<!--    - If $x_1$ and $Y$ are correlated, we don't know whether it's causal or selection bias. -->
+<!--    - But either way, $x_1$ helps us better predict the value of $Y$. -->
+
+---
+# Prediction vs. causal inference
+
+When would .hi[causal inference] be useful (to a policymaker, business executive, individual)? When would .hi-purple[prediction] be useful?
+
+1. **Birth weight $(Y)$ ~ air pollution $(x)$**
+
+--
+   - Causal inference: How strictly should air pollution be regulated?
+   - Prediction: What areas might need more prenatal services?
+
+--
+1. **Income $(Y)$ ~ educational attainment $(x)$**
+
+--
+   - Causal inference: Should I go to college? Should we increase investment in public education?
+   - Prediction: What types of people should we advertise to? Choose for a tax audit?
+
+--
+1. **Probability of default on a loan $(Y)$**
+
+--
+   - Causal inference: How can we (borrowers) make better financial decisions?
+   - Prediction: Who should we (bankers) lend money to?
+
+--
+1. **Poverty $(Y)$ ~ public infrastructure $(x)$**
+
+--
+   - Causal inference: Can infrastructure investment help fight poverty?
+   - Prediction: Which communities need the most aid right now?
+
+
+---
+
+# Summary
+
+There are **3 main purposes** of data analysis:
+1. .hi-turquoise[**Descriptive analysis:**] Characterize observed patterns among variables.
+2. .hi[**Causal inference:**] Learn how Y changes as a result of actively changing X.
+3. .hi-purple[**Prediction:**] Predict the value of one variable from other information.
+
+Causal questions require thinking about **counterfactuals.**
+* **The Fundamental Problem of Causal Inference:** We can only ever observe one of the **potential outcomes.**
+* A difference in means gives the **treatment effect** plus **selection bias.**
+
+Key differences among the 3 goals:
+1. **Focus:** Prediction focuses on the outcome $\color{#6A5ACD}{\hat{Y_{i}}}$, causal inference on a coefficient $\color{#e64173}{\hat{\beta_0}}$.
+2. **Selection bias** is a problem for causal inference, but not predictive or descriptive analysis.
+3. **Interpretion:** Coefficients have meaning in causal inference and descriptive analysis, but not in prediction.
+
+---
+
+# What about methods?
+
+What **methods** should we use for each goal?
+
+1. .hi-turquoise[**Descriptive analysis:**] **Exploratory analysis and regression.**
+   - Covering soon!
+   
+2. .hi[**Causal inference:**] **Econometrics.**
+   - See your other classes.
+
+3. .hi-purple[**Prediction:**] **Statistical learning / machine learning.**
+   - Introduction in a few weeks!
+
