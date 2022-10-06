@@ -209,8 +209,8 @@ name: rubin
 - **Outcome** variable `\(Y\)`. (E.g., severity of pain.)
 
 **Potential outcomes:** What would happen with and without treatment?
-- `\(Y^0_i =\)` outcome for person `\(i\)` if `\(T_i = 1\)` (take Advil).
-- `\(Y^1_i =\)` outcome for person `\(i\)` if `\(T_i = 0\)` (don't take Advil).
+- `\(Y^1_i =\)` outcome for person `\(i\)` if `\(T_i = 1\)` (take Advil).
+- `\(Y^0_i =\)` outcome for person `\(i\)` if `\(T_i = 0\)` (don't take Advil).
 
 The **treatment effect** for person `\(i\)` is:
 `$$\text{Effect} = Y^1_i - Y^0_i.$$`
@@ -356,8 +356,8 @@ For sake of illustration, consider a simple linear model:
 
 `$$\begin{aligned}
 Y_i
-&amp;= f(T_i, x_{1i}, ..., x_{Ni}) \\
-&amp;= \beta_0 T_{i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i
+&amp;= f(x_{0i}, x_{1i}, ..., x_{Ni}) \\
+&amp;= \beta_0 x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i
 \end{aligned}$$`
 
 All 3 goals are trying to model the DGP, but with different emphases and interpretations.
@@ -412,7 +412,7 @@ Three key differences among the goals:
 ---
 # Diff 3. Interpretation.
 
-`$$\color{#6A5ACD}{Y_i} = f(T_i, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} T_{i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$`
+`$$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$`
 
 .hi-turquoise[**Description:**] `\(\beta_0\)` represents an **association** between `\(x_{0i}\)` and `\(\color{#6A5ACD}{Y_i}\)`.
 - It says how the average value of `\(\color{#6A5ACD}{Y_i}\)` changes as we look at different values of `\(x_{0i}\)`.
