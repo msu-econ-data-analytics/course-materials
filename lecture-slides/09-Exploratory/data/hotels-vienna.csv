@@ -1,0 +1,429 @@
+"country","city_actual","rating_count","center1label","center2label","neighbourhood","price","city","stars","ratingta","ratingta_count","scarce_room","hotel_id","offer","offer_cat","year","month","weekend","holiday","distance","distance_alter","accommodation_type","nnights","rating"
+"Austria","Vienna",36,"City centre","Donauturm","17. Hernals",81,"Vienna",4,4.5,216,1,21894,1,"15-50% offer",2017,11,0,0,2.7,4.4,"Apartment",1,4.4
+"Austria","Vienna",189,"City centre","Donauturm","17. Hernals",81,"Vienna",4,3.5,708,0,21897,1,"1-15% offer",2017,11,0,0,1.7,3.8,"Hotel",1,3.9
+"Austria","Vienna",53,"City centre","Donauturm","Alsergrund",85,"Vienna",4,3.5,629,0,21901,1,"15-50% offer",2017,11,0,0,1.4,2.5,"Hotel",1,3.7
+"Austria","Vienna",55,"City centre","Donauturm","Alsergrund",83,"Vienna",3,4,52,0,21902,1,"15-50% offer",2017,11,0,0,1.7,2.5,"Hotel",1,4
+"Austria","Vienna",33,"City centre","Donauturm","Alsergrund",82,"Vienna",4,3.5,219,1,21903,1,"15-50% offer",2017,11,0,0,1.2,2.8,"Hotel",1,3.9
+"Austria","Vienna",25,"City centre","Donauturm","Alsergrund",229,"Vienna",5,4.5,27,1,21904,1,"1-15% offer",2017,11,0,0,0.9,3,"Apartment",1,4.8
+"Austria","Vienna",57,"City centre","Donauturm","Alsergrund",103,"Vienna",4,3.5,251,1,21906,0,"0% no offer",2017,11,0,0,0.9,2.4,"Hotel",1,3.9
+"Austria","Vienna",161,"City centre","Donauturm","Alsergrund",150,"Vienna",4,4.5,617,0,21907,0,"0% no offer",2017,11,0,0,1,2.7,"Hotel",1,4.6
+"Austria","Vienna",50,"City centre","Donauturm","Alsergrund",80,"Vienna",2,3.5,146,1,21908,1,"1-15% offer",2017,11,0,0,0.7,2.7,"Hotel",1,3.5
+"Austria","Vienna",NA,"City centre","Donauturm","Alsergrund",153,"Vienna",3,NA,NA,1,21910,1,"15-50% offer",2017,11,0,0,1.5,2.7,"Apartment",1,NA
+"Austria","Vienna",203,"City centre","Donauturm","Alsergrund",60,"Vienna",4,4,359,1,21912,1,"1-15% offer",2017,11,0,0,1.1,2.7,"Hotel",1,4.1
+"Austria","Vienna",251,"City centre","Donauturm","Alsergrund",128,"Vienna",4,4,829,0,21913,0,"0% no offer",2017,11,0,0,0.8,2.9,"Hotel",1,4
+"Austria","Vienna",142,"City centre","Donauturm","Alsergrund",100,"Vienna",4,4,55,1,21914,1,"15-50% offer",2017,11,0,0,1,2.3,"Apartment",1,4.5
+"Austria","Vienna",8,"City centre","Donauturm","Alsergrund",143,"Vienna",2,NA,NA,1,21915,1,"15-50% offer",2017,11,0,0,1.2,2.3,"Apartment",1,3.7
+"Austria","Vienna",NA,"City centre","Donauturm","Alsergrund",106,"Vienna",2.5,2,74,1,21916,0,"0% no offer",2017,11,0,0,0.7,2.6,"Hotel",1,NA
+"Austria","Vienna",18,"City centre","Donauturm","Alsergrund",85,"Vienna",4,4,62,0,21917,1,"1-15% offer",2017,11,0,0,1.7,2.6,"Hotel",1,4.1
+"Austria","Vienna",20,"City centre","Donauturm","Alsergrund",77,"Vienna",3,3.5,97,0,21918,1,"15-50% offer",2017,11,0,0,0.9,2.8,"Hotel",1,3.7
+"Austria","Vienna",77,"City centre","Donauturm","Alsergrund",78,"Vienna",3,3.5,120,1,21919,1,"15-50% offer",2017,11,0,0,0.8,2.8,"Hotel",1,3.9
+"Austria","Vienna",76,"City centre","Donauturm","Alsergrund",78,"Vienna",3,3.5,161,1,21920,0,"0% no offer",2017,11,0,0,0.9,2.8,"Hotel",1,4
+"Austria","Vienna",NA,"City centre","Donauturm","Donaustadt",260,"Vienna",3.5,5,2,1,21921,0,"0% no offer",2017,11,0,0,3.4,0.6,"Apartment",1,NA
+"Austria","Vienna",5,"City centre","Donauturm","Donaustadt",158,"Vienna",3,4.5,72,1,21922,0,"0% no offer",2017,11,0,0,3.4,0.6,"Apartment",1,4.8
+"Austria","Vienna",77,"City centre","Donauturm","Donaustadt",77,"Vienna",3,4,158,1,21924,0,"0% no offer",2017,11,0,0,4.2,1.5,"Hotel",1,3.9
+"Austria","Vienna",193,"City centre","Donauturm","Donaustadt",77,"Vienna",3,3,91,0,21925,1,"50%-75% offer",2017,11,0,0,3.9,1.9,"Hotel",1,2.7
+"Austria","Vienna",94,"City centre","Donauturm","Donaustadt",95,"Vienna",4,4,228,0,21926,1,"15-50% offer",2017,11,0,0,3.6,1.2,"Hotel",1,4.3
+"Austria","Vienna",1,"City centre","Donauturm","Donaustadt",156,"Vienna",3,NA,NA,1,21927,0,"0% no offer",2017,11,0,0,3.8,1.2,"Apartment",1,3
+"Austria","Vienna",5,"City centre","Donauturm","Donaustadt",145,"Vienna",3,4.5,205,1,21928,0,"0% no offer",2017,11,0,0,3.5,0.8,"Bed and breakfast",1,3.5
+"Austria","Vienna",178,"City centre","Donauturm","Donaustadt",208,"Vienna",4,4,1085,1,21930,0,"0% no offer",2017,11,0,0,2.9,0.6,"Hotel",1,4.1
+"Austria","Vienna",330,"City centre","Donauturm","Donaustadt",87,"Vienna",3,3.5,423,1,21933,0,"0% no offer",2017,11,0,0,3.4,0.9,"Hotel",1,3.7
+"Austria","Vienna",6,"City centre","Donauturm","Favoriten",131,"Vienna",2,NA,NA,1,21934,1,"15-50% offer",2017,11,0,0,2.3,4.9,"Apartment",1,3.5
+"Austria","Vienna",194,"City centre","Donauturm","Favoriten",54,"Vienna",3,4,522,0,21935,1,"50%-75% offer",2017,11,0,0,2,4.5,"Hotel",1,3.5
+"Austria","Vienna",9,"City centre","Donauturm","Favoriten",139,"Vienna",2,3,17,1,21936,1,"15-50% offer",2017,11,0,0,2.4,5,"Apartment",1,3
+"Austria","Vienna",3,"City centre","Donauturm","Favoriten",184,"Vienna",2,NA,NA,1,21937,1,"15-50% offer",2017,11,0,0,2.8,5.3,"Apartment",1,3.2
+"Austria","Vienna",1,"City centre","Donauturm","Favoriten",127,"Vienna",3,NA,NA,1,21938,1,"15-50% offer",2017,11,0,0,2.9,5.2,"Apartment",1,1
+"Austria","Vienna",NA,"City centre","Donauturm","Favoriten",95,"Vienna",3,NA,NA,1,21939,0,"0% no offer",2017,11,0,0,2.5,5.1,"Apartment",1,NA
+"Austria","Vienna",441,"City centre","Donauturm","Favoriten",99,"Vienna",3.5,4.5,630,0,21940,0,"0% no offer",2017,11,0,0,1.7,4.2,"Hotel",1,4.4
+"Austria","Vienna",1122,"City centre","Donauturm","Favoriten",75,"Vienna",3.5,4.5,573,0,21941,1,"15-50% offer",2017,11,0,0,1.7,4.1,"Hotel",1,4.4
+"Austria","Vienna",362,"City centre","Donauturm","Favoriten",76,"Vienna",3,4,269,0,21943,1,"15-50% offer",2017,11,0,0,2.1,4.6,"Hotel",1,4.4
+"Austria","Vienna",2,"City centre","Donauturm","Favoriten",130,"Vienna",2,NA,NA,1,21945,1,"15-50% offer",2017,11,0,0,2.5,5.1,"Apartment",1,3
+"Austria","Vienna",525,"City centre","Donauturm","Favoriten",91,"Vienna",4,4.5,741,0,21946,0,"0% no offer",2017,11,0,0,1.9,4.2,"Hotel",1,4.5
+"Austria","Vienna",1,"City centre","Donauturm","Favoriten",135,"Vienna",2,NA,NA,1,21947,1,"15-50% offer",2017,11,0,0,2.4,5,"Apartment",1,3
+"Austria","Vienna",113,"City centre","Donauturm","Favoriten",56,"Vienna",2,3,183,1,21948,0,"0% no offer",2017,11,0,0,2,4.5,"Hotel",1,2
+"Austria","Vienna",71,"City centre","Donauturm","Favoriten",27,"Vienna",2,3.5,216,1,21949,0,"0% no offer",2017,11,0,0,2.7,5.1,"Hostel",1,3.7
+"Austria","Vienna",1,"City centre","Donauturm","Favoriten",88,"Vienna",3,NA,NA,1,21950,1,"1-15% offer",2017,11,0,0,2.3,4.6,"Apartment",1,3
+"Austria","Vienna",22,"City centre","Donauturm","Favoriten",133,"Vienna",2,NA,NA,1,21951,1,"15-50% offer",2017,11,0,0,2.5,4.8,"Apartment",1,3.5
+"Austria","Vienna",366,"City centre","Donauturm","Favoriten",33,"Vienna",2,3.5,491,0,21956,0,"0% no offer",2017,11,0,0,1.8,4.3,"Hotel",1,3.4
+"Austria","Vienna",NA,"City centre","Donauturm","Favoriten",116,"Vienna",3.5,NA,NA,0,21958,0,"0% no offer",2017,11,0,0,2,4.4,"Apartment",1,NA
+"Austria","Vienna",821,"City centre","Donauturm","Favoriten",71,"Vienna",4,4,31,0,21959,1,"1-15% offer",2017,11,0,0,1.7,4.2,"Hotel",1,4
+"Austria","Vienna",16,"City centre","Donauturm","Favoriten",90,"Vienna",3.5,NA,NA,1,21960,1,"1-15% offer",2017,11,0,0,2.7,5.3,"Apartment",1,3.5
+"Austria","Vienna",23,"City centre","Donauturm","Favoriten",84,"Vienna",4,NA,NA,1,21962,1,"15-50% offer",2017,11,0,0,1.9,4.3,"Apartment",1,4.1
+"Austria","Vienna",38,"City centre","Donauturm","Favoriten",63,"Vienna",3,NA,NA,0,21963,1,"15-50% offer",2017,11,0,0,2.3,4.7,"Guest House",1,4.3
+"Austria","Fischamend",366,"City centre","Donauturm","Fischamend",59,"Vienna",3,2.5,243,0,21964,1,"15-50% offer",2017,11,0,0,13,13,"Hotel",1,3
+"Austria","Vienna",77,"City centre","Donauturm","Graben",113,"Vienna",3,4,259,0,21965,1,"15-50% offer",2017,11,0,0,0.2,2.9,"Hotel",1,4.4
+"Austria","Vienna",27,"City centre","Donauturm","Graben",218,"Vienna",4.5,NA,NA,1,21966,1,"1-15% offer",2017,11,0,0,0.1,2.9,"Apartment",1,4.1
+"Austria","Vienna",144,"City centre","Donauturm","Graben",299,"Vienna",5,4.5,702,1,21967,1,"50%-75% offer",2017,11,0,0,0.1,2.8,"Hotel",1,4.5
+"Austria","Vienna",184,"City centre","Donauturm","Innere Stadt",156,"Vienna",3,4.5,1347,1,21968,1,"1-15% offer",2017,11,0,0,0.3,2.6,"Hotel",1,4.5
+"Austria","Vienna",78,"City centre","Donauturm","Innere Stadt",513,"Vienna",5,5,1126,1,21969,1,"15-50% offer",2017,11,0,0,0.3,2.8,"Hotel",1,4.8
+"Austria","Vienna",319,"City centre","Donauturm","Innere Stadt",133,"Vienna",4,4,466,1,21970,1,"15-50% offer",2017,11,0,0,0.3,2.6,"Hotel",1,4.3
+"Austria","Vienna",73,"City centre","Donauturm","Innere Stadt",123,"Vienna",4,3.5,47,1,21971,1,"15-50% offer",2017,11,0,0,0.5,3.1,"Hotel",1,4.1
+"Austria","Vienna",81,"City centre","Donauturm","Innere Stadt",219,"Vienna",4,4.5,392,1,21972,1,"1-15% offer",2017,11,0,0,0.3,3,"Hotel",1,4.5
+"Austria","Vienna",271,"City centre","Donauturm","Innere Stadt",152,"Vienna",4,4,261,0,21973,1,"15-50% offer",2017,11,0,0,0.3,3,"Hotel",1,4.3
+"Austria","Vienna",211,"City centre","Donauturm","Innere Stadt",115,"Vienna",4,4.5,211,1,21975,1,"15-50% offer",2017,11,0,0,0.1,2.7,"Hotel",1,4.3
+"Austria","Vienna",5,"City centre","Donauturm","Innere Stadt",806,"Vienna",5,4.5,114,0,21976,1,"15-50% offer",2017,11,0,0,0.3,2.8,"Hotel",1,4.5
+"Austria","Vienna",316,"City centre","Donauturm","Innere Stadt",138,"Vienna",4,4.5,463,0,21977,1,"15-50% offer",2017,11,0,0,0.2,2.6,"Hotel",1,4.5
+"Austria","Vienna",28,"City centre","Donauturm","Innere Stadt",95,"Vienna",3,NA,NA,1,21979,0,"0% no offer",2017,11,0,0,0.4,2.5,"Apartment",1,3.7
+"Austria","Vienna",336,"City centre","Donauturm","Innere Stadt",146,"Vienna",4,4,714,0,21980,0,"0% no offer",2017,11,0,0,0.1,2.9,"Hotel",1,4.4
+"Austria","Vienna",83,"City centre","Donauturm","Innere Stadt",103,"Vienna",3,4,159,0,21981,0,"0% no offer",2017,11,0,0,0.7,3.1,"Pension",1,4
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",125,"Vienna",3.5,NA,NA,1,21983,0,"0% no offer",2017,11,0,0,0.5,3.3,"Apartment",1,NA
+"Austria","Vienna",88,"City centre","Donauturm","Innere Stadt",98,"Vienna",3,3.5,66,1,21984,0,"0% no offer",2017,11,0,0,0.5,2.6,"Hotel",1,3.7
+"Austria","Vienna",140,"City centre","Donauturm","Innere Stadt",121,"Vienna",3.5,4.5,557,1,21985,1,"15-50% offer",2017,11,0,0,0.3,2.5,"Hotel",1,4.5
+"Austria","Vienna",391,"City centre","Donauturm","Innere Stadt",149,"Vienna",4,4,1516,0,21986,1,"1-15% offer",2017,11,0,0,0.2,2.6,"Hotel",1,4
+"Austria","Vienna",320,"City centre","Donauturm","Innere Stadt",120,"Vienna",3,3.5,515,0,21987,1,"1-15% offer",2017,11,0,0,0.3,2.5,"Hotel",1,3.9
+"Austria","Vienna",21,"City centre","Donauturm","Innere Stadt",157,"Vienna",3,4.5,146,1,21988,1,"1-15% offer",2017,11,0,0,0.4,2.9,"Hotel",1,4.4
+"Austria","Vienna",193,"City centre","Donauturm","Innere Stadt",261,"Vienna",5,5,945,1,21989,1,"15-50% offer",2017,11,0,0,0.3,3.1,"Hotel",1,4.8
+"Austria","Vienna",75,"City centre","Donauturm","Innere Stadt",145,"Vienna",3.5,4,48,1,21990,1,"15-50% offer",2017,11,0,0,0.7,3.4,"Apartment",1,4.1
+"Austria","Vienna",35,"City centre","Donauturm","Innere Stadt",275,"Vienna",4,4,16,1,21991,1,"15-50% offer",2017,11,0,0,0.2,2.6,"Apartment",1,4.3
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",253,"Vienna",3.5,NA,NA,1,21992,0,"0% no offer",2017,11,0,0,0.2,2.9,"Apartment",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",209,"Vienna",4,NA,NA,1,21993,0,"0% no offer",2017,11,0,0,0.2,2.9,"Apartment",1,NA
+"Austria","Vienna",505,"City centre","Donauturm","Innere Stadt",112,"Vienna",4,4,607,0,21995,1,"15-50% offer",2017,11,0,0,0.2,2.9,"Hotel",1,4
+"Austria","Vienna",386,"City centre","Donauturm","Innere Stadt",138,"Vienna",4,4,273,0,21996,1,"15-50% offer",2017,11,0,0,0.3,2.5,"Hotel",1,4.3
+"Austria","Vienna",109,"City centre","Donauturm","Innere Stadt",84,"Vienna",3,4,171,1,21997,1,"1-15% offer",2017,11,0,0,0.4,2.6,"Pension",1,4
+"Austria","Vienna",626,"City centre","Donauturm","Innere Stadt",199,"Vienna",4.5,4.5,3171,0,21998,1,"50%-75% offer",2017,11,0,0,0.3,2.9,"Hotel",1,4.5
+"Austria","Vienna",334,"City centre","Donauturm","Innere Stadt",203,"Vienna",5,4.5,917,0,21999,1,"15-50% offer",2017,11,0,0,0.3,2.9,"Hotel",1,4.4
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",116,"Vienna",3,3,4,1,22001,0,"0% no offer",2017,11,0,0,0.2,2.7,"Vacation home Condo",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",107,"Vienna",3.5,NA,NA,1,22002,0,"0% no offer",2017,11,0,0,0.2,2.7,"Apartment",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",127,"Vienna",3.5,NA,NA,1,22003,0,"0% no offer",2017,11,0,0,0.2,2.7,"Apartment",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",104,"Vienna",3.5,NA,NA,1,22004,0,"0% no offer",2017,11,0,0,0.2,2.7,"Apartment",1,NA
+"Austria","Vienna",11,"City centre","Donauturm","Innere Stadt",168,"Vienna",3.5,3.5,4,1,22005,1,"15-50% offer",2017,11,0,0,0.2,2.6,"Apartment",1,4
+"Austria","Vienna",150,"City centre","Donauturm","Innere Stadt",544,"Vienna",5,4.5,1178,0,22006,0,"0% no offer",2017,11,0,0,0.5,3.2,"Hotel",1,4.8
+"Austria","Vienna",531,"City centre","Donauturm","Innere Stadt",252,"Vienna",5,4.5,1050,0,22007,1,"1-15% offer",2017,11,0,0,0.5,3.2,"Hotel",1,4.6
+"Austria","Vienna",253,"City centre","Donauturm","Innere Stadt",323,"Vienna",5,4.5,1168,0,22008,1,"15-50% offer",2017,11,0,0,0.5,3.2,"Hotel",1,4.5
+"Austria","Vienna",47,"City centre","Donauturm","Innere Stadt",158,"Vienna",3,4,232,1,22009,0,"0% no offer",2017,11,0,0,0.3,3.1,"Hotel",1,4.3
+"Austria","Vienna",19,"City centre","Donauturm","Innere Stadt",156,"Vienna",3.5,NA,NA,1,22010,1,"15-50% offer",2017,11,0,0,0.2,2.7,"Apartment",1,4
+"Austria","Vienna",124,"City centre","Donauturm","Innere Stadt",218,"Vienna",4,5,1112,1,22011,1,"50%-75% offer",2017,11,0,0,0.2,2.6,"Hotel",1,4.6
+"Austria","Vienna",115,"City centre","Donauturm","Innere Stadt",218,"Vienna",4,4.5,475,0,22012,1,"15-50% offer",2017,11,0,0,0.1,2.7,"Hotel",1,4.5
+"Austria","Vienna",110,"City centre","Donauturm","Innere Stadt",135,"Vienna",3,3.5,162,0,22013,1,"15-50% offer",2017,11,0,0,0.3,2.6,"Hotel",1,3.9
+"Austria","Vienna",16,"City centre","Donauturm","Innere Stadt",219,"Vienna",2,NA,NA,1,22014,1,"15-50% offer",2017,11,0,0,0.6,2.6,"Apartment",1,4
+"Austria","Vienna",467,"City centre","Donauturm","Innere Stadt",179,"Vienna",4,4.5,423,1,22016,0,"0% no offer",2017,11,0,0,0.5,3.3,"Hotel",1,4.4
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",511,"Vienna",3.5,NA,NA,1,22017,1,"1-15% offer",2017,11,0,0,0.5,3.3,"Apartment",1,NA
+"Austria","Vienna",650,"City centre","Donauturm","Innere Stadt",157,"Vienna",4,4.5,1380,0,22018,1,"1-15% offer",2017,11,0,0,0.7,3.5,"Hotel",1,4.5
+"Austria","Vienna",95,"City centre","Donauturm","Innere Stadt",146,"Vienna",4,4.5,770,1,22019,0,"0% no offer",2017,11,0,0,0.3,2.8,"Hotel",1,4.5
+"Austria","Vienna",564,"City centre","Donauturm","Innere Stadt",200,"Vienna",5,4,1850,0,22020,1,"15-50% offer",2017,11,0,0,0.4,2.9,"Hotel",1,4.3
+"Austria","Vienna",168,"City centre","Donauturm","Innere Stadt",157,"Vienna",4,4,392,1,22021,0,"0% no offer",2017,11,0,0,0.1,2.8,"Hotel",1,4.1
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",138,"Vienna",4,NA,NA,1,22022,0,"0% no offer",2017,11,0,0,0.3,2.6,"Apartment",1,NA
+"Austria","Vienna",175,"City centre","Donauturm","Innere Stadt",108,"Vienna",3,3.5,234,1,22023,1,"15-50% offer",2017,11,0,0,0.3,2.5,"Hotel",1,3.5
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",290,"Vienna",3.5,NA,NA,1,22025,0,"0% no offer",2017,11,0,0,0.2,2.6,"Apartment",1,NA
+"Austria","Vienna",426,"City centre","Donauturm","Innere Stadt",127,"Vienna",4,4,840,0,22026,1,"15-50% offer",2017,11,0,0,0.8,3.1,"Hotel",1,4
+"Austria","Vienna",1,"City centre","Donauturm","Innere Stadt",114,"Vienna",3,NA,NA,1,22027,0,"0% no offer",2017,11,0,0,0.7,3,"Guest House",1,3
+"Austria","Vienna",148,"City centre","Donauturm","Innere Stadt",163,"Vienna",4,4,388,1,22028,0,"0% no offer",2017,11,0,0,0.4,2.7,"Hotel",1,4.1
+"Austria","Vienna",163,"City centre","Donauturm","Innere Stadt",116,"Vienna",4,4.5,212,1,22029,1,"15-50% offer",2017,11,0,0,0.2,2.8,"Apart-hotel",1,4.5
+"Austria","Vienna",493,"City centre","Donauturm","Innere Stadt",226,"Vienna",5,4.5,2985,0,22030,1,"15-50% offer",2017,11,0,0,0.5,3.3,"Hotel",1,4.3
+"Austria","Vienna",56,"City centre","Donauturm","Innere Stadt",231,"Vienna",4,4.5,282,0,22031,1,"15-50% offer",2017,11,0,0,0.1,2.7,"Hotel",1,4.4
+"Austria","Vienna",247,"City centre","Donauturm","Innere Stadt",116,"Vienna",4,4.5,1274,1,22032,1,"15-50% offer",2017,11,0,0,0.4,2.6,"Hotel",1,4.4
+"Austria","Vienna",169,"City centre","Donauturm","Innere Stadt",76,"Vienna",3,4,167,1,22033,1,"15-50% offer",2017,11,0,0,0.4,2.6,"Guest House",1,3.7
+"Austria","Vienna",1,"City centre","Donauturm","Innere Stadt",135,"Vienna",3.5,NA,NA,1,22034,0,"0% no offer",2017,11,0,0,0.3,2.6,"Apartment",1,1
+"Austria","Vienna",599,"City centre","Donauturm","Innere Stadt",184,"Vienna",5,4.5,1330,0,22035,1,"15-50% offer",2017,11,0,0,0.6,2.7,"Hotel",1,4.5
+"Austria","Vienna",258,"City centre","Donauturm","Innere Stadt",384,"Vienna",5,5,1207,0,22036,1,"15-50% offer",2017,11,0,0,0.6,2.5,"Hotel",1,4.8
+"Austria","Vienna",703,"City centre","Donauturm","Innere Stadt",166,"Vienna",4,4,1592,1,22037,1,"15-50% offer",2017,11,0,0,0.6,2.8,"Hotel",1,4.3
+"Austria","Vienna",230,"City centre","Donauturm","Innere Stadt",187,"Vienna",5,4,468,0,22038,1,"15-50% offer",2017,11,0,0,0.5,3.1,"Hotel",1,4.1
+"Austria","Vienna",112,"City centre","Donauturm","Innere Stadt",371,"Vienna",5,4.5,1319,0,22039,1,"1-15% offer",2017,11,0,0,0.5,3.1,"Hotel",1,4.6
+"Austria","Vienna",278,"City centre","Donauturm","Innere Stadt",156,"Vienna",4,4.5,272,1,22040,0,"0% no offer",2017,11,0,0,0.1,2.7,"Pension",1,4.4
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",220,"Vienna",3.5,NA,NA,1,22041,0,"0% no offer",2017,11,0,0,0.3,2.5,"Apartment",1,NA
+"Austria","Vienna",81,"City centre","Donauturm","Innere Stadt",169,"Vienna",4,4.5,561,1,22042,0,"0% no offer",2017,11,0,0,0.3,2.5,"Hotel",1,4.5
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",103,"Vienna",3,NA,NA,1,22043,0,"0% no offer",2017,11,0,0,0.3,2.7,"Apartment",1,NA
+"Austria","Vienna",15,"City centre","Donauturm","Innere Stadt",266,"Vienna",5,NA,NA,1,22044,0,"0% no offer",2017,11,0,0,0.3,2.6,"Apartment",1,4.5
+"Austria","Vienna",203,"City centre","Donauturm","Innere Stadt",131,"Vienna",3,4,338,1,22045,1,"15-50% offer",2017,11,0,0,0.1,2.9,"Pension",1,3.9
+"Austria","Vienna",150,"City centre","Donauturm","Innere Stadt",168,"Vienna",4,4.5,154,1,22046,0,"0% no offer",2017,11,0,0,0.2,2.8,"Apartment",1,4.6
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",101,"Vienna",3,NA,NA,1,22047,0,"0% no offer",2017,11,0,0,0.2,2.6,"Apartment",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",364,"Vienna",3.5,NA,NA,1,22049,0,"0% no offer",2017,11,0,0,0.2,3,"Apartment",1,NA
+"Austria","Vienna",404,"City centre","Donauturm","Innere Stadt",242,"Vienna",4,4.5,2165,0,22050,1,"1-15% offer",2017,11,0,0,0,2.8,"Hotel",1,4.8
+"Austria","Vienna",123,"City centre","Donauturm","Innere Stadt",223,"Vienna",4,3.5,276,1,22051,0,"0% no offer",2017,11,0,0,0.5,2.4,"Hotel",1,3.5
+"Austria","Vienna",653,"City centre","Donauturm","Innere Stadt",149,"Vienna",4,4.5,930,1,22052,1,"15-50% offer",2017,11,0,0,0.3,2.7,"Hotel",1,4.4
+"Austria","Vienna",NA,"City centre","Donauturm","Innere Stadt",232,"Vienna",3.5,NA,NA,1,22053,0,"0% no offer",2017,11,0,0,0.2,2.7,"Apartment",1,NA
+"Austria","Vienna",388,"City centre","Donauturm","Innere Stadt",114,"Vienna",4,4,836,0,22054,1,"15-50% offer",2017,11,0,0,0.5,2.3,"Hotel",1,4
+"Austria","Vienna",1,"City centre","Donauturm","Innere Stadt",253,"Vienna",3.5,NA,NA,1,22055,0,"0% no offer",2017,11,0,0,0.1,2.8,"Apartment",1,2
+"Austria","Vienna",230,"City centre","Donauturm","Innere Stadt",163,"Vienna",4,4.5,203,1,22057,1,"15-50% offer",2017,11,0,0,0.3,2.6,"Apart-hotel",1,4.4
+"Austria","Vienna",69,"City centre","Donauturm","Innere Stadt",116,"Vienna",3,4.5,774,1,22059,1,"15-50% offer",2017,11,0,0,0.4,3.1,"Pension",1,4.1
+"Austria","Vienna",34,"City centre","Donauturm","Innere Stadt",139,"Vienna",4,3.5,54,1,22061,1,"1-15% offer",2017,11,0,0,0.2,2.9,"Hotel",1,3.5
+"Austria","Vienna",6,"City centre","Donauturm","Innere Stadt",91,"Vienna",3.5,NA,NA,1,22063,0,"0% no offer",2017,11,0,0,0.2,2.7,"Apartment",1,3.2
+"Austria","Vienna",102,"City centre","Donauturm","Josefstadt",79,"Vienna",3,3.5,127,1,22064,1,"1-15% offer",2017,11,0,0,1.4,3.6,"Hotel",1,3.5
+"Austria","Vienna",65,"City centre","Donauturm","Josefstadt",66,"Vienna",4,3.5,85,1,22065,1,"15-50% offer",2017,11,0,0,1.1,3.2,"Pension",1,3.7
+"Austria","Vienna",9,"City centre","Donauturm","Josefstadt",100,"Vienna",3,4,17,1,22066,1,"1-15% offer",2017,11,0,0,1.1,3.2,"Apartment",1,3
+"Austria","Vienna",11,"City centre","Donauturm","Josefstadt",75,"Vienna",2.5,3.5,33,1,22067,1,"1-15% offer",2017,11,0,0,1.3,3.4,"Pension",1,3
+"Austria","Vienna",51,"City centre","Donauturm","Josefstadt",73,"Vienna",2,3,87,1,22068,0,"0% no offer",2017,11,0,0,1.2,3.3,"Pension",1,3.5
+"Austria","Vienna",298,"City centre","Donauturm","Josefstadt",127,"Vienna",5,4,876,1,22069,1,"1-15% offer",2017,11,0,0,0.8,3.4,"Hotel",1,4.1
+"Austria","Vienna",354,"City centre","Donauturm","Josefstadt",110,"Vienna",3,4,419,0,22071,1,"15-50% offer",2017,11,0,0,0.9,3.4,"Hotel",1,4.1
+"Austria","Vienna",92,"City centre","Donauturm","Josefstadt",88,"Vienna",3,4,509,1,22072,1,"15-50% offer",2017,11,0,0,0.9,3.3,"Hotel",1,4.4
+"Austria","Vienna",66,"City centre","Donauturm","Josefstadt",59,"Vienna",3,4,88,0,22073,1,"15-50% offer",2017,11,0,0,1.2,3.5,"Pension",1,3.7
+"Austria","Vienna",NA,"City centre","Donauturm","Josefstadt",355,"Vienna",4,NA,NA,1,22074,0,"0% no offer",2017,11,0,0,1.6,3.8,"Apartment",1,NA
+"Austria","Vienna",128,"City centre","Donauturm","Josefstadt",59,"Vienna",3,4,967,1,22075,1,"50%-75% offer",2017,11,0,0,1.6,3.7,"Hotel",1,3.9
+"Austria","Vienna",530,"City centre","Donauturm","Josefstadt",119,"Vienna",4,4,1358,0,22076,1,"1-15% offer",2017,11,0,0,0.9,3.4,"Hotel",1,4
+"Austria","Vienna",342,"City centre","Donauturm","Josefstadt",152,"Vienna",4,4,1461,0,22077,1,"1-15% offer",2017,11,0,0,0.9,3.4,"Hotel",1,4.3
+"Austria","Vienna",194,"City centre","Donauturm","Josefstadt",102,"Vienna",4,4,346,0,22078,1,"1-15% offer",2017,11,0,0,1,3.4,"Hotel",1,4
+"Austria","Vienna",1,"City centre","Donauturm","Josefstadt",363,"Vienna",3.5,NA,NA,1,22079,1,"1-15% offer",2017,11,0,0,1.5,3.5,"Apartment",1,5
+"Austria","Vienna",63,"City centre","Donauturm","Josefstadt",54,"Vienna",3,3,85,1,22080,1,"15-50% offer",2017,11,0,0,1.1,3.4,"Hotel",1,3.2
+"Austria","Vienna",67,"City centre","Donauturm","Josefstadt",101,"Vienna",3,4,44,1,22081,1,"15-50% offer",2017,11,0,0,1.1,3.3,"Apartment",1,4
+"Austria","Vienna",84,"City centre","Donauturm","Josefstadt",75,"Vienna",2,4.5,304,1,22082,1,"15-50% offer",2017,11,0,0,0.9,3.5,"Hotel",1,4
+"Austria","Vienna",30,"City centre","Donauturm","Josefstadt",73,"Vienna",2,4,103,1,22083,1,"1-15% offer",2017,11,0,0,0.9,3.5,"Hotel",1,3.9
+"Austria","Vienna",169,"City centre","Donauturm","Josefstadt",94,"Vienna",3,4,452,1,22084,1,"15-50% offer",2017,11,0,0,1,3.4,"Hotel",1,4.1
+"Austria","Vienna",65,"City centre","Donauturm","Josefstadt",64,"Vienna",4,4,251,1,22085,1,"15-50% offer",2017,11,0,0,1.1,3.3,"Pension",1,3.5
+"Austria","Vienna",91,"City centre","Donauturm","Josefstadt",81,"Vienna",3.5,3.5,260,0,22086,1,"15-50% offer",2017,11,0,0,1,3.3,"Apart-hotel",1,3.7
+"Austria","Vienna",1,"City centre","Donauturm","Josefstadt",162,"Vienna",3,NA,NA,1,22087,1,"15-50% offer",2017,11,0,0,1.6,4,"Apartment",1,4
+"Austria","Vienna",765,"City centre","Donauturm","Josefstadt",115,"Vienna",4,4.5,2150,0,22088,1,"15-50% offer",2017,11,0,0,0.9,3.5,"Hotel",1,4.5
+"Austria","Vienna",80,"City centre","Donauturm","Josefstadt",101,"Vienna",4,4.5,90,1,22089,1,"15-50% offer",2017,11,0,0,1.2,3.8,"Apartment",1,4.4
+"Austria","Vienna",43,"City centre","Donauturm","Josefstadt",68,"Vienna",3,3.5,182,1,22090,1,"15-50% offer",2017,11,0,0,0.9,3.2,"Hotel",1,3.7
+"Austria","Vienna",78,"City centre","Donauturm","Kaerntner Strasse",354,"Vienna",5,4.5,1504,0,22092,1,"1-15% offer",2017,11,0,0,0.4,3.2,"Hotel",1,4.5
+"Austria","Vienna",184,"City centre","Donauturm","Kaerntner Strasse",153,"Vienna",4,4,700,1,22093,1,"15-50% offer",2017,11,0,0,0.2,3,"Hotel",1,4.1
+"Austria","Vienna",276,"City centre","Donauturm","Kaerntner Strasse",202,"Vienna",5,4,615,1,22094,1,"15-50% offer",2017,11,0,0,0.2,3,"Hotel",1,4.3
+"Austria","Vienna",313,"City centre","Donauturm","Kaerntner Strasse",169,"Vienna",4,4,760,1,22095,1,"1-15% offer",2017,11,0,0,0.3,3.1,"Hotel",1,4.1
+"Austria","Vienna",323,"City centre","Donauturm","Kaerntner Strasse",182,"Vienna",4,4.5,327,0,22097,1,"1-15% offer",2017,11,0,0,0.5,3.3,"Hotel",1,4.5
+"Austria","Vienna",NA,"City centre","Donauturm","Kaerntner Strasse",193,"Vienna",3,NA,NA,1,22098,0,"0% no offer",2017,11,0,0,0.1,2.9,"Apartment",1,NA
+"Austria","Vienna",90,"City centre","Donauturm","Kaerntner Strasse",138,"Vienna",4,4.5,408,1,22099,1,"1-15% offer",2017,11,0,0,0.2,3,"Pension",1,4.1
+"Austria","Vienna",140,"City centre","Donauturm","Kaerntner Strasse",527,"Vienna",5,5,1748,1,22100,1,"1-15% offer",2017,11,0,0,0.4,3.1,"Hotel",1,4.8
+"Austria","Vienna",512,"City centre","Donauturm","Kaerntner Strasse",142,"Vienna",4,4,837,0,22101,1,"15-50% offer",2017,11,0,0,0.1,2.8,"Hotel",1,4.4
+"Austria","Vienna",NA,"City centre","Donauturm","Kaerntner Strasse",98,"Vienna",3.5,NA,NA,1,22102,0,"0% no offer",2017,11,0,0,0.4,3.1,"Apartment",1,NA
+"Austria","Vienna",340,"City centre","Donauturm","Landstrasse",110,"Vienna",4,4.5,2718,0,22104,1,"1-15% offer",2017,11,0,0,0.6,3.2,"Hotel",1,4.3
+"Austria","Vienna",34,"City centre","Donauturm","Landstrasse",82,"Vienna",3.5,4,25,1,22107,1,"15-50% offer",2017,11,0,0,1.9,3.2,"Apartment",1,4.1
+"Austria","Vienna",26,"City centre","Donauturm","Landstrasse",91,"Vienna",3.5,NA,NA,1,22108,1,"15-50% offer",2017,11,0,0,0.9,2.4,"Apartment",1,2.5
+"Austria","Vienna",NA,"City centre","Donauturm","Landstrasse",150,"Vienna",3.5,NA,NA,1,22109,0,"0% no offer",2017,11,0,0,1.6,3,"Apartment",1,NA
+"Austria","Vienna",97,"City centre","Donauturm","Landstrasse",83,"Vienna",3.5,4.5,35,1,22110,1,"15-50% offer",2017,11,0,0,1.7,3,"Apartment",1,4.4
+"Austria","Vienna",11,"City centre","Donauturm","Landstrasse",95,"Vienna",4.5,NA,NA,1,22111,1,"15-50% offer",2017,11,0,0,1.8,3.1,"Apartment",1,4
+"Austria","Vienna",15,"City centre","Donauturm","Landstrasse",131,"Vienna",3,NA,NA,0,22112,1,"15-50% offer",2017,11,0,0,1.4,2.8,"Apartment",1,3.7
+"Austria","Vienna",84,"City centre","Donauturm","Landstrasse",162,"Vienna",4,5,610,1,22113,1,"15-50% offer",2017,11,0,0,1.1,2.8,"Bed and breakfast",1,4.8
+"Austria","Vienna",152,"City centre","Donauturm","Landstrasse",177,"Vienna",5,4,2015,0,22114,1,"50%-75% offer",2017,11,0,0,0.5,3,"Hotel",1,4.3
+"Austria","Vienna",3,"City centre","Donauturm","Landstrasse",122,"Vienna",2,NA,NA,1,22115,1,"1-15% offer",2017,11,0,0,1.5,3.6,"Apartment",1,4
+"Austria","Vienna",25,"City centre","Donauturm","Landstrasse",79,"Vienna",3,NA,NA,1,22116,0,"0% no offer",2017,11,0,0,1.6,3.7,"Apartment",1,2
+"Austria","Vienna",181,"City centre","Donauturm","Landstrasse",82,"Vienna",4,4,395,0,22117,1,"15-50% offer",2017,11,0,0,1.4,3.1,"Hotel",1,4
+"Austria","Vienna",359,"City centre","Donauturm","Landstrasse",82,"Vienna",4,4,717,1,22118,1,"1-15% offer",2017,11,0,0,1.7,3.3,"Hotel",1,4.1
+"Austria","Vienna",160,"City centre","Donauturm","Landstrasse",66,"Vienna",3,3.5,203,0,22119,1,"15-50% offer",2017,11,0,0,1.8,3.4,"Hotel",1,3.9
+"Austria","Vienna",303,"City centre","Donauturm","Landstrasse",169,"Vienna",4,4,1208,0,22120,0,"0% no offer",2017,11,0,0,0.8,2.7,"Hotel",1,4.1
+"Austria","Vienna",254,"City centre","Donauturm","Landstrasse",59,"Vienna",3,3.5,189,1,22122,0,"0% no offer",2017,11,0,0,0.8,2.7,"Guest House",1,3.7
+"Austria","Vienna",173,"City centre","Donauturm","Landstrasse",109,"Vienna",4,4,666,0,22123,0,"0% no offer",2017,11,0,0,1.5,3.8,"Hotel",1,4.1
+"Austria","Vienna",114,"City centre","Donauturm","Landstrasse",104,"Vienna",3,3,72,1,22125,0,"0% no offer",2017,11,0,0,0.7,2.6,"Hotel",1,3.4
+"Austria","Vienna",249,"City centre","Donauturm","Landstrasse",145,"Vienna",3.5,4.5,730,0,22126,1,"15-50% offer",2017,11,0,0,0.9,2.5,"Hotel",1,4.3
+"Austria","Vienna",1,"City centre","Donauturm","Landstrasse",58,"Vienna",3.5,NA,NA,1,22127,0,"0% no offer",2017,11,0,0,1.4,3.6,"Apartment",1,2
+"Austria","Vienna",6,"City centre","Donauturm","Landstrasse",107,"Vienna",4,NA,NA,1,22129,1,"15-50% offer",2017,11,0,0,1.3,3.4,"Vacation home Condo",1,4.3
+"Austria","Vienna",13,"City centre","Donauturm","Landstrasse",85,"Vienna",3,3.5,183,1,22130,1,"50%-75% offer",2017,11,0,0,0.8,2.1,"Hotel",1,3.5
+"Austria","Vienna",18,"City centre","Donauturm","Landstrasse",184,"Vienna",4,4,5,1,22131,1,"1-15% offer",2017,11,0,0,0.7,2.2,"Apartment",1,4.5
+"Austria","Vienna",497,"City centre","Donauturm","Landstrasse",137,"Vienna",4.5,4,1060,0,22132,1,"15-50% offer",2017,11,0,0,1,3.3,"Hotel",1,4.1
+"Austria","Vienna",503,"City centre","Donauturm","Landstrasse",116,"Vienna",4.5,4.5,1591,0,22134,1,"1-15% offer",2017,11,0,0,1.1,3.3,"Hotel",1,4.5
+"Austria","Vienna",70,"City centre","Donauturm","Landstrasse",157,"Vienna",2,3.5,52,0,22135,1,"15-50% offer",2017,11,0,0,1.1,3.3,"Apartment",1,3.7
+"Austria","Vienna",109,"City centre","Donauturm","Landstrasse",110,"Vienna",3,3.5,529,1,22136,0,"0% no offer",2017,11,0,0,1.3,3.3,"Hotel",1,3.7
+"Austria","Vienna",171,"City centre","Donauturm","Landstrasse",134,"Vienna",4,4.5,343,1,22138,1,"15-50% offer",2017,11,0,0,0.6,3,"Hotel",1,4.3
+"Austria","Vienna",79,"City centre","Donauturm","Landstrasse",79,"Vienna",4,3.5,77,1,22140,0,"0% no offer",2017,11,0,0,1.3,3.3,"Hotel",1,3.7
+"Austria","Vienna",13,"City centre","Donauturm","Landstrasse",143,"Vienna",3,NA,NA,1,22141,0,"0% no offer",2017,11,0,0,1.4,3.3,"Apartment",1,4.5
+"Austria","Vienna",281,"City centre","Donauturm","Landstrasse",132,"Vienna",4,4,1403,0,22142,1,"15-50% offer",2017,11,0,0,1,3.2,"Hotel",1,4.1
+"Austria","Vienna",108,"City centre","Donauturm","Landstrasse",68,"Vienna",4,4,162,1,22143,1,"50%-75% offer",2017,11,0,0,1.3,3.5,"Apartment",1,4
+"Austria","Vienna",267,"City centre","Donauturm","Leopoldstadt",128,"Vienna",4,4,1437,0,22144,1,"15-50% offer",2017,11,0,0,0.6,2.3,"Hotel",1,4.1
+"Austria","Vienna",183,"City centre","Donauturm","Leopoldstadt",99,"Vienna",3,4.5,491,0,22145,0,"0% no offer",2017,11,0,0,1.5,1.6,"Hotel",1,4.5
+"Austria","Vienna",5,"City centre","Donauturm","Leopoldstadt",149,"Vienna",2,NA,NA,1,22148,1,"15-50% offer",2017,11,0,0,0.9,1.9,"Apartment",1,2.2
+"Austria","Vienna",136,"City centre","Donauturm","Leopoldstadt",86,"Vienna",4,3.5,326,0,22149,1,"50%-75% offer",2017,11,0,0,1.8,1,"Hotel",1,4
+"Austria","Vienna",11,"City centre","Donauturm","Leopoldstadt",155,"Vienna",3,4,28,0,22150,0,"0% no offer",2017,11,0,0,1.9,1.4,"Apartment",1,4.1
+"Austria","Vienna",242,"City centre","Donauturm","Leopoldstadt",63,"Vienna",3,3,183,1,22152,1,"1-15% offer",2017,11,0,0,1,1.9,"Hotel",1,3.4
+"Austria","Vienna",81,"City centre","Donauturm","Leopoldstadt",157,"Vienna",2,3.5,12,0,22153,1,"15-50% offer",2017,11,0,0,0.6,2.3,"Apartment",1,3.7
+"Austria","Vienna",16,"City centre","Donauturm","Leopoldstadt",134,"Vienna",3.5,4.5,70,1,22155,1,"15-50% offer",2017,11,0,0,0.6,2.2,"Hotel",1,4
+"Austria","Vienna",6,"City centre","Donauturm","Leopoldstadt",141,"Vienna",5,NA,NA,1,22156,1,"1-15% offer",2017,11,0,0,1.7,1.4,"Apartment",1,4.3
+"Austria","Vienna",122,"City centre","Donauturm","Leopoldstadt",79,"Vienna",3,4,290,0,22157,1,"15-50% offer",2017,11,0,0,0.9,1.9,"Hotel",1,3.7
+"Austria","Vienna",250,"City centre","Donauturm","Leopoldstadt",138,"Vienna",4,4,1023,0,22158,0,"0% no offer",2017,11,0,0,0.5,2.3,"Hotel",1,4
+"Austria","Vienna",603,"City centre","Donauturm","Leopoldstadt",113,"Vienna",4,4.5,1516,1,22159,1,"15-50% offer",2017,11,0,0,1,1.8,"Hotel",1,4.5
+"Austria","Vienna",25,"City centre","Donauturm","Leopoldstadt",171,"Vienna",3,NA,NA,1,22160,1,"15-50% offer",2017,11,0,0,1.5,1.3,"Apartment",1,3.5
+"Austria","Vienna",52,"City centre","Donauturm","Leopoldstadt",56,"Vienna",2,4,1666,0,22161,1,"1-15% offer",2017,11,0,0,1.5,1.4,"Hotel",1,3.5
+"Austria","Vienna",152,"City centre","Donauturm","Leopoldstadt",84,"Vienna",3,4,1249,0,22162,1,"15-50% offer",2017,11,0,0,1.5,1.4,"Hotel",1,3.9
+"Austria","Vienna",293,"City centre","Donauturm","Leopoldstadt",72,"Vienna",2,4.5,302,0,22163,1,"15-50% offer",2017,11,0,0,1.1,2,"Hotel",1,4
+"Austria","Vienna",1,"City centre","Donauturm","Leopoldstadt",587,"Vienna",5,5,7,1,22164,1,"15-50% offer",2017,11,0,0,0.7,2.2,"Hotel",1,1
+"Austria","Vienna",84,"City centre","Donauturm","Leopoldstadt",68,"Vienna",3,4,129,1,22165,1,"15-50% offer",2017,11,0,0,0.9,2.1,"Hotel",1,4
+"Austria","Vienna",208,"City centre","Donauturm","Leopoldstadt",102,"Vienna",3.5,4,281,0,22166,1,"50%-75% offer",2017,11,0,0,1.5,1.4,"Hotel",1,3.9
+"Austria","Vienna",29,"City centre","Donauturm","Leopoldstadt",96,"Vienna",3,3.5,7,1,22167,1,"15-50% offer",2017,11,0,0,1.5,1.4,"Apartment",1,3.4
+"Austria","Vienna",57,"City centre","Donauturm","Leopoldstadt",81,"Vienna",1,3.5,141,0,22168,0,"0% no offer",2017,11,0,0,0.9,1.9,"Hotel",1,3.7
+"Austria","Vienna",267,"City centre","Donauturm","Leopoldstadt",82,"Vienna",3,4,727,0,22169,1,"15-50% offer",2017,11,0,0,1.6,1.7,"Hotel",1,4.1
+"Austria","Vienna",275,"City centre","Donauturm","Leopoldstadt",66,"Vienna",3,4,407,1,22170,1,"15-50% offer",2017,11,0,0,1.1,1.7,"Hotel",1,4
+"Austria","Vienna",23,"City centre","Donauturm","Leopoldstadt",87,"Vienna",3,4,51,1,22171,1,"15-50% offer",2017,11,0,0,0.8,2.2,"Apartment",1,3.9
+"Austria","Vienna",NA,"City centre","Donauturm","Leopoldstadt",364,"Vienna",4,NA,NA,1,22173,0,"0% no offer",2017,11,0,0,0.6,2.3,"Apartment",1,NA
+"Austria","Vienna",240,"City centre","Donauturm","Leopoldstadt",240,"Vienna",5,4.5,2098,0,22175,1,"15-50% offer",2017,11,0,0,0.4,2.4,"Hotel",1,4.5
+"Austria","Vienna",374,"City centre","Donauturm","Leopoldstadt",113,"Vienna",3,4.5,1686,0,22176,1,"15-50% offer",2017,11,0,0,0.8,2.1,"Hotel",1,4.5
+"Austria","Vienna",468,"City centre","Donauturm","Leopoldstadt",106,"Vienna",3,4.5,1449,1,22177,1,"15-50% offer",2017,11,0,0,1,1.9,"Hotel",1,4.5
+"Austria","Vienna",422,"City centre","Donauturm","Leopoldstadt",89,"Vienna",3,4,1580,0,22179,1,"15-50% offer",2017,11,0,0,1.6,1.2,"Hotel",1,4.1
+"Austria","Vienna",307,"City centre","Donauturm","Leopoldstadt",61,"Vienna",2,4,1027,0,22180,1,"50%-75% offer",2017,11,0,0,0.9,2.2,"Hotel",1,4
+"Austria","Vienna",2,"City centre","Donauturm","Leopoldstadt",92,"Vienna",3.5,NA,NA,1,22181,0,"0% no offer",2017,11,0,0,0.8,2.3,"Apartment",1,4.5
+"Austria","Vienna",527,"City centre","Donauturm","Leopoldstadt",106,"Vienna",4,4,739,1,22182,1,"15-50% offer",2017,11,0,0,0.8,2,"Hotel",1,4.1
+"Austria","Vienna",637,"City centre","Donauturm","Leopoldstadt",100,"Vienna",4,4,584,1,22183,1,"15-50% offer",2017,11,0,0,0.8,2,"Hotel",1,4
+"Austria","Vienna",461,"City centre","Donauturm","Leopoldstadt",75,"Vienna",3,4,827,0,22184,1,"15-50% offer",2017,11,0,0,0.7,2.2,"Hotel",1,4.1
+"Austria","Vienna",3,"City centre","Donauturm","Leopoldstadt",84,"Vienna",3,4,92,1,22185,0,"0% no offer",2017,11,0,0,0.8,2.2,"Hotel",1,2.2
+"Austria","Vienna",104,"City centre","Donauturm","Leopoldstadt",151,"Vienna",4,4.5,1272,0,22187,0,"0% no offer",2017,11,0,0,0.5,2.3,"Hotel",1,4.6
+"Austria","Vienna",90,"City centre","Donauturm","Leopoldstadt",87,"Vienna",3,3.5,314,0,22188,0,"0% no offer",2017,11,0,0,0.9,1.9,"Hotel",1,3.5
+"Austria","Vienna",75,"City centre","Donauturm","Leopoldstadt",117,"Vienna",4,4.5,836,1,22189,0,"0% no offer",2017,11,0,0,0.5,2.3,"Hotel",1,4.4
+"Austria","Vienna",139,"City centre","Donauturm","Leopoldstadt",120,"Vienna",4,4,807,0,22190,1,"50%-75% offer",2017,11,0,0,1.9,1.9,"Hotel",1,4.5
+"Austria","Vienna",NA,"City centre","Donauturm","Leopoldstadt",132,"Vienna",3.5,NA,NA,1,22191,0,"0% no offer",2017,11,0,0,0.8,2.1,"Apartment",1,NA
+"Austria","Vienna",41,"City centre","Donauturm","Leopoldstadt",68,"Vienna",2.5,4,85,0,22192,0,"0% no offer",2017,11,0,0,0.9,1.9,"Hotel",1,3.9
+"Austria","Vienna",122,"City centre","Donauturm","Margareten",383,"Vienna",3,4,382,1,22193,0,"0% no offer",2017,11,0,0,1.9,4.7,"Hotel",1,4
+"Austria","Vienna",6,"City centre","Donauturm","Margareten",160,"Vienna",4,NA,NA,1,22194,1,"1-15% offer",2017,11,0,0,1.6,4.4,"Apartment",1,4.3
+"Austria","Vienna",NA,"City centre","Donauturm","Margareten",135,"Vienna",2,NA,NA,1,22195,0,"0% no offer",2017,11,0,0,2,4.8,"Apartment",1,NA
+"Austria","Vienna",137,"City centre","Donauturm","Margareten",111,"Vienna",4.5,4.5,659,0,22196,1,"15-50% offer",2017,11,0,0,2,4.8,"Hotel",1,4.5
+"Austria","Vienna",144,"City centre","Donauturm","Margareten",174,"Vienna",4,4.5,1650,0,22198,0,"0% no offer",2017,11,0,0,1.5,4.3,"Hotel",1,4.3
+"Austria","Vienna",80,"City centre","Donauturm","Margareten",63,"Vienna",3,3.5,335,0,22199,1,"15-50% offer",2017,11,0,0,2,4.7,"Hotel",1,3.5
+"Austria","Vienna",11,"City centre","Donauturm","Margareten",73,"Vienna",3,NA,NA,1,22200,0,"0% no offer",2017,11,0,0,1.4,4.2,"Apartment",1,4.3
+"Austria","Vienna",58,"City centre","Donauturm","Margareten",100,"Vienna",3.5,4.5,15,0,22201,0,"0% no offer",2017,11,0,0,1.5,4.3,"Hotel",1,4.5
+"Austria","Vienna",NA,"City centre","Donauturm","Margareten",162,"Vienna",3.5,NA,NA,1,22202,0,"0% no offer",2017,11,0,0,1.7,4.4,"Apartment",1,NA
+"Austria","Vienna",303,"City centre","Donauturm","Margareten",86,"Vienna",4,3.5,1708,0,22203,1,"1-15% offer",2017,11,0,0,1.4,4.2,"Hotel",1,3.9
+"Austria","Vienna",NA,"City centre","Donauturm","Margareten",103,"Vienna",3,NA,NA,1,22204,0,"0% no offer",2017,11,0,0,1.9,4.7,"Guest House",1,NA
+"Austria","Vienna",82,"City centre","Donauturm","Margareten",67,"Vienna",3,4,909,0,22205,1,"15-50% offer",2017,11,0,0,1.8,4.5,"Hotel",1,4
+"Austria","Vienna",248,"City centre","Donauturm","Margareten",129,"Vienna",4,4,372,0,22206,1,"1-15% offer",2017,11,0,0,1.3,4.1,"Hotel",1,4.1
+"Austria","Vienna",151,"City centre","Donauturm","Margareten",80,"Vienna",3,4,161,1,22208,1,"50%-75% offer",2017,11,0,0,1.9,4.6,"Apartment",1,4.1
+"Austria","Vienna",7,"City centre","Donauturm","Margareten",131,"Vienna",2,NA,NA,1,22209,1,"15-50% offer",2017,11,0,0,1.9,4.7,"Apartment",1,3.2
+"Austria","Vienna",2,"City centre","Donauturm","Margareten",150,"Vienna",3.5,NA,NA,1,22210,1,"1-15% offer",2017,11,0,0,1.6,4.3,"Apartment",1,5
+"Austria","Vienna",3,"City centre","Donauturm","Mariahilf",159,"Vienna",3,NA,NA,1,22211,1,"15-50% offer",2017,11,0,0,1.1,3.9,"Apartment",1,4.6
+"Austria","Vienna",85,"City centre","Donauturm","Mariahilf",86,"Vienna",3,4,383,1,22212,0,"0% no offer",2017,11,0,0,1.3,4.1,"Hotel",1,4
+"Austria","Vienna",3,"City centre","Donauturm","Mariahilf",96,"Vienna",2,NA,NA,1,22213,0,"0% no offer",2017,11,0,0,0.9,3.6,"Hotel",1,3.7
+"Austria","Vienna",258,"City centre","Donauturm","Mariahilf",131,"Vienna",4,4,682,0,22214,1,"1-15% offer",2017,11,0,0,0.7,3.4,"Hotel",1,4.1
+"Austria","Vienna",13,"City centre","Donauturm","Mariahilf",103,"Vienna",4,NA,NA,1,22215,1,"15-50% offer",2017,11,0,0,2,4.7,"Apartment",1,4.1
+"Austria","Vienna",95,"City centre","Donauturm","Mariahilf",85,"Vienna",2,4,618,0,22217,1,"15-50% offer",2017,11,0,0,1,3.8,"Hotel",1,4
+"Austria","Vienna",44,"City centre","Donauturm","Mariahilf",80,"Vienna",3,3.5,170,0,22218,0,"0% no offer",2017,11,0,0,1.4,4.2,"Hotel",1,3.9
+"Austria","Vienna",125,"City centre","Donauturm","Mariahilf",93,"Vienna",4,4,410,1,22219,1,"15-50% offer",2017,11,0,0,1.1,3.9,"Hotel",1,4
+"Austria","Vienna",5,"City centre","Donauturm","Mariahilf",81,"Vienna",3.5,NA,NA,1,22221,1,"15-50% offer",2017,11,0,0,1.8,4.6,"Apartment",1,4.5
+"Austria","Vienna",161,"City centre","Donauturm","Mariahilf",77,"Vienna",3,4,2102,0,22222,1,"1-15% offer",2017,11,0,0,1.9,4.6,"Hotel",1,4
+"Austria","Vienna",210,"City centre","Donauturm","Mariahilf",140,"Vienna",4,5,1495,1,22223,1,"15-50% offer",2017,11,0,0,0.8,3.6,"Hotel",1,4.8
+"Austria","Vienna",264,"City centre","Donauturm","Mariahilf",99,"Vienna",4,4,1228,1,22224,1,"15-50% offer",2017,11,0,0,1,3.8,"Hotel",1,4
+"Austria","Vienna",49,"City centre","Donauturm","Mariahilf",75,"Vienna",4,4,151,1,22225,0,"0% no offer",2017,11,0,0,1.1,3.9,"Pension",1,4.1
+"Austria","Vienna",162,"City centre","Donauturm","Mariahilf",105,"Vienna",4,4.5,716,0,22226,1,"15-50% offer",2017,11,0,0,1.4,4.1,"Hotel",1,4.4
+"Austria","Vienna",581,"City centre","Donauturm","Mariahilf",100,"Vienna",3.5,4.5,1414,0,22227,1,"15-50% offer",2017,11,0,0,1.7,4.4,"Hotel",1,4.5
+"Austria","Vienna",55,"City centre","Donauturm","Mariahilf",89,"Vienna",3,4,67,1,22228,1,"15-50% offer",2017,11,0,0,1,3.8,"Pension",1,3.7
+"Austria","Vienna",39,"City centre","Donauturm","Mariahilf",82,"Vienna",3,3.5,78,0,22229,1,"15-50% offer",2017,11,0,0,1.1,3.9,"Hotel",1,3.9
+"Austria","Vienna",484,"City centre","Donauturm","Mariahilf",82,"Vienna",4,4,1150,0,22230,0,"0% no offer",2017,11,0,0,1.8,4.5,"Hotel",1,3.9
+"Austria","Vienna",NA,"City centre","Donauturm","Mariahilf",88,"Vienna",3,NA,NA,1,22231,1,"15-50% offer",2017,11,0,0,1.8,4.5,"Apartment",1,NA
+"Austria","Vienna",NA,"City centre","Donauturm","Mariahilf",150,"Vienna",3,NA,NA,1,22233,0,"0% no offer",2017,11,0,0,1.6,4.4,"Apartment",1,NA
+"Austria","Vienna",10,"City centre","Donauturm","Mariahilf",134,"Vienna",2,NA,NA,1,22234,1,"1-15% offer",2017,11,0,0,1.6,4.4,"Apartment",1,3.7
+"Austria","Vienna",45,"City centre","Donauturm","Mariahilf",87,"Vienna",4,4,290,0,22235,1,"15-50% offer",2017,11,0,0,1.9,4.7,"Hotel",1,3.5
+"Austria","Vienna",98,"City centre","Donauturm","Mariahilf",100,"Vienna",4,3.5,372,0,22236,1,"15-50% offer",2017,11,0,0,1.6,4.3,"Hotel",1,3.7
+"Austria","Vienna",239,"City centre","Donauturm","Mariahilf",84,"Vienna",4,4,561,0,22237,1,"15-50% offer",2017,11,0,0,1.6,4.3,"Hotel",1,4.3
+"Austria","Vienna",170,"City centre","Donauturm","Mariahilf",52,"Vienna",2,4,112,1,22238,1,"15-50% offer",2017,11,0,0,0.9,3.7,"Hotel",1,3.7
+"Austria","Vienna",100,"City centre","Donauturm","Neubau",98,"Vienna",4,4,650,1,22239,1,"15-50% offer",2017,11,0,0,0.8,3.5,"Hotel",1,3.7
+"Austria","Vienna",310,"City centre","Donauturm","Neubau",333,"Vienna",5,5,1523,0,22240,1,"1-15% offer",2017,11,0,0,0.7,3.4,"Hotel",1,4.9
+"Austria","Vienna",305,"City centre","Donauturm","Neubau",99,"Vienna",3,4,1171,0,22241,0,"0% no offer",2017,11,0,0,1.8,4.4,"Hotel",1,4.1
+"Austria","Vienna",105,"City centre","Donauturm","Neubau",77,"Vienna",3,4,98,1,22243,1,"15-50% offer",2017,11,0,0,1.5,4.1,"Bed and breakfast",1,4
+"Austria","Vienna",6,"City centre","Donauturm","Neubau",160,"Vienna",3.5,NA,NA,1,22244,1,"1-15% offer",2017,11,0,0,1.6,4.3,"Apartment",1,4.6
+"Austria","Vienna",1,"City centre","Donauturm","Neubau",160,"Vienna",3.5,NA,NA,1,22245,1,"1-15% offer",2017,11,0,0,1.6,4.3,"Apartment",1,5
+"Austria","Vienna",141,"City centre","Donauturm","Neubau",76,"Vienna",3,3.5,265,0,22246,1,"1-15% offer",2017,11,0,0,1.6,4.2,"Hotel",1,3.5
+"Austria","Vienna",14,"City centre","Donauturm","Neubau",89,"Vienna",3,4,36,1,22247,1,"15-50% offer",2017,11,0,0,1.6,4.1,"Bed and breakfast",1,4.4
+"Austria","Vienna",6,"City centre","Donauturm","Neubau",113,"Vienna",3,NA,NA,1,22248,0,"0% no offer",2017,11,0,0,0.8,3.6,"Hotel",1,3.7
+"Austria","Vienna",328,"City centre","Donauturm","Neubau",110,"Vienna",4,4.5,2436,0,22249,1,"15-50% offer",2017,11,0,0,0.9,3.6,"Hotel",1,4.4
+"Austria","Vienna",123,"City centre","Donauturm","Neubau",184,"Vienna",4,4.5,2431,0,22250,1,"50%-75% offer",2017,11,0,0,1,3.7,"Hotel",1,4.6
+"Austria","Vienna",181,"City centre","Donauturm","Neubau",33,"Vienna",2,3.5,308,0,22251,1,"50%-75% offer",2017,11,0,0,1.7,4.2,"Hotel",1,3.2
+"Austria","Vienna",77,"City centre","Donauturm","Neubau",1012,"Vienna",3,4,364,1,22252,1,"1-15% offer",2017,11,0,0,1,3.8,"Hotel",1,4.3
+"Austria","Vienna",308,"City centre","Donauturm","Neubau",99,"Vienna",4,4,612,0,22253,1,"15-50% offer",2017,11,0,0,1.7,4.4,"Hotel",1,4.1
+"Austria","Vienna",54,"City centre","Donauturm","Neubau",122,"Vienna",3,4,143,1,22254,1,"1-15% offer",2017,11,0,0,0.8,3.5,"Hotel",1,3.9
+"Austria","Vienna",544,"City centre","Donauturm","Neubau",122,"Vienna",4,4,978,0,22255,1,"1-15% offer",2017,11,0,0,1.7,4.3,"Hotel",1,4.3
+"Austria","Vienna",359,"City centre","Donauturm","Neubau",105,"Vienna",4,4,816,0,22256,0,"0% no offer",2017,11,0,0,1.7,4.3,"Hotel",1,4
+"Austria","Vienna",3,"City centre","Donauturm","Neubau",98,"Vienna",4,NA,NA,1,22257,1,"15-50% offer",2017,11,0,0,1.7,4.2,"Apartment",1,5
+"Austria","Vienna",NA,"City centre","Donauturm","Neubau",92,"Vienna",3.5,NA,NA,1,22258,0,"0% no offer",2017,11,0,0,1.4,4.1,"Apartment",1,NA
+"Austria","Vienna",98,"City centre","Donauturm","Neubau",109,"Vienna",4,4,582,0,22259,1,"15-50% offer",2017,11,0,0,1.4,4,"Hotel",1,4
+"Austria","Vienna",54,"City centre","Donauturm","Neubau",105,"Vienna",3,4.5,412,1,22260,1,"15-50% offer",2017,11,0,0,1.2,3.9,"Hotel",1,4.1
+"Austria","Vienna",22,"City centre","Donauturm","Ottakring",133,"Vienna",2,NA,NA,1,22265,1,"15-50% offer",2017,11,0,0,2,4.4,"Apartment",1,3.2
+"Austria","Vienna",4,"City centre","Donauturm","Ottakring",133,"Vienna",2.5,NA,NA,1,22266,0,"0% no offer",2017,11,0,0,2.3,4.6,"Apartment",1,4.3
+"Austria","Vienna",69,"City centre","Donauturm","Ottakring",52,"Vienna",3,3.5,193,0,22268,1,"15-50% offer",2017,11,0,0,3.1,5.2,"Hotel",1,3.5
+"Austria","Vienna",17,"City centre","Donauturm","Ottakring",134,"Vienna",2,NA,NA,1,22269,1,"15-50% offer",2017,11,0,0,1.8,4.1,"Apartment",1,3.7
+"Austria","Vienna",83,"City centre","Donauturm","Ottakring",80,"Vienna",4,4,265,0,22271,1,"15-50% offer",2017,11,0,0,4.1,6,"Hotel",1,4
+"Austria","Vienna",36,"City centre","Donauturm","Rudolfsheim-Funfhaus",91,"Vienna",2,4,42,1,22272,0,"0% no offer",2017,11,0,0,2.9,5.3,"Hotel",1,4
+"Austria","Vienna",NA,"City centre","Donauturm","Rudolfsheim-Funfhaus",129,"Vienna",4,NA,NA,1,22273,1,"1-15% offer",2017,11,0,0,2.6,5.2,"Apartment",1,NA
+"Austria","Vienna",153,"City centre","Donauturm","Rudolfsheim-Funfhaus",47,"Vienna",2,3.5,549,1,22274,0,"0% no offer",2017,11,0,0,1.9,4.6,"Hostel",1,3.7
+"Austria","Vienna",136,"City centre","Donauturm","Rudolfsheim-Funfhaus",70,"Vienna",4,3.5,1020,0,22275,1,"15-50% offer",2017,11,0,0,1.8,4.4,"Hotel",1,3.9
+"Austria","Vienna",17,"City centre","Donauturm","Rudolfsheim-Funfhaus",88,"Vienna",3.5,NA,NA,1,22276,1,"1-15% offer",2017,11,0,0,2.3,4.9,"Apartment",1,2.2
+"Austria","Vienna",156,"City centre","Donauturm","Rudolfsheim-Funfhaus",136,"Vienna",3,4.5,1452,0,22277,1,"15-50% offer",2017,11,0,0,1.9,4.5,"Hotel",1,4.5
+"Austria","Vienna",81,"City centre","Donauturm","Rudolfsheim-Funfhaus",80,"Vienna",3,4,464,1,22279,1,"15-50% offer",2017,11,0,0,2.1,4.8,"Hotel",1,4.1
+"Austria","Vienna",40,"City centre","Donauturm","Rudolfsheim-Funfhaus",131,"Vienna",2,NA,NA,1,22280,1,"15-50% offer",2017,11,0,0,2.3,4.9,"Apartment",1,3.9
+"Austria","Vienna",54,"City centre","Donauturm","Rudolfsheim-Funfhaus",81,"Vienna",3,4.5,635,1,22281,1,"1-15% offer",2017,11,0,0,2.4,4.9,"Hotel",1,4.1
+"Austria","Vienna",13,"City centre","Donauturm","Rudolfsheim-Funfhaus",133,"Vienna",2,NA,NA,0,22284,1,"15-50% offer",2017,11,0,0,2.5,5.1,"Apartment",1,3.7
+"Austria","Vienna",225,"City centre","Donauturm","Rudolfsheim-Funfhaus",66,"Vienna",4,3.5,388,1,22285,1,"1-15% offer",2017,11,0,0,3.6,6.1,"Hotel",1,3.7
+"Austria","Vienna",144,"City centre","Donauturm","Rudolfsheim-Funfhaus",77,"Vienna",3,4,241,0,22286,1,"1-15% offer",2017,11,0,0,2.8,5.5,"Hotel",1,4
+"Austria","Vienna",2,"City centre","Donauturm","Rudolfsheim-Funfhaus",121,"Vienna",3,NA,NA,1,22287,0,"0% no offer",2017,11,0,0,1.8,4.4,"Apartment",1,4.5
+"Austria","Vienna",525,"City centre","Donauturm","Rudolfsheim-Funfhaus",69,"Vienna",4,3.5,399,0,22288,1,"1-15% offer",2017,11,0,0,2.1,4.8,"Hotel",1,3.7
+"Austria","Vienna",113,"City centre","Donauturm","Rudolfsheim-Funfhaus",83,"Vienna",3,4,260,0,22289,1,"15-50% offer",2017,11,0,0,2.1,4.8,"Hotel",1,4.1
+"Austria","Vienna",10,"City centre","Donauturm","Rudolfsheim-Funfhaus",53,"Vienna",2,4.5,604,1,22290,0,"0% no offer",2017,11,0,0,1.9,4.6,"Hostel",1,4.1
+"Austria","Vienna",2,"City centre","Donauturm","Rudolfsheim-Funfhaus",133,"Vienna",3.5,NA,NA,1,22291,1,"15-50% offer",2017,11,0,0,2.7,5.3,"Apartment",1,4
+"Austria","Vienna",78,"City centre","Donauturm","Rudolfsheim-Funfhaus",77,"Vienna",4,3,212,0,22293,1,"15-50% offer",2017,11,0,0,1.8,4.5,"Hotel",1,3.9
+"Austria","Vienna",69,"City centre","Donauturm","Rudolfsheim-Funfhaus",48,"Vienna",2,4.5,945,1,22294,0,"0% no offer",2017,11,0,0,2,4.7,"Hostel",1,4.5
+"Austria","Vienna",314,"City centre","Donauturm","Rudolfsheim-Funfhaus",142,"Vienna",4.5,4,831,0,22295,1,"50%-75% offer",2017,11,0,0,2.9,5.5,"Hotel",1,4.3
+"Austria","Vienna",134,"City centre","Donauturm","Rudolfsheim-Funfhaus",121,"Vienna",4,4,7,0,22296,1,"1-15% offer",2017,11,0,0,1.7,4.3,"Hotel",1,3.9
+"Austria","Vienna",38,"City centre","Donauturm","Schonbrunn",68,"Vienna",3,4,116,1,22299,1,"15-50% offer",2017,11,0,0,3.6,6.2,"Hotel",1,3.5
+"Austria","Vienna",65,"City centre","Donauturm","Schonbrunn",63,"Vienna",3,3.5,199,0,22300,0,"0% no offer",2017,11,0,0,2,4.8,"Hotel",1,3.7
+"Austria","Vienna",92,"City centre","Donauturm","Schonbrunn",101,"Vienna",3,4.5,187,0,22301,0,"0% no offer",2017,11,0,0,2.1,4.9,"Hotel",1,4.5
+"Austria","Vienna",100,"City centre","Donauturm","Schonbrunn",75,"Vienna",4,3.5,309,0,22302,1,"15-50% offer",2017,11,0,0,2.6,5.4,"Hotel",1,3.7
+"Austria","Vienna",910,"City centre","Donauturm","Schonbrunn",156,"Vienna",4,4,1122,0,22303,0,"0% no offer",2017,11,0,0,3.6,6.2,"Hotel",1,4.3
+"Austria","Vienna",79,"City centre","Donauturm","Schonbrunn",56,"Vienna",3,4,177,0,22304,1,"15-50% offer",2017,11,0,0,3.7,6.3,"Hotel",1,3.5
+"Austria","Vienna",1541,"City centre","Donauturm","Schonbrunn",82,"Vienna",3.5,4.5,1245,0,22306,1,"15-50% offer",2017,11,0,0,2.4,5.2,"Hotel",1,4.5
+"Austria","Vienna",183,"City centre","Donauturm","Schonbrunn",82,"Vienna",4,4,1148,0,22307,1,"15-50% offer",2017,11,0,0,2.6,5.4,"Hotel",1,4.4
+"Austria","Vienna",30,"City centre","Donauturm","Schonbrunn",106,"Vienna",3,3,69,1,22309,0,"0% no offer",2017,11,0,0,4.1,6.8,"Hotel",1,3.7
+"Austria","Vienna",24,"City centre","Donauturm","Schonbrunn",85,"Vienna",3,3,114,1,22310,1,"1-15% offer",2017,11,0,0,3.1,5.9,"Hotel",1,2.7
+"Austria","Vienna",18,"City centre","Donauturm","Schonbrunn",83,"Vienna",3.5,NA,NA,1,22311,1,"15-50% offer",2017,11,0,0,2.6,5.4,"Hotel",1,4.5
+"Austria","Vienna",140,"City centre","Donauturm","Schonbrunn",92,"Vienna",4,4,753,0,22312,1,"1-15% offer",2017,11,0,0,2.9,5.6,"Hotel",1,4.1
+"Austria","Vienna",14,"City centre","Donauturm","Schonbrunn",169,"Vienna",3,NA,NA,1,22314,0,"0% no offer",2017,11,0,0,2.3,5.1,"Apartment",1,4.3
+"Austria","Vienna",8,"City centre","Donauturm","Schonbrunn",77,"Vienna",3,4.5,79,1,22315,1,"15-50% offer",2017,11,0,0,2.7,5.4,"Guest House",1,3.5
+"Austria","Schwechat",333,"City centre","Donauturm","Schwechat",92,"Vienna",3,4,196,0,22317,0,"0% no offer",2017,11,0,0,11,11,"Hotel",1,4.3
+"Austria","Schwechat",923,"City centre","Donauturm","Schwechat",166,"Vienna",4,4,2400,0,22318,1,"1-15% offer",2017,11,0,0,11,11,"Hotel",1,4
+"Austria","Schwechat",122,"City centre","Donauturm","Schwechat",137,"Vienna",4,3.5,191,1,22319,0,"0% no offer",2017,11,0,0,7.7,7.9,"Hotel",1,3.7
+"Austria","Schwechat",26,"City centre","Donauturm","Schwechat",99,"Vienna",3,3.5,191,0,22320,0,"0% no offer",2017,11,0,0,7.7,7.9,"Hotel",1,3.7
+"Austria","Schwechat",73,"City centre","Donauturm","Schwechat",140,"Vienna",4,4,127,1,22321,0,"0% no offer",2017,11,0,0,7.8,8,"Hotel",1,3.5
+"Austria","Schwechat",161,"City centre","Donauturm","Schwechat",80,"Vienna",3,3.5,247,0,22322,0,"0% no offer",2017,11,0,0,6.3,6.9,"Hotel",1,3.2
+"Austria","Schwechat",39,"City centre","Donauturm","Schwechat",91,"Vienna",3,3.5,161,0,22323,0,"0% no offer",2017,11,0,0,6.7,8.2,"Hotel",1,3.5
+"Austria","Vienna",NA,"City centre","Donauturm","Vienna",105,"Vienna",3.5,NA,NA,1,22324,1,"1-15% offer",2017,11,0,0,4.3,6.7,"Apartment",1,NA
+"Austria","Vienna",2,"City centre","Donauturm","Vienna",130,"Vienna",2,NA,NA,1,22325,0,"0% no offer",2017,11,0,0,2.6,5.4,"Apartment",1,4
+"Austria","Vienna",16,"City centre","Donauturm","Vienna",110,"Vienna",3,4.5,29,1,22326,1,"1-15% offer",2017,11,0,0,4.7,7,"Pension",1,4.3
+"Austria","Vienna",124,"City centre","Donauturm","Vienna",117,"Vienna",4,4,192,0,22328,0,"0% no offer",2017,11,0,0,2,3.4,"Hotel",1,4
+"Austria","Vienna",9,"City centre","Donauturm","Vienna",106,"Vienna",4,4,12,1,22330,0,"0% no offer",2017,11,0,0,5.4,8.1,"Pension",1,4.1
+"Austria","Vienna",33,"City centre","Donauturm","Vienna",66,"Vienna",3,3.5,129,0,22331,0,"0% no offer",2017,11,0,0,3.9,6.4,"Hotel",1,3.7
+"Austria","Vienna",16,"City centre","Donauturm","Vienna",266,"Vienna",5,5,2,1,22332,1,"1-15% offer",2017,11,0,0,3.5,1.3,"Apartment",1,4.6
+"Austria","Vienna",57,"City centre","Donauturm","Vienna",58,"Vienna",2,3.5,1051,0,22333,0,"0% no offer",2017,11,0,0,2.4,3.7,"Hotel",1,3.5
+"Austria","Vienna",21,"City centre","Donauturm","Vienna",81,"Vienna",3.5,3,12,1,22334,1,"1-15% offer",2017,11,0,0,3.7,6.4,"Hotel",1,4.1
+"Austria","Vienna",160,"City centre","Donauturm","Vienna",109,"Vienna",4,3.5,386,0,22335,1,"1-15% offer",2017,11,0,0,3.5,6.2,"Hotel",1,4
+"Austria","Vienna",985,"City centre","Donauturm","Vienna",114,"Vienna",4.5,4.5,2454,0,22336,1,"50%-75% offer",2017,11,0,0,2.3,1.9,"Hotel",1,4.3
+"Austria","Vienna",69,"City centre","Donauturm","Vienna",125,"Vienna",3.5,4,261,0,22337,1,"1-15% offer",2017,11,0,0,2.3,1.1,"Apart-hotel",1,4.4
+"Austria","Vienna",51,"City centre","Donauturm","Vienna",69,"Vienna",3,3.5,53,1,22338,1,"1-15% offer",2017,11,0,0,1.7,1.8,"Guest House",1,3.7
+"Austria","Vienna",NA,"City centre","Donauturm","Vienna",69,"Vienna",3,NA,NA,1,22339,0,"0% no offer",2017,11,0,0,2.6,2.3,"Apartment",1,NA
+"Austria","Vienna",72,"City centre","Donauturm","Vienna",97,"Vienna",4,4,277,0,22340,1,"15-50% offer",2017,11,0,0,3.1,5.9,"Hotel",1,4
+"Austria","Vienna",65,"City centre","Donauturm","Vienna",74,"Vienna",4,4,73,1,22341,1,"15-50% offer",2017,11,0,0,4.8,7.3,"Hotel",1,3.9
+"Austria","Vienna",147,"City centre","Donauturm","Vienna",69,"Vienna",4,3.5,320,0,22342,1,"15-50% offer",2017,11,0,0,3.7,6.4,"Hotel",1,3.7
+"Austria","Vienna",45,"City centre","Donauturm","Vienna",83,"Vienna",4,3.5,121,0,22343,1,"15-50% offer",2017,11,0,0,3.9,6.6,"Hotel",1,4
+"Austria","Vienna",50,"City centre","Donauturm","Vienna",50,"Vienna",3,4,12,0,22344,1,"15-50% offer",2017,11,0,0,3.9,6.6,"Hotel",1,3.9
+"Austria","Vienna",27,"City centre","Donauturm","Vienna",130,"Vienna",2,3.5,36,0,22345,1,"15-50% offer",2017,11,0,0,4.7,7.4,"Apartment",1,3.2
+"Austria","Vienna",2,"City centre","Donauturm","Vienna",134,"Vienna",3,NA,NA,1,22346,1,"1-15% offer",2017,11,0,0,3.7,6.2,"Apartment",1,3
+"Austria","Vienna",12,"City centre","Donauturm","Vienna",134,"Vienna",3,NA,NA,1,22347,1,"15-50% offer",2017,11,0,0,6.9,9.6,"Apartment",1,4
+"Austria","Vienna",26,"City centre","Donauturm","Vienna",77,"Vienna",3,3.5,21,1,22348,0,"0% no offer",2017,11,0,0,3.7,5,"Hotel",1,4
+"Austria","Vienna",28,"City centre","Donauturm","Vienna",102,"Vienna",3,4.5,204,0,22349,0,"0% no offer",2017,11,0,0,5.3,7.6,"Hotel",1,4
+"Austria","Vienna",30,"City centre","Donauturm","Vienna",56,"Vienna",3.5,3.5,88,1,22350,1,"1-15% offer",2017,11,0,0,2.5,5.2,"Apartment",1,3.2
+"Austria","Vienna",1,"City centre","Donauturm","Vienna",185,"Vienna",3,NA,NA,1,22351,1,"15-50% offer",2017,11,0,0,2.7,5.4,"Apartment",1,3
+"Austria","Vienna",12,"City centre","Donauturm","Vienna",130,"Vienna",3,4,20,1,22353,0,"0% no offer",2017,11,0,0,6.6,9.4,"Hotel",1,4.4
+"Austria","Vienna",171,"City centre","Donauturm","Vienna",78,"Vienna",3,4,811,0,22354,0,"0% no offer",2017,11,0,0,3.2,4.5,"Hotel",1,4.3
+"Austria","Vienna",34,"City centre","Donauturm","Vienna",76,"Vienna",3,4,61,1,22355,1,"1-15% offer",2017,11,0,0,3.3,4.6,"Hotel",1,3.7
+"Austria","Vienna",69,"City centre","Donauturm","Vienna",68,"Vienna",4,3.5,87,1,22356,1,"1-15% offer",2017,11,0,0,4.5,5.2,"Hotel",1,4
+"Austria","Vienna",84,"City centre","Donauturm","Vienna",116,"Vienna",4,4,493,0,22358,1,"15-50% offer",2017,11,0,0,2.7,3.7,"Hotel",1,4
+"Austria","Vienna",212,"City centre","Donauturm","Vienna",172,"Vienna",4,4,401,1,22359,1,"1-15% offer",2017,11,0,0,2.2,3.8,"Hotel",1,4.1
+"Austria","Vienna",15,"City centre","Donauturm","Vienna",80,"Vienna",2,3.5,187,1,22361,0,"0% no offer",2017,11,0,0,5.2,7.6,"Hostel",1,3.2
+"Austria","Vienna",12,"City centre","Donauturm","Vienna",87,"Vienna",3,4,30,1,22362,0,"0% no offer",2017,11,0,0,2.4,3.9,"Hotel",1,4
+"Austria","Vienna",89,"City centre","Donauturm","Vienna",90,"Vienna",3,3,78,1,22363,1,"1-15% offer",2017,11,0,0,4.6,7.4,"Hotel",1,3
+"Austria","Vienna",74,"City centre","Donauturm","Vienna",100,"Vienna",3.5,4,282,1,22364,1,"15-50% offer",2017,11,0,0,2.7,4.2,"Hotel",1,4.4
+"Austria","Vienna",3,"City centre","Donauturm","Vienna",173,"Vienna",2,NA,NA,1,22365,1,"15-50% offer",2017,11,0,0,3.1,4.6,"Apartment",1,3.2
+"Austria","Vienna",44,"City centre","Donauturm","Vienna",92,"Vienna",2,3.5,35,1,22366,0,"0% no offer",2017,11,0,0,2.5,4.1,"Pension",1,3.2
+"Austria","Vienna",6,"City centre","Donauturm","Vienna",133,"Vienna",2,NA,NA,1,22369,1,"15-50% offer",2017,11,0,0,2.6,5.3,"Apartment",1,3.7
+"Austria","Vienna",3,"City centre","Donauturm","Vienna",134,"Vienna",3.5,NA,NA,1,22370,1,"50%-75% offer",2017,11,0,0,5.1,7.7,"Apartment",1,3.2
+"Austria","Vienna",2,"City centre","Donauturm","Vienna",209,"Vienna",3,NA,NA,1,22371,1,"15-50% offer",2017,11,0,0,5.2,7.8,"Apartment",1,4
+"Austria","Vienna",44,"City centre","Donauturm","Vienna",66,"Vienna",3,NA,NA,1,22372,1,"75%+ offer ",2017,11,0,0,1.6,1.8,"Apartment",1,4.4
+"Austria","Vienna",35,"City centre","Donauturm","Vienna",114,"Vienna",4,5,12,1,22373,1,"50%-75% offer",2017,11,0,0,1.4,2.2,"Apartment",1,4.9
+"Austria","Voesendorf",38,"City centre","Donauturm","Voesendorf",89,"Vienna",4,3,73,0,22377,0,"0% no offer",2017,11,0,0,7,9.7,"Hotel",1,3.5
+"Austria","Voesendorf",115,"City centre","Donauturm","Voesendorf",92,"Vienna",4,3.5,545,0,22378,0,"0% no offer",2017,11,0,0,7.1,9.9,"Hotel",1,3.7
+"Austria","Vienna",186,"City centre","Donauturm","Wahring",84,"Vienna",3,4.5,982,0,22380,1,"15-50% offer",2017,11,0,0,1.9,2.7,"Hotel",1,4.4
+"Austria","Vienna",27,"City centre","Donauturm","Wahring",124,"Vienna",2,2.5,26,1,22381,1,"15-50% offer",2017,11,0,0,1.8,3.2,"Apartment",1,3.5
+"Austria","Vienna",45,"City centre","Donauturm","Wahring",185,"Vienna",4,4,142,1,22382,0,"0% no offer",2017,11,0,0,2.1,3,"Hotel",1,4.4
+"Austria","Vienna",168,"City centre","Donauturm","Wahring",85,"Vienna",4,3.5,553,0,22384,1,"1-15% offer",2017,11,0,0,3,3.2,"Hotel",1,4
+"Austria","Vienna",1,"City centre","Donauturm","Wahring",133,"Vienna",2,NA,NA,1,22385,1,"15-50% offer",2017,11,0,0,1.9,3.1,"Apartment",1,4
+"Austria","Vienna",77,"City centre","Donauturm","Wieden",110,"Vienna",3.5,4.5,116,0,22386,0,"0% no offer",2017,11,0,0,1.6,4,"Hotel",1,4.5
+"Austria","Vienna",72,"City centre","Donauturm","Wieden",86,"Vienna",3,4,89,0,22387,0,"0% no offer",2017,11,0,0,1.6,4,"Hotel",1,4.3
+"Austria","Vienna",158,"City centre","Donauturm","Wieden",118,"Vienna",4,4,436,0,22388,0,"0% no offer",2017,11,0,0,1,3.6,"Hotel",1,4.1
+"Austria","Vienna",15,"City centre","Donauturm","Wieden",126,"Vienna",3.5,NA,NA,1,22389,1,"1-15% offer",2017,11,0,0,0.9,3.6,"Hotel",1,4.5
+"Austria","Vienna",291,"City centre","Donauturm","Wieden",92,"Vienna",3,4,688,0,22390,1,"15-50% offer",2017,11,0,0,1.3,3.9,"Hotel",1,4.3
+"Austria","Vienna",317,"City centre","Donauturm","Wieden",197,"Vienna",4,4.5,1840,1,22391,1,"15-50% offer",2017,11,0,0,0.8,3.5,"Hotel",1,4.8
+"Austria","Vienna",193,"City centre","Donauturm","Wieden",39,"Vienna",2.5,3.5,69,1,22393,0,"0% no offer",2017,11,0,0,1.3,4,"Guest House",1,3.5
+"Austria","Vienna",280,"City centre","Donauturm","Wieden",135,"Vienna",4,4,1121,0,22394,0,"0% no offer",2017,11,0,0,1.2,3.9,"Hotel",1,4.5
+"Austria","Vienna",47,"City centre","Donauturm","Wieden",125,"Vienna",4,4.5,229,0,22395,1,"15-50% offer",2017,11,0,0,1.2,3.7,"Hotel",1,4.4
+"Austria","Vienna",7,"City centre","Donauturm","Wieden",67,"Vienna",2,4.5,1583,0,22396,0,"0% no offer",2017,11,0,0,1,3.8,"Hostel",1,3.4
+"Austria","Vienna",125,"City centre","Donauturm","Wieden",134,"Vienna",4,4.5,615,0,22397,1,"1-15% offer",2017,11,0,0,0.8,3.5,"Hotel",1,4.5
+"Austria","Vienna",34,"City centre","Donauturm","Wieden",91,"Vienna",3,3.5,383,1,22398,1,"15-50% offer",2017,11,0,0,0.9,3.7,"Hotel",1,3.5
+"Austria","Vienna",112,"City centre","Donauturm","Wieden",110,"Vienna",3,4,263,0,22399,0,"0% no offer",2017,11,0,0,0.8,3.6,"Hotel",1,3.9
+"Austria","Vienna",1,"City centre","Donauturm","Wieden",84,"Vienna",3.5,NA,NA,1,22400,0,"0% no offer",2017,11,0,0,0.9,3.6,"Apartment",1,5
+"Austria","Vienna",77,"City centre","Donauturm","Wieden",100,"Vienna",3,4,149,1,22401,1,"1-15% offer",2017,11,0,0,1.2,3.7,"Hotel",1,4
+"Austria","Vienna",572,"City centre","Donauturm","Wieden",95,"Vienna",4,4,1003,1,22402,1,"1-15% offer",2017,11,0,0,1.5,3.9,"Hotel",1,4.1
+"Austria","Vienna",53,"City centre","Donauturm","Wieden",73,"Vienna",3,3,293,1,22403,1,"1-15% offer",2017,11,0,0,1.5,4,"Hotel",1,3.4
+"Austria","Vienna",2,"City centre","Donauturm","Wieden",109,"Vienna",3,3,14,1,22404,1,"50%-75% offer",2017,11,0,0,1.5,3.8,"Apartment",1,5
+"Austria","Vienna",145,"City centre","Donauturm","Wieden",185,"Vienna",5,4,740,0,22406,1,"15-50% offer",2017,11,0,0,0.8,3.6,"Hotel",1,4.3
+"Austria","Vienna",112,"City centre","Donauturm","Wieden",100,"Vienna",4,4.5,1006,1,22407,0,"0% no offer",2017,11,0,0,1,3.7,"Hotel",1,4.4
+"Austria","Vienna",169,"City centre","Donauturm","Wieden",58,"Vienna",3,3,135,0,22408,1,"15-50% offer",2017,11,0,0,1.4,4.1,"Hotel",1,3.2
+"Austria","Vienna",80,"City centre","Donauturm","Wieden",110,"Vienna",3.5,NA,NA,1,22409,1,"1-15% offer",2017,11,0,0,0.7,3.5,"Apartment",1,4

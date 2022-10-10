@@ -72,7 +72,7 @@ Fall 2022
 * Potential outcomes, counterfactuals, and causal inference
 * Descriptive, Predictive, or Causal Analysis?
 
-[**Exploratory Analysis, Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part1-nosolutions.html)
+[**Lecture 9: Exploratory Analysis, Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part1.html)
 
 * Summaries, frequency tables and crosstabs in R
 * Describing distributions (histograms, kernel density, bandwidth choice, stratification)
@@ -80,7 +80,7 @@ Fall 2022
 * Handling variable transformations
 * Handling missing data
 
-[**Exploratory Analysis, Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/week09-exploratory/week09-exploratory-part2.html)
+[**Lecture 9: Exploratory Analysis, Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part2.html)
 
 * Describing relationships (Anscombe's Quartet, scatterplots, transformations, binscatter)
 * Conditional expectations (the CEF, motivation for linear regression)
