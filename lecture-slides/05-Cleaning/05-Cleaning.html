@@ -1291,6 +1291,7 @@ Avoid using logical conditions like `height==180` for numeric variables.
 * But under the hood, it might still be stored as `180.000000000000173...`.
 
 What you can do instead:
+* **Best option:** `dplyr::near` compares numbers with a built-in tolerance.
 * Use `&gt;` and `&lt;` comparisons, or `between(height, 179.9, 180.1)`.
 * Convert in place: `as.integer(height)==180`
 * Or with finer control: `round(height, digits=6)==180`
