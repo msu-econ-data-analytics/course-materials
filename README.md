@@ -89,7 +89,7 @@ Fall 2022
 
 [**Lecture 10: Spatial Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial.html)
 
-* [Intro to geospatial data](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pptx)
+* [Intro to geospatial data](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pdf)
 * Spatial data and quick mapping
 * Reference systems and projections
 * Spatial calculations
