@@ -87,7 +87,16 @@ Fall 2022
 * Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
 * Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
 
-**Spatial Analysis**
+[**Lecture 10: Spatial Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial.html)
+
+* [Intro to geospatial data](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pptx)
+* Spatial data and quick mapping
+* Reference systems and projections
+* Spatial calculations
+* Spatial selection
+* Spatial joins
+
+
 
 **Data Visualization**
 
@@ -193,6 +202,12 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Introduction to Data Science* Chapter 8: Visualizing data distributions](https://rafalab.github.io/dsbook/distributions.html) (Rafael A. Irizarry). Histograms, density plots, stratification.
 * [*Introduction to Data Science* Chapter 28: Smoothing](https://rafalab.github.io/dsbook/smoothing.html) (Rafael A. Irizarry). Bin smoothing, kernels, and local regression.
 * DataCamp tutorial (free for 6 months for enrolled students): [Exploratory Data Analysis in R](https://learn.datacamp.com/courses/exploratory-data-analysis-in-r).
+
+### Spatial analysis
+* [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Slides with coding examples. Core concepts, vector data, spatial analysis, raster data.
+* [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries).
+* [*Modern Data Science with R* Chapters 17-18](https://mdsr-book.github.io/mdsr2e/ch-spatial.html) (Baumer, Kaplan, and Horton). Chapter 17: Working with geospatial data. Chapter 18: Geospatial computations.
+* [*Geocomputation with R*](https://geocompr.robinlovelace.net/) (Lovelace, Nowosad, and Muenchow). Comprehensive treatment of GIS tools in R.
 
 ### Data visualization
 * [*Introduction to Data Science* Chapters 6-10: Data Visualization](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry).
