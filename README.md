@@ -204,8 +204,8 @@ This is a list of further resources that you may find helpful throughout (and af
 * DataCamp tutorial (free for 6 months for enrolled students): [Exploratory Data Analysis in R](https://learn.datacamp.com/courses/exploratory-data-analysis-in-r).
 
 ### Spatial analysis
-* [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Slides with coding examples. Core concepts, vector data, spatial analysis, raster data.
-* [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries).
+* [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Great tutorial. Core concepts, vector data, spatial analysis, raster data.
+* [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries). Another great tutorial, though focused more on ecology than social science.
 * [*Modern Data Science with R* Chapters 17-18](https://mdsr-book.github.io/mdsr2e/ch-spatial.html) (Baumer, Kaplan, and Horton). Chapter 17: Working with geospatial data. Chapter 18: Geospatial computations.
 * [*Geocomputation with R*](https://geocompr.robinlovelace.net/) (Lovelace, Nowosad, and Muenchow). Comprehensive treatment of GIS tools in R.
 
