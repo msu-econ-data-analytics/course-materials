@@ -35,8 +35,8 @@ Fall 2022
 
 **Lecture 3: Productivity Tools**
 
-* [Version control](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/03-Productivity/Git_and_GitHub.pdf)
-* [R Markdown](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/03-Productivity/R-Markdown-example.Rmd)
+* [**Version control**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/03-Productivity/Git_and_GitHub.pdf)
+* [**R Markdown**](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/03-Productivity/R-Markdown-example.Rmd)
 
 [**Lecture 4: Data Wrangling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/04-Wrangling/04-Wrangling.html)
 
@@ -72,30 +72,31 @@ Fall 2022
 * Potential outcomes, counterfactuals, and causal inference
 * Descriptive, Predictive, or Causal Analysis?
 
-[**Lecture 9: Exploratory Analysis, Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part1.html)
+**Lecture 9: Exploratory Analysis**
 
-* Summaries, frequency tables and crosstabs in R
-* Describing distributions (histograms, kernel density, bandwidth choice, stratification)
-* Handling extreme values
-* Handling variable transformations
-* Handling missing data
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part1.html)
+  * Summaries, frequency tables and crosstabs in R
+  * Describing distributions (histograms, kernel density, bandwidth choice, stratification)
+  * Handling extreme values
+  * Handling variable transformations
+  * Handling missing data
 
-[**Lecture 9: Exploratory Analysis, Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part2.html)
-
-* Describing relationships (Anscombe's Quartet, scatterplots, transformations, binscatter)
-* Conditional expectations (the CEF, motivation for linear regression)
-* Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
-* Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part2.html)
+  * Describing relationships (Anscombe's Quartet, scatterplots, transformations, binscatter)
+  * Conditional expectations (the CEF, motivation for linear regression)
+  * Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
+  * Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
 
 **Lecture 10: Spatial Analysis**
 
-* [Intro to geospatial data](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pdf)
-* [Part 1](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part1.html)
+* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pdf)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part1.html)
   - Spatial data and quick mapping
   - Reference systems and projections
-* [Part 2](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part2.html)
-  - Spatial calculations
-  - Spatial selection
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part2.html)
+  - Spatial queries (measurement, relationships)
+  - Spatial subsetting
+  - Geometry operations
   - Spatial joins
 
 **Data Visualization**
