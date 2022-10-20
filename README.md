@@ -87,16 +87,16 @@ Fall 2022
 * Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
 * Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
 
-[**Lecture 10: Spatial Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial.html)
+**Lecture 10: Spatial Analysis**
 
 * [Intro to geospatial data](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pdf)
-* Spatial data and quick mapping
-* Reference systems and projections
-* Spatial calculations
-* Spatial selection
-* Spatial joins
-
-
+* [Part 1](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part1.html)
+  - Spatial data and quick mapping
+  - Reference systems and projections
+* [Part 2](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part2.html)
+  - Spatial calculations
+  - Spatial selection
+  - Spatial joins
 
 **Data Visualization**
 

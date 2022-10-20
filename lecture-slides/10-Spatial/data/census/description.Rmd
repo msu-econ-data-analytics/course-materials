@@ -1,0 +1,50 @@
+---
+title: Brief Summary of the Census Data
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Below is a table of the variables in this table. They were combined from 
+different ACS 5 year tables.
+
+<u>NOTE</u>:
+
+- variables that start with `c_` are counts
+- variables that start with `med_` are medians
+- variables that end in `_moe` are margin of error estimates
+- variables that start with `p_` are proportions calcuated from the counts divided by the table denominator (the total count for whom that variable was assessed)
+
+
+| Variable        | Description                                     |
+|-----------------|-------------------------------------------------|
+| `c_race`        |Total population                                 
+| `c_white`       |Total white non-Latinx
+| `c_black`       | Total black and African American non-Latinx
+| `c_asian`       | Total Asian non-Latinx
+| `c_latinx`      | Total Latinx
+| `state_fips`    | State level FIPS code
+| `county_fips`   | County level FIPS code
+| `tract_fips`    | Tract level FIPS code
+| `med_rent`      | Median rent
+| `med_hhinc`     | Median household income
+| `c_tenants`     | Total tenants
+| `c_owners`      | Total owners
+| `c_renters`     | Total renters
+| `c_movers`      | Total number of people who moved
+| `c_stay`        | Total number of people who stayed
+| `c_movelocal`   | Number of people who moved locally
+| `c_movecounty`  | Number of people who moved counties
+| `c_movestate`   | Number of people who moved states
+| `c_moveabroad`  | Number of people who moved abroad
+| `c_commute`     | Total number of commuters
+| `c_car`         | Number of commuters who use a car
+| `c_carpool`     | Number of commuters who carpool
+| `c_transit`     | Number of commuters who use public transit
+| `c_bike`        | Number of commuters who bike
+| `c_walk`        | Number of commuters who bike
+| `year`          | ACS data year
+| `FIPS_11_digit` | 11-digit FIPS code
+| ....            | *and more*

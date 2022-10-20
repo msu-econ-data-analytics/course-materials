@@ -1,0 +1,556 @@
+---
+title: "Lecture 10: Spatial Analysis, Part 2"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Based on materials by [UC Berkeley's D-Lab](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) under a CC license."
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+      fig_caption: true
+---
+name: toc
+
+```{css, echo=FALSE}
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.medsmall {
+  font-size: 90%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+library(tidyverse)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	cache = TRUE,
+	dpi = 300,
+  warning = F,
+  message = F
+)
+library(tmap)
+tmap_options(outer.margins=0, asp=2)
+```
+
+# Table of contents
+
+**Part 1**
+
+1. Spatial data and quick mapping
+
+1. Reference systems and projections
+
+**Part 2**
+
+1. [Spatial queries](#queries)
+
+1. [Spatial subsetting](#subset)
+
+1. [Geometry operations](#geometry)
+
+1. [Spatial joins](#joins)
+
+
+---
+
+# Preliminaries
+
+Set your working directory (in your console) to the location of this file. E.g.:
+```{r, eval=F}
+setwd("C:/git/491/course-materials/lecture-slides/10-Spatial")
+```
+
+Run this (from Part 1):
+```{r, echo = F}
+library(sf)
+library(tidyverse)
+library(tmap)
+counties = st_read("data/california_counties/CaliforniaCounties.shp") |>
+  st_make_valid()
+alameda = counties |> filter(NAME == "Alameda")
+```
+
+---
+class: inverse, middle
+name: queries
+
+# Spatial queries
+
+---
+
+# Types of spatial queries
+
+**Spatial measurement**
+- Returns a continuous numerical answer.
+- **Length:** What is the length of I-90 in Montana?
+- **Area:** What is the area of Gallatin County?
+- **Distance:** What is the distance between Bozeman and Livingston?
+
+**Spatial relationships**
+- Returns TRUE or FALSE, or the set of matching features.
+- **Intersect:** What states is Yellowstone National Park in?
+- **Within:** Is the city of Bozeman entirely within Gallatin County?
+- **Cross:** What counties does the Madison River pass through?
+
+---
+
+# Calculate area
+
+```{r}
+st_area(alameda)
+```
+
+Too big!
+
+--
+
+```{r}
+st_area(alameda)/1000000
+```
+
+Wait, the units are wrong!
+
+--
+
+```{r}
+units::set_units(st_area(alameda), km^2)
+```
+
+---
+
+# Calculate area
+
+For all counties (add as new column/attribute):
+```{r}
+counties2 = counties |>
+  cbind(area = units::set_units(st_area(counties), km^2))
+mean(counties2$area)
+```
+
+---
+
+# Calculate area
+
+Spatial measurements can differ greatly depending on the CRS.
+```{r}
+# Calculate area using data in WGS84 CRS (4326)
+counties2$area_wgs84 = units::set_units(st_area(st_transform(counties, 4326)), km^2)
+
+# Calculate area using data in Web Mercator CRS (3857)
+counties2$area_web = units::set_units(st_area(st_transform(counties, 3857)), km^2)
+
+# Take a look at the results
+counties2 |> select(starts_with("area")) |> head()
+```
+
+---
+
+# Calculate area
+
+Of these:
+* Albers is an equal area CRS optimized for CA, so area measurements will be highly accurate.
+* WGS84 is a geographic (unprojected) CRS in degrees... but `sf` calculates area using spherical geometry!
+* Web Mercator is terrible! Preserves shape, but area is highly distorted.
+
+**Your choice of CRS is absolutely critical to accurate calculations.**
+
+---
+
+# Calculate distance
+
+Load BART rapid transit stations:
+```{r}
+stations = st_read("data/bart_stations_2019.geojson")
+```
+
+Calculate distance from each station to the Oakland Airport:
+```{r}
+st_distance(filter(stations, station_na == "Oakland Airport"), stations)
+```
+
+
+---
+class: inverse, middle
+name: subsets
+
+# Spatial subsetting
+
+---
+
+# Spatial subsetting
+
+Often we want to **subset** (i.e., filter) features according to their spatial relationship with another set of features. Types of relationships (queries that are either `TRUE` or `FALSE`):
+
+.pull-left[
+![](img/spatial_relationships.png)
+]
+.pull-right[
+Common `sf` functions:
+* `st_intersects` (most general)
+* `st_within`
+* `st_contains` (the inverse of `st_within`)
+]
+
+These functions are **binary predicates** that return matrices of `TRUE` and `FALSE` for all permutations of features in two shapefiles. They are most useful in combination with `st_filter`.
+
+---
+
+# Within vs. intersect
+
+Load a shapefile of protected areas:
+```{r}
+protected = st_read("data/protected_areas/CPAD_2020a_units.shp")
+
+# Verify CRS is the same as county
+stopifnot(st_crs(protected) == st_crs(alameda))
+```
+
+---
+
+# Within vs. intersect
+
+Map them (takes a minute):
+```{r, fig.height=3.5}
+tm_shape(alameda) + tm_polygons() +
+  tm_shape(protected) + tm_polygons(col = "green")
+```
+
+---
+
+# Within vs. intersect
+
+Some protected areas are completely **within** the county, some **overlap**, and some are completely **outside**.
+* `st_intersects` returns both the "within" and "overlap" cases.
+* `st_within` returns only the "completely within" cases.
+
+Select the protected areas matching each of these criteria:
+```{r}
+protected_intersect = st_filter(protected, alameda) # default: st_intersects
+protected_within = st_filter(protected, alameda, .predicate = st_within)
+
+# Alternative syntax using [column, row] subsetting:
+# protected_within = protected[alameda, , op = st_within]
+```
+
+---
+
+# Within vs. intersect
+
+Map them:
+```{r, fig.height=3.3}
+tm_shape(alameda) + tm_polygons(alpha = 0.5) +
+  tm_shape(protected_intersect) + tm_polygons(col = "green", alpha = 0.5) +
+  tm_shape(protected_within) + tm_polygons(col = "blue", alpha = 0.5)
+```
+
+
+---
+class: inverse, middle
+name: geometry
+
+# Geometry operations
+
+---
+
+# Intersections
+
+What if we want only the parts of the protected areas that fall within the county?
+* Now we aren't just *selecting* features; we're *manipulating* their geometry.
+
+We need a different spatial operation: `st_intersects`.
+* It returns a new set of features that are **clipped** to the boundary of the county.
+
+```{r}
+protected_intersection = st_intersection(protected, alameda)
+```
+
+---
+
+# Intersect vs. intersection
+
+```{r, fig.height=3.7}
+tm_shape(alameda) + tm_polygons() +
+  tm_shape(protected_intersect) + tm_polygons(col = "green", alpha = 0.5) +
+  tm_shape(protected_intersection) + tm_polygons(col = "red", alpha = 0.5)
+```
+
+---
+
+# Intersections
+
+Check the resulting object:
+
+```{r}
+table(protected_intersection$COUNTY)
+```
+
+Whoops! What went wrong?
+
+---
+
+# Intersections
+
+.scroll-output-full[
+```{r}
+str(protected_intersection)
+```
+]
+
+---
+
+# Intersections
+
+`st_intersection` returns attributes from **both** intersecting features.
+* Mindlessly, without checking whether they still makes sense for the *intersection* geometry.
+* For example, `ACRES` describes the area of the original, full protected area -- not only the part that is in Alameda County.
+
+--
+
+**Be careful when interpreting attributes after geometry operations.**
+
+---
+
+# Other geometry operations
+
+![](img/geometry_operations.png)
+
+
+---
+
+# Centroids
+
+The **geographic centroid** of a polygon is its "center of gravity".
+* A way to create a point representation of a more complex object.
+
+```{r, fig.height=3}
+county_centroids = st_centroid(counties)
+tm_shape(counties) + tm_borders() +
+  tm_shape(county_centroids) + tm_dots(col = "red")
+```
+
+---
+
+# Buffering
+
+**How many protected areas are within walking distance of a BART station?** Let's say walking distance is 1 km, or about 0.6 miles.
+
+First, **buffer** the BART stations:
+```{r, fig.height=2.7}
+stations_1km = st_buffer(stations, dist = 1000)  # in the CRS's length units
+tm_shape(stations_1km) + tm_polygons(col = "pink") +
+  tm_shape(stations) + tm_dots()
+```
+
+---
+
+# Buffering
+
+Now, we can subset the protected areas by whether they intersect one of these buffer polygons.
+```{r, error=TRUE}
+protected_transit = st_filter(protected, stations_1km)
+```
+
+Oops... we forgot to put them in the same CRS.
+
+---
+
+# Buffering
+
+```{r, fig.height=3.6}
+stations_1km_proj = st_transform(stations_1km, st_crs(protected))
+protected_transit = st_filter(protected, stations_1km_proj)
+tm_shape(stations_1km) + tm_polygons(col = "pink") +
+  tm_shape(protected_transit) + tm_polygons(col = "green", alpha = 0.4)
+```
+
+---
+class: inverse, middle
+name: joins
+
+# Spatial joins
+
+---
+
+# Spatial joins
+
+**Spatial joins** let us conduct graphical, statistical, or econometric analysis on variables that are originally at different levels of spatial aggregation.
+
+**Are parent incomes predictive of school academic performance?**
+
+What data would you ideally want?
+
+--
+
+What we have:
+* For each school: API, location.
+* For each Census tract: median household income, tract boundary.
+
+---
+
+# Spatial joins
+
+Load the data:
+```{r}
+tracts = st_read("data/census/tracts_acs_sdf_ac.json")
+schools = read_csv("data/alco_schools.csv")
+```
+
+---
+
+# Spatial joins
+
+Look at the data:
+.medsmall[
+```{r}
+colnames(tracts)
+head(schools)
+```
+]
+
+---
+
+# Spatial joins
+
+The schools dataset is just a csv, not a shapefile / feature collection.
+* But it does have lat/lon coordinates, from which we can create a point layer.
+
+Convert to an `sf` object. (GCS is unknown, but fine to assume it's WGS84.)
+```{r}
+wgs84 = 4326
+schools = read_csv("data/alco_schools.csv") |>
+  st_as_sf(coords = c("X", "Y"), crs = wgs84)
+colnames(schools)
+```
+
+---
+
+# Spatial joins
+
+Let's see where the schools are in relation to the Census tracts:
+```{r, fig.height=3.5}
+tm_shape(tracts) + tm_polygons(col = "skyblue") +
+  tm_shape(schools) + tm_dots(col = "navy")
+```
+
+---
+
+# Spatial joins
+
+We want to join the tract data to the schools data. Normally we look for a common variable.
+```{r}
+colnames(schools)
+colnames(tracts)
+```
+
+--
+
+**But there are no variables in common!** (What if the schools dataset identified the county?) 
+--
+Still a bad idea -- we would throw away more detailed information.
+
+---
+
+# Spatial joins
+
+Instead, we need to perform a join using spatial relationships -- a **spatial join**.
+
+First, check the CRS:
+
+.scroll-output-full[
+```{r}
+st_crs(schools)
+st_crs(tracts)
+```
+]
+
+---
+
+# Spatial joins
+
+Put them in the same CRS, then do a spatial join:
+```{r}
+schools_nad83 = st_transform(schools, st_crs(tracts))
+schools_tract = st_join(schools_nad83, tracts)
+View(schools_tract)
+colnames(schools_tract)
+```
+
+Now we know the neighborhood household income for each school!
+
+--
+* Is this what we wanted?
+
+---
+
+# Checking our output
+
+**Good questions to ask after any operation:**
+1. What type of object should we have gotten?
+2. What should the dimensions of that object be, and why?
+3. How can we visually check the results?
+
+---
+
+# Checking our output
+
+```{r, out.height="80%", out.width="100%"}
+tmap_mode("view")
+tm_shape(tracts) + tm_polygons(col = 'white', border.col = 'black') +
+  tm_shape(schools_tract) + tm_dots(col = 'GEOID')
+```
+
+---
+
+# Spatial joins
+
+Finally, we can look at a scatterplot of the relationship we wanted:
+```{r, out.width="80%", fig.height=4.5}
+ggplot(schools_tract, aes(x = med_hhinc, y = API)) + geom_point()
+```
+
+---
+
+# Spatial joins
+
+Removing the zeros (probably missing data):
+```{r, out.width="80%", fig.height=4.2}
+schools_tract |>
+  filter(API > 0) |>
+  ggplot(aes(x = med_hhinc, y = API)) + geom_point()
+```
+
+---
+
+# Challenge
+
+Using the same datasets we've used in these slides:
+
+1. **What fraction of the *area* of Alameda County is within 5 km of a BART station?**
+
+2. **What fraction of the *population* of Alameda County is within walking distance of a park (protected area)?**
+
+Write out a step-by-step plan, then implement it.
