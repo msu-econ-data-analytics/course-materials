@@ -85,7 +85,7 @@ setwd("C:/git/491/course-materials/lecture-slides/10-Spatial")
 ```
 
 Run this (from Part 1):
-```{r, echo = F}
+```{r, eval = F}
 library(sf)
 library(tidyverse)
 library(tmap)
@@ -281,7 +281,7 @@ name: geometry
 What if we want only the parts of the protected areas that fall within the county?
 * Now we aren't just *selecting* features; we're *manipulating* their geometry.
 
-We need a different spatial operation: `st_intersects`.
+We need a different spatial operation: `st_intersection`.
 * It returns a new set of features that are **clipped** to the boundary of the county.
 
 ```{r}

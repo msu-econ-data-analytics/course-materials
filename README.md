@@ -99,7 +99,13 @@ Fall 2022
   - Geometry operations
   - Spatial joins
 
-**Data Visualization**
+[**Lecture 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/11-Visualization.html)
+
+* Basics of ggplot2
+* Plotting examples
+* Colors and themes
+* Principles of data visualization
+* Case studies
 
 **Regression Modeling**
 
