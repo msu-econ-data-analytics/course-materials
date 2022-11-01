@@ -59,7 +59,7 @@ knitr::opts_chunk$set(
 
 1. [Indicator and interaction terms](#indicators)
 
-1. [Econometrics functions in R](#functions)
+1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 
@@ -521,7 +521,7 @@ Let's not throw out all those observations just because we can't control for age
 class: inverse, middle
 name: functions
 
-# Econometrics functions in R
+# Econometrics packages in R
 
 ---
 
@@ -891,7 +891,7 @@ starwars2 |>
 
 1. [Indicator and interaction terms](#indicators)
 
-1. [Econometrics functions in R](#functions)
+1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 

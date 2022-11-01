@@ -113,7 +113,7 @@ Fall 2022
 * Basic regression in R
 * Review: Interpreting coefficients
 * Indicator and interaction terms
-* Econometrics functions in R
+* Econometrics packages in R
 * Modeling nonlinear relationships
 * Preview: Model validation
 
