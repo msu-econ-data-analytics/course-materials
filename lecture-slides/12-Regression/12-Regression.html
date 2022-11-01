@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 12: Regression Modeling</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 12: Regression Modeling
+]
+.author[
+### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Based partly on materials by <a href="https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html">Grant McDermott</a> and <a href="https://raw.githack.com/edrubin/EC525S19/master/NotesLab/04RReg/04RReg.html">Ed Rubin</a>, with permission.
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+# CSS for including pauses in printed PDF output (see bottom of lecture)
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+.remark-code-line {
+  font-size: 95%;
+}
+.small {
+  font-size: 75%;
+}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+&lt;/style&gt;
+
+
+
+# Table of contents
+
+1. [Basic regression in R](#basics)
+
+1. [Review: Interpreting coefficients](#interpret)
+
+1. [Indicator and interaction terms](#indicators)
+
+1. [Econometrics functions in R](#functions)
+
+1. [Modeling nonlinear relationships](#nonlinear)
+
+1. [Preview: Model validation](#validation)
+
+
+---
+class: inverse, middle
+name: basics
+
+# Regression in R
+
+---
+
+# Prep work
+
+Load the packages we'll be using:
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, estimatr, broom, summarytools, fixest, binsreg)
+```
+
+We'll mostly be working with the `starwars` data frame that comes with `dplyr`.
+
+```r
+head(starwars)
+```
+
+```
+## # A tibble: 6 × 14
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Luke Skywal…    172    77 blond   fair    blue       19   male  mascu… Tatooi…
+## 2 C-3PO           167    75 &lt;NA&gt;    gold    yellow    112   none  mascu… Tatooi…
+## 3 R2-D2            96    32 &lt;NA&gt;    white,… red        33   none  mascu… Naboo  
+## 4 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
+## 5 Leia Organa     150    49 brown   light   brown      19   fema… femin… Aldera…
+## 6 Owen Lars       178   120 brown,… light   blue       52   male  mascu… Tatooi…
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
+## # ℹ Use `colnames()` to see all variable names
+```
+
+---
+
+# Basic regression
+
+Base R's command for running regression models is `lm()` ("linear models").
+
+```r
+lm(y ~ x1 + x2 + x3, data = df)
+```
+
+It estimates this regression:
+
+`$$y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} + u_i$$`
+
+Using the variables (columns) `y` and `x` from the object `df`.
+
+---
+
+# Basic regression
+
+Let's run a simple bivariate regression of mass on height using our dataset of Star Wars characters.
+
+
+```r
+ols1 = lm(mass ~ height, data = starwars)
+ols1
+```
+
+```
+## 
+## Call:
+## lm(formula = mass ~ height, data = starwars)
+## 
+## Coefficients:
+## (Intercept)       height  
+##    -13.8103       0.6386
+```
+
+Most valuable information is buried within this object's internal list structure. Try `View(ols1)`.
+
+---
+
+# Basic regression
+
+To summarise the key pieces of information, we can use the generic summary() function. This will look pretty similar to the default regression output from Stata.
+
+
+```r
+summary(ols1)
+```
+
+```
+## 
+## Call:
+## lm(formula = mass ~ height, data = starwars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+##  -61.43  -30.03  -21.13  -17.73 1260.06 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -13.8103   111.1545  -0.124    0.902
+## height        0.6386     0.6261   1.020    0.312
+## 
+## Residual standard error: 169.4 on 57 degrees of freedom
+##   (28 observations deleted due to missingness)
+## Multiple R-squared:  0.01792,	Adjusted R-squared:  0.0006956 
+## F-statistic:  1.04 on 1 and 57 DF,  p-value: 0.312
+```
+
+---
+
+# Basic regression
+
+To just show the coefficients:
+
+
+```r
+summary(ols1)$coefficients
+```
+
+```
+##               Estimate  Std. Error    t value  Pr(&gt;|t|)
+## (Intercept) -13.810314 111.1545260 -0.1242443 0.9015590
+## height        0.638571   0.6260583  1.0199865 0.3120447
+```
+
+---
+
+# Get tidy regression coefficients
+
+Note advantage over Stata: the regression is an object, not an action.
+- Results are stored for later use -- they don't just disappear.
+
+In practice you'll often want to convert your regression output to a tidy data frame (aka tibble). You can do this using `tidy()` from the `broom` package.
+
+
+```r
+tidy(ols1, conf.int = TRUE)
+```
+
+```
+## # A tibble: 2 × 7
+##   term        estimate std.error statistic p.value conf.low conf.high
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  -13.8     111.       -0.124   0.902 -236.       209.  
+## 2 height         0.639     0.626     1.02    0.312   -0.615      1.89
+```
+
+---
+
+# Subsetting data for a regression
+
+What data analysis mistake have we made already?
+
+--
+
+**We didn't plot our data.** 😱
+
+
+```r
+ggplot(starwars, aes(x=height, y=mass)) +
+  geom_point()
+```
+
+&lt;img src="12-Regression_files/figure-html/jabba-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Subsetting data for a regression
+
+If we think Jabba is not part of the same data generating process we want to study, we can filter him out.
+
+
+```r
+no_jabba = starwars |&gt; filter(!str_detect(name, "Jabba"))
+ols2 = lm(mass ~ height, no_jabba)
+summary(ols2) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
+## 2 height         0.621    0.0707      8.79 4.02e-12
+```
+
+
+---
+class: inverse, middle
+name: interpret
+
+# Review: Interpreting coefficients
+
+
+---
+
+# Interpreting regression coefficients
+
+`$$y_i = \alpha + \beta x_{i} + u_i$$`
+
+- `\(\beta\)`: The "effect" of `\(x\)` on `\(y\)`.
+  - How much `\(y\)` changes in response to a one-unit change in `\(x\)`.
+  - The average derivative: `\(dy/dx\)`.
+  - Not necessarily causal! Only if you can assume away selection bias.
+
+* `\(\alpha\)`: The y-intercept.
+  - The average value of `\(y\)` when `\(x = 0\)`.
+
+
+```r
+lm(mass ~ height, no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
+## 2 height         0.621    0.0707      8.79 4.02e-12
+```
+
+Put into a complete sentence with units:
+
+--
+- "For every **1 cm** increase in height, average mass increases by **0.6 kg.**"
+
+---
+
+# Interpreting log-transformed variables
+
+`$$\log(y_i) = \alpha + \beta x_{i} + u_i$$`
+
+
+```r
+lm(log(mass) ~ height, no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   2.28    0.159         14.4 2.00e-20
+## 2 height        0.0112  0.000895      12.5 6.77e-18
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+- Here: "A **1 cm** change in height is associated with a **0.01 log unit** change in mass."
+
+--
+
+But log units have a convenient **proportional change** or **percentage change** interpretation:
+- "A **1-cm** change in height is associated with a **0.01 times** change in mass."
+- "A **1-cm** change in height is associated with a **1-percent** change in mass."
+
+---
+
+# Interpreting log-transformed variables
+
+**Why?** Here's the algebra:
+
+Original values `\(x_0\)` and `\(y_0\)`. Percentage change in `\(y\)` is `\(\% \Delta y = \Delta y / y_0\)`.
+
+Model:
+`$$\ln(y_0) = \alpha + \beta x_0$$`
+`$$\ln(y_0 + \Delta y) = \alpha + \beta (x_0 + 1)$$`
+
+Solve for `\(\% \Delta y\)`:
+`$$\ln(y_0 + \Delta y) = \ln(y_0) + \beta$$`
+`$$\ln(\frac{y_0 + \Delta y}{y_0}) = \beta$$`
+`$$\ln(1 + \% \Delta y) = \beta$$`
+
+Using the approximation `\(\ln(a+1) \approx a\)` for small `\(a\)`:
+`$$\beta \approx \% \Delta y.$$`
+
+---
+
+# Interpreting log-transformed variables
+
+`$$y_i = \alpha + \beta \log(x_{i}) + u_i$$`
+
+
+```r
+lm(mass ~ log(height), no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   -347.       52.4     -6.61 1.51e- 8
+## 2 log(height)     82.3      10.2      8.06 6.05e-11
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+
+--
+- Here: "A **1 log unit** change in height is associated with an **82-kg** change in mass."
+
+--
+- "A **100%** change in height is associated with a **82-kg** change in mass."
+- "A **10%** change in height is associated with an **8.2-kg** change in mass."
+
+
+---
+
+# Interpreting log-transformed variables
+
+`$$\log(y_i) = \alpha + \beta \log(x_{i}) + u_i$$`
+
+
+```r
+lm(log(mass) ~ log(height), no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    -3.76     0.614     -6.12 9.61e- 8
+## 2 log(height)     1.56     0.120     13.0  1.34e-18
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+
+--
+- Here: "A **1 log unit** change in height is associated with a **1.6 log unit** change in mass."
+
+--
+- "A **100%** change in height is associated with a **1.6 times** change in mass."
+- "A **100%** change in height is associated with a **160 percent** change in mass."
+
+--
+- "A **10%** change in height is associated with a **16 percent** change in mass."
+- "A **1%** change in height is associated with a **1.6 percent** change in mass."
+
+
+---
+class: inverse, middle
+name: indicators
+
+# Indicator and interaction terms
+
+---
+
+# Indicator variables
+
+For the next example, let's use only the human characters.
+
+
+```r
+humans = filter(starwars, species=="Human")
+
+freq(humans$gender)
+```
+
+```
+## Frequencies  
+## humans$gender  
+## Type: Character  
+## 
+##                   Freq   % Valid   % Valid Cum.   % Total   % Total Cum.
+## --------------- ------ --------- -------------- --------- --------------
+##        feminine      9     25.71          25.71     25.71          25.71
+##       masculine     26     74.29         100.00     74.29         100.00
+##            &lt;NA&gt;      0                               0.00         100.00
+##           Total     35    100.00         100.00    100.00         100.00
+```
+
+---
+
+# Indicator variables
+
+
+```r
+humans = humans |&gt; mutate(masculine = as.integer(gender == "masculine"))
+lm(mass ~ masculine, data = humans) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic    p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)     56.3      9.54      5.91 0.00000892
+## 2 masculine       30.6     10.3       2.98 0.00735
+```
+
+How do we interpret the `masculine` coefficient?
+
+--
+- The variable is coded as `\(0\)` for `feminine` and `\(1\)` for `masculine`.
+- So the intercept gives the average mass of `feminine` characters: `\(\alpha = 56\)` kg.
+
+--
+- Relative to that, the average effect of being `masculine` on mass is `\(30.6\)` kg.
+- So the average mass of `masculine` characters is `\(56 + 31 = 87\)` kg.
+
+
+---
+
+# Indicator variables
+
+If we don't want to have to add up terms we can estimate the mean for each group separately! (Just omit the intercept.)
+
+
+```r
+humans = humans |&gt; mutate(feminine = 1 - masculine)
+lm(mass ~ feminine + masculine + 0, data = humans) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term      estimate std.error statistic  p.value
+##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 feminine      56.3      9.54      5.91 8.92e- 6
+## 2 masculine     87.0      3.79     22.9  7.76e-16
+```
+
+```r
+group_by(humans, gender) |&gt; summarize(mean(mass, na.rm=T))
+```
+
+```
+## # A tibble: 2 × 2
+##   gender    `mean(mass, na.rm = T)`
+##   &lt;chr&gt;                       &lt;dbl&gt;
+## 1 feminine                     56.3
+## 2 masculine                    87.0
+```
+
+---
+
+# Indicator variables
+
+We actually didn't need to specifically create new binary variables. R will automatically interpret any factor (or string!) variables as indicators:
+
+
+```r
+lm(mass ~ gender, data = humans) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term            estimate std.error statistic    p.value
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)         56.3      9.54      5.91 0.00000892
+## 2 gendermasculine     30.6     10.3       2.98 0.00735
+```
+
+---
+
+# Interaction terms
+
+To find the effect of height separately for each gender, we can estimate this regression:
+`$$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times Height_i + u_i$$`
+
+Interpretation:
+- `\(\beta_0\)` is the `\(y\)`-intercept of height for feminine characters.
+- `\(\beta_1\)` is the change to the `\(y\)`-intercept for masculine characters ( `\(Masc_i=1\)` ).
+- `\(\beta_2\)` is the effect of height for feminine characters.
+- `\(\beta_3\)` is the *additional* effect of height for masculine characters.
+- `\(\beta_2 + \beta_3\)` is the effect of height for masculine characters.
+
+
+---
+
+# Interaction terms
+
+To find the effect of height separately for each gender, we can estimate this regression:
+`$$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times Height_i + u_i$$`
+
+Two equivalent syntaxes:
+
+```r
+lm(mass ~ gender * height, data = humans)
+```
+
+```r
+lm(mass ~ height + gender + height:gender, data = humans)
+```
+
+Using `*` is a good default. In most cases, you need to include all "parent" terms in order to interpret the interaction correctly.
+
+---
+
+# Interaction terms
+
+To find the effect of height separately for each gender, we can estimate this regression:
+`$$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times Height_i + u_i$$`
+
+
+```r
+lm(mass ~ gender * height, data = humans) |&gt; tidy()
+```
+
+```
+## # A tibble: 4 × 5
+##   term                   estimate std.error statistic p.value
+##   &lt;chr&gt;                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)             -61.0      204.     -0.299    0.768
+## 2 gendermasculine         -15.7      220.     -0.0716   0.944
+## 3 height                    0.733      1.27    0.576    0.572
+## 4 gendermasculine:height    0.163      1.35    0.121    0.905
+```
+
+**Interpret each height coefficient in a sentence.**
+
+--
+- "For each 1-cm increase in height, mass increases for feminine characters by `\(0.73\)` kg."
+
+--
+- "For each 1-cm increase in height, mass increases by `\(0.16\)` kg *more* (or *faster*) for masculine characters than it does for feminine characters."
+
+--
+- "For each 1-cm increase in height, mass increases for masculine characters by `\(0.73 + 0.16 = 0.90\)` kg."
+
+---
+
+# Transformations
+
+R will do any other transformations you want inline, without having to `mutate()`.
+
+- Arithmetic transformations: `x^2`, `I(x/3)`, `I((x - mean(x))/sd(x))`
+
+- Log/exponential transformations: `log(x)`, `exp(x)`
+
+- Indicators: `I(x &lt; 100)`, `I(x == "Montana")`
+
+---
+
+# Challenge
+
+Estimate this regression in the original `starwars` dataset:
+
+`$$\begin{eqnarray}
+Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
+&amp; &amp; \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
+\end{eqnarray}$$`
+
+(Remember the variable `birth_year` encodes age, for some reason.)
+
+
+
+&lt;!--  !!!  Don't look at the next slide until you try coding it yourself  !!!   --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+
+```
+## # A tibble: 6 × 4
+##     estimate std.error statistic  p.value
+##        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1    2.12     59.4        0.0357 9.72e- 1
+## 2   -0.190     0.641     -0.297  7.69e- 1
+## 3    8.95      8.36       1.07   2.93e- 1
+## 4    0.00476   0.00211    2.25   3.19e- 2
+## 5 1311.       20.8       63.1    1.89e-33
+## 6   -0.111     0.0594    -1.87   7.10e- 2
+```
+
+---
+
+# Challenge
+
+Estimate this regression in the original `starwars` dataset:
+
+`$$\begin{eqnarray}
+Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
+&amp; &amp; \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
+\end{eqnarray}$$`
+
+
+```r
+reg_challenge = lm(
+  mass ~ height * log(birth_year) + I(height^2) + I(str_detect(name, "Jabba")),
+  data = starwars
+  )
+tidy(summary(reg_challenge))
+```
+
+```
+## # A tibble: 6 × 5
+##   term                                   estimate std.error statistic  p.value
+##   &lt;chr&gt;                                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 "(Intercept)"                           2.12     59.4        0.0357 9.72e- 1
+## 2 "height"                               -0.190     0.641     -0.297  7.69e- 1
+## 3 "log(birth_year)"                       8.95      8.36       1.07   2.93e- 1
+## 4 "I(height^2)"                           0.00476   0.00211    2.25   3.19e- 2
+## 5 "I(str_detect(name, \"Jabba\"))TRUE" 1311.       20.8       63.1    1.89e-33
+## 6 "height:log(birth_year)"               -0.111     0.0594    -1.87   7.10e- 2
+```
+
+---
+
+# More challenge
+
+Try these on your own time:
+
+1. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
+
+2. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
+
+---
+
+# Even more challenge
+
+Let's not throw out all those observations just because we can't control for age. Use the flag approach to deal with this variable:
+
+1. Create a new binary indicator variable that =1 if `birth_year` is missing and =0 otherwise.
+
+1. Create a new variable that equals `log(birth_year)` except a specific value is filled in for all rows with missing values (choose a value outside the existing range of `log(birth_year)`).
+
+1. Verify that `mass ~ log(birth_year)` and `mass ~ new_variable + flag_variable` yield the same coefficient on the continuous variable.
+
+1. Re-run the same regression on the previous slide, using this flag approach. (Make sure to treat the flag variable *exactly* the same way as the continuous variable -- if you were interacting both with X before, interact both with X now.)
+  
+
+---
+class: inverse, middle
+name: functions
+
+# Econometrics functions in R
+
+---
+
+# Robust standard errors
+
+`lm()` uses classical/homoskedastic standard errors, which you basically should **never** use.
+
+You can obtain heteroskedasticity-consistent "robust" standard errors using `estimatr::lm_robust()`.
+
+
+```r
+ols1_robust = lm_robust(mass ~ height, data = starwars)
+ols1_robust
+```
+
+```
+##               Estimate  Std. Error    t value     Pr(&gt;|t|)    CI Lower
+## (Intercept) -13.810314 23.45557632 -0.5887859 5.583311e-01 -60.7792950
+## height        0.638571  0.08791977  7.2631109 1.159161e-09   0.4625147
+##               CI Upper DF
+## (Intercept) 33.1586678 57
+## height       0.8146273 57
+```
+
+
+---
+
+# Clustered standard errors
+
+If you haven't learned about clustering yet...
+
+You want to **cluster** your standard errors whenever your observations are correlated within unit/group/geography (i.e., not fully independent draws from a population).
+
+![](img/slope_hypothesis_testing.png)
+
+Clustering is for cross-sectional or panel data. (Time series data calls for other solutions.)
+
+---
+
+# Clustered standard errors
+
+To cluster by `homeworld`:
+
+
+```r
+lm_robust(mass ~ height, data = starwars, clusters = homeworld)
+```
+
+```
+##               Estimate  Std. Error    t value     Pr(&gt;|t|)    CI Lower
+## (Intercept) -9.3014938 28.84436408 -0.3224718 0.7559158751 -76.6200628
+## height       0.6134058  0.09911832  6.1886211 0.0002378887   0.3857824
+##               CI Upper       DF
+## (Intercept) 58.0170751 7.486034
+## height       0.8410291 8.195141
+```
+
+---
+
+# Fixed effect regressions
+
+Most "real" regressions you run in economics will involve fixed effects of some kind (i.e., many group- or unit-specific indicators).
+
+`fixest::feols()` **should be your new best friend.**
+- It can handle large numbers of fixed effects quickly and quietly.
+- It has tons of options and is *orders of magnitude* faster than alternatives (`lfe` in R or `reghdfe` in Stata).
+- It can also handle simpler regressions, so it deserves to be your default everyday regression function.
+
+Syntax to include species FE:
+
+`$$Mass_{i} = \beta_0 + \beta_1 Height_{i} + \lambda_{species} + u_i$$`
+
+
+```r
+ols_fe = feols(mass ~ height | species, data = starwars)
+```
+
+---
+
+# Regression tables
+
+Get **quick regression tables** with `fixest::etable()`:
+
+
+```r
+etable(ols_fe, ols_fe)
+```
+
+```
+##                             ols_fe             ols_fe
+## Dependent Var.:               mass               mass
+##                                                      
+## height          0.9749*** (0.0443) 0.9749*** (0.0443)
+## Fixed-Effects:  ------------------ ------------------
+## species                        Yes                Yes
+## _______________ __________________ __________________
+## S.E.: Clustered        by: species        by: species
+## Observations                    58                 58
+## R2                         0.99672            0.99672
+## Within R2                  0.66249            0.66249
+## ---
+## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+&lt;/br&gt;
+
+Try package `modelsummary` for publication-quality tables that you can output with formatting to LaTeX, Markdown, etc.
+
+---
+
+# Other models in R
+
+Instrumental variables (IV) regressions:
+
+- `fixest::feols()` (see, your new best friend!)
+  - Syntax: `y ~ controls | fe | endogenous ~ instrument`.
+- `estimatr::iv_robust()` 
+- `ivreg::ivreg()`
+
+Logit regression:
+
+- `glm(formula, data, family = binomial(link = "logit"))`
+- `feglm(formula, data, family = binomial(link = "logit"))`
+- To get marginal effects, try package `mfx`.
+
+"glm" stands for generalized linear models.
+
+
+
+---
+class: inverse, middle
+name: nonlinear
+
+# Modeling nonlinear relationships
+
+---
+
+# Some preliminaries
+
+Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 10% random sample:
+
+```r
+set.seed(123)
+london = read_csv("https://osf.io/ey5p7/download")
+london_sample = london |&gt; 
+  mutate(ln_price = log(price)) |&gt; 
+  filter(!is.na(price)) |&gt;
+  slice_sample(prop = 0.05)
+```
+  
+---
+
+# Modeling nonlinear relationships
+
+**How should we model the relationship between longitude and price?**
+
+--
+
+First, we need to check the CEF with a quick binscatter:
+
+```r
+binsreg(y = london_sample$ln_price, x = london_sample$longitude)
+```
+
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+```
+## Call: binsreg
+## 
+## Binscatter Plot
+## Bin selection method (binsmethod)  =  IMSE direct plug-in
+## Placement (binspos)                =  Quantile-spaced
+## Derivative (deriv)                 =  0
+## 
+## Group (by)                         =  Full Sample
+## Sample size (n)                    =  2690
+## # of distinct values (Ndist)       =  2690
+## # of clusters (Nclust)             =  NA
+## dots, degree (p)                   =  0
+## dots, smooth (s)                   =  0
+## # of bins (nbins)                  =  21
+```
+
+---
+
+# Modeling nonlinear relationships
+
+So then... **what's wrong with running the following regression?**
+
+```r
+linear = feols(ln_price ~ longitude, data = london_sample)
+tidy(linear)
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)     4.15    0.0231    180.   0       
+## 2 longitude      -1.13    0.147      -7.67 2.35e-14
+```
+
+--
+The plot showed us that a linear specification of longitude is a bad fit.
+* It still tells us an average derivative.
+* But that's not an average that's very useful.
+
+Instead, let's choose a **nonlinear specification** that get us closer to the true CEF.
+
+--
+1. Bin regression (step functions).
+2. Polynomial regression.
+3. Piecewise functions (splines).
+
+
+---
+
+# Bin regression (step functions)
+
+Just like a binscatter. Use a regression to estimate means by quantile:
+
+```r
+binned = feols(ln_price ~ factor(ntile(longitude, 10)), data = london_sample)
+tidy(binned)
+```
+
+```
+## # A tibble: 10 × 5
+##    term                           estimate std.error statistic  p.value
+##    &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)                      4.14      0.0408    102.   0       
+##  2 factor(ntile(longitude, 10))2    0.263     0.0577      4.55 5.51e- 6
+##  3 factor(ntile(longitude, 10))3    0.394     0.0577      6.83 1.06e-11
+##  4 factor(ntile(longitude, 10))4    0.444     0.0577      7.70 1.96e-14
+##  5 factor(ntile(longitude, 10))5    0.322     0.0577      5.58 2.62e- 8
+##  6 factor(ntile(longitude, 10))6    0.206     0.0577      3.57 3.60e- 4
+##  7 factor(ntile(longitude, 10))7    0.150     0.0577      2.60 9.46e- 3
+##  8 factor(ntile(longitude, 10))8    0.0692    0.0577      1.20 2.30e- 1
+##  9 factor(ntile(longitude, 10))9   -0.115     0.0577     -1.99 4.63e- 2
+## 10 factor(ntile(longitude, 10))10  -0.213     0.0577     -3.70 2.23e- 4
+```
+
+**How do we interpret these coefficients?**
+
+---
+
+# Bin regression (step functions)
+
+To visualize the estimated regression model, **generate fitted values** using `predict`:
+
+```r
+binned_predict = predict(binned, data = london_sample, interval = "confidence")
+binned_fitted = cbind(london_sample, binned_predict)
+head(binned_predict)
+```
+
+```
+##        fit     se.fit   ci_low  ci_high
+## 1 4.213814 0.04077622 4.133858 4.293770
+## 2 3.931437 0.04077622 3.851481 4.011394
+## 3 4.466514 0.04077622 4.386558 4.546470
+## 4 4.538370 0.04077622 4.458414 4.618326
+## 5 4.213814 0.04077622 4.133858 4.293770
+## 6 4.144617 0.04077622 4.064661 4.224573
+```
+
+Note this calculates a **confidence** interval, not a **prediction** interval.
+- Confidence interval: Uncertainty about the true conditional mean.
+- Prediction interval: Uncertainty about individual observations.
+
+---
+
+# Bin regression (step functions)
+
+
+```r
+ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
+  geom_point(aes(y = ln_price), alpha = 0.1) +
+  geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = "coral") +
+  geom_line(aes(y = fit), size = 1, color = "orangered4")
+```
+
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Bin regression (step functions)
+
+**Pros:**
+- Extremely flexible: Get us very close to the true CEF.
+
+**Cons:**
+
+(Why might they not meet our needs?)
+
+--
+
+- Estimates may be too noisy (high variance).
+- Fitted values have sudden jumps even if the true DGP is smooth.
+
+
+---
+
+# Polynomial regression
+
+Another approach is **polynomial regression.**
+
+The simplest is quadratic -- just two terms for longitude.
+
+
+```r
+poly2 = feols(ln_price ~ longitude + longitude^2, data = london_sample)
+tidy(poly2)
+```
+
+```
+## # A tibble: 3 × 5
+##   term           estimate std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        4.05    0.0245     165.  0       
+## 2 longitude         -3.67    0.280      -13.1 3.82e-38
+## 3 I(longitude^2)    -9.24    0.872      -10.6 9.56e-26
+```
+
+These terms are hard to interpret until we visualize the model.
+
+---
+
+# Polynomial regression
+
+The quadratic model:
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Polynomial regression
+
+Cubic:
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Polynomial regression
+
+Quartic:
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-22-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Polynomial regression
+
+**Pro:**
+- Flexible -- easily capture many types of smooth nonlinear relationships.
+- Parsimonious -- fewer coefficients to estimate = lower variance.
+
+**Cons:**
+
+(What do you think?)
+
+--
+- Not so good if CEF is not smooth.
+- Poorly behaved in the tails.
+
+
+---
+
+# Piecewise functions (splines)
+
+Piecewise linear (1 knot at `\(-0.15\)`):
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-23-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Piecewise functions (splines)
+
+Piecewise cubic (7 knots):
+&lt;img src="12-Regression_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, middle
+name: validation
+
+# Preview: Model validation
+
+---
+
+# Model validation
+
+Let's re-estimate the regression of mass on height on a **training** dataset that consists only of the 30 *shortest* characters.
+
+
+```r
+ols1_train = lm(mass ~ height, data = starwars |&gt; filter(rank(height) &lt;= 30))
+```
+
+Now we can use the model with `predict()` to predict mass for all characters (except Jabba)
+
+
+```r
+starwars2 = filter(starwars, !str_detect(name, "Jabba"))
+predict(ols1_train, newdata = starwars2, interval = "prediction") |&gt;
+  head(5)
+```
+
+```
+##        fit       lwr       upr
+## 1 68.00019 46.307267  89.69311
+## 2 65.55178 43.966301  87.13725
+## 3 30.78434  8.791601  52.77708
+## 4 82.69065 60.001764 105.37954
+## 5 57.22718 35.874679  78.57968
+```
+
+---
+
+# Model validation
+
+Or more conveniently, add the predictions to your original dataframe with `augment`:
+
+
+```r
+starwars2 = augment(ols1_train, newdata = starwars2, interval = "prediction")
+starwars2 |&gt; relocate(contains(".")) |&gt; head()
+```
+
+```
+## # A tibble: 6 × 18
+##   .fitted .lower .upper .resid name         height  mass hair_…¹ skin_…² eye_c…³
+##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+## 1    68.0  46.3    89.7   9.00 Luke Skywal…    172    77 blond   fair    blue   
+## 2    65.6  44.0    87.1   9.45 C-3PO           167    75 &lt;NA&gt;    gold    yellow 
+## 3    30.8   8.79   52.8   1.22 R2-D2            96    32 &lt;NA&gt;    white,… red    
+## 4    82.7  60.0   105.   53.3  Darth Vader     202   136 none    white   yellow 
+## 5    57.2  35.9    78.6  -8.23 Leia Organa     150    49 brown   light   brown  
+## 6    70.9  49.1    92.8  49.1  Owen Lars       178   120 brown,… light   blue   
+## # … with 8 more variables: birth_year &lt;dbl&gt;, sex &lt;chr&gt;, gender &lt;chr&gt;,
+## #   homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color
+## # ℹ Use `colnames()` to see all variable names
+```
+
+---
+
+# Model validation
+
+Now we can plot the predictions to see how well our model (estimated on training data) performs for the rest of the data:
+
+&lt;img src="12-Regression_files/figure-html/predict_plot-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Summary
+
+1. [Basic regression in R](#basics)
+
+1. [Review: Interpreting coefficients](#interpret)
+
+1. [Indicator and interaction terms](#indicators)
+
+1. [Econometrics functions in R](#functions)
+
+1. [Modeling nonlinear relationships](#nonlinear)
+
+1. [Preview: Model validation](#validation)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

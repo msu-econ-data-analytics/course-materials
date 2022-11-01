@@ -41,14 +41,14 @@ Fall 2022
 [**Lecture 4: Data Wrangling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/04-Wrangling/04-Wrangling.html)
 
 * Philosophy of tidy data
-* Wrangling data with **dplyr**
-* Joining data with **dplyr**
-* Tidying data with **tidyr**
-* Importing data with **readr**
+* Wrangling data with `dplyr`
+* Joining data with `dplyr`
+* Tidying data with `tidyr`
+* Importing data with `readr`
 
 [**Lecture 5: Data Cleaning**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/05-Cleaning/05-Cleaning.html)
 
-* More on joins
+* Join safety
 * Keys and relational data
 * String cleaning
 * Number storage
@@ -76,16 +76,17 @@ Fall 2022
 
 * [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part1.html)
   * Summaries, frequency tables and crosstabs in R
-  * Describing distributions (histograms, kernel density, bandwidth choice, stratification)
+  * Characterizing distributions
   * Handling extreme values
   * Handling variable transformations
   * Handling missing data
 
 * [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part2.html)
-  * Describing relationships (Anscombe's Quartet, scatterplots, transformations, binscatter)
-  * Conditional expectations (the CEF, motivation for linear regression)
-  * Adjusting for other variables (Simpson's Paradox, manual/visual partialing out of binary control variables or fixed effects)
-  * Smoothing (bin smoothing/moving averages, local regression, kernels, tips about smoothing functions in R)
+  * Characterizing relationships
+  * Binscatter
+  * The Conditional Expectation Function
+  * Adjusting for other variables
+  * Bin smoothing and local regression
 
 **Lecture 10: Spatial Analysis**
 
@@ -101,13 +102,20 @@ Fall 2022
 
 [**Lecture 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/11-Visualization.html)
 
-* Basics of ggplot2
+* Basics of `ggplot2`
 * Plotting examples
 * Colors and themes
 * Principles of data visualization
 * Case studies
 
-**Regression Modeling**
+[**Lecture 12: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Regression/12-Regression.html)
+
+* Basic regression in R
+* Review: Interpreting coefficients
+* Indicator and interaction terms
+* Econometrics functions in R
+* Modeling nonlinear relationships
+* Preview: Model validation
 
 **Machine Learning Fundamentals**
 
