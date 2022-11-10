@@ -1,0 +1,487 @@
+---
+title: "Lecture 14a: Shrinkage Methods"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+---
+exclude: true
+
+```{r, setup, include = F}
+library(pacman)
+p_load(
+  broom, tidyverse,
+  ggplot2, ggthemes, ggforce, ggridges, cowplot, scales,
+  latex2exp, viridis, extrafont, gridExtra, plotly, ggformula,
+  kableExtra, DT,
+  snakecase, janitor, knitr, future, furrr,
+  MASS, estimatr, tidymodels, glmnet,
+  huxtable, here, magrittr, parallel
+)
+# Define colors
+red_pink   = "#e64173"
+turquoise  = "#20B2AA"
+orange     = "#FFA500"
+red        = "#fb6107"
+blue       = "#3b3b9a"
+green      = "#8bb174"
+grey_light = "grey70"
+grey_mid   = "grey50"
+grey_dark  = "grey20"
+purple     = "#6A5ACD"
+slate      = "#314f4f"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(knitr.table.format = "html")
+```
+
+---
+
+# Table of contents
+
+1. [Shrinkage methods](#intro)
+
+1. [Ridge regression](#ridge)
+
+1. [Lasso (and elasticnet)](#lasso)
+
+
+---
+layout: true
+# Shrinkage methods
+
+---
+name: intro
+## Intro
+
+Linear regression is great for causal inference.
+* Best linear approximation to the CEF.
+* Best linear unbiased estimator (BLUE) (under certain assumptions).
+* Can give us unbiased treatment effects (under certain assumptions).
+
+Is it good for prediction too?
+* More advanced, nonlinear methods sometimes work better.
+* But linear regression can still work well even on fairly complex problems.
+
+---
+
+To use regression effectively in prediction, we have to deal with two issues:
+
+**Model selection.** How do we choose the $X_i$'s?
+- Which variables do you put in your regression?
+- How do you parameterize/transform/interact them?
+- What if you have more variables than observations?
+- More variables improve fit, but how do you avoid overfitting?
+
+**Variance reduction.** Can we improve predictions with some tweaks?
+* OLS tends to have low bias.super[.pink[†]] and relatively low variance.
+* But if we accept a little more bias, we can get big reductions in variance, and therefore better predictions (lower MSE).
+
+.footnote[
+.pink[†] Unbiased, in fact, when the true DGP (population CEF) is linear.
+]
+
+---
+
+## Shrinkage methods
+- fit a model that contains .pink[all] $\color{#e64173}{p}$ .pink[predictors]
+- simultaneously: .pink[**shrink** coefficients] toward zero
+  - Shrink: constrain, regularize.
+
+.note[Idea:] Penalize the model for coefficients as they move away from zero.
+
+---
+## Intuition
+
+When we estimate a large, imprecise coefficient, should we just accept it?
+- Is the pattern likely to come up again, or idiosyncratic to this sample?
+- Maybe we should demand a higher bar for larger coefficients.
+
+```{r jabba, echo=FALSE, fig.height=3.6, fig.width=7}
+ggplot(starwars %>% filter(height>140, height<180) %>% slice(1:16), aes(x=height, y=mass)) +
+  geom_point() +
+  geom_smooth(method="lm", formula=y~x)
+```
+
+---
+name: shrinkage-why
+## Overall idea
+
+- Shrinking our coefficients toward zero .hi[reduces the model's variance]..super[.pink[†]]
+- .hi[Penalizing] our model for .hi[larger coefficients] shrinks them toward zero.
+- The .hi[optimal penalty] will balance reduced variance with increased bias.
+
+.footnote[
+.pink[†] Imagine the extreme case: a model whose coefficients are all zeros has no variance.
+]
+
+--
+
+Now you understand shrinkage methods.
+- .attn[Ridge regression]
+- .attn[Lasso]
+- .attn[Elasticnet]
+
+---
+layout: true
+# Ridge regression
+
+---
+class: inverse, middle
+
+---
+name: ridge
+## Back to least squares
+
+.note[Recall] Least-squares regression gets $\hat{\beta}_j$'s by minimizing RSS, _i.e._,
+$$
+\begin{align}
+  \min_{\hat{\beta}} \text{RSS} = \min_{\hat{\beta}} \sum_{i=1}^{n} e_i^2 = \min_{\hat{\beta}} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\underbrace{\left[ \hat{\beta}_0 + \hat{\beta}_1 x_{i,1} + \cdots + \hat{\beta}_p x_{i,p} \right]}_{=\hat{y}_i}} \bigg)^2
+\end{align}
+$$
+
+--
+
+.attn[Ridge regression] makes a small change
+- .pink[adds a shrinkage penalty] = the sum of squared coefficients $\left( \color{#e64173}{\lambda\sum_{j}\beta_j^2} \right)$
+- .pink[minimizes] the (weighted) sum of .pink[RSS and the shrinkage penalty]
+
+--
+
+$$
+\begin{align}
+  \min_{\hat{\beta}^R} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}
+$$
+
+---
+name: ridge-penalization
+
+.col-left[
+.hi[Ridge regression]
+$$
+\begin{align}
+\min_{\hat{\beta}^R} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}
+$$
+]
+
+.col-right[
+.b[Least squares]
+$$
+\begin{align}
+\min_{\hat{\beta}} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2
+\end{align}
+$$
+]
+
+<br><br><br><br>
+
+$\color{#e64173}{\lambda}\enspace (\geq0)$ is a tuning parameter for the harshness of the penalty.
+<br>
+$\color{#e64173}{\lambda} = 0$ implies no penalty: we are back to least squares.
+--
+<br>
+Each value of $\color{#e64173}{\lambda}$ produces a new set of coefficients.
+
+--
+
+Ridge's approach to the bias-variance tradeoff: Balance
+- reducing .b[RSS], _i.e._, $\sum_i\left( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \right)^2$
+- reducing .b[coefficients] .grey-light[(ignoring the intercept)]
+
+$\color{#e64173}{\lambda}$ determines how much ridge "cares about" these two quantities..super[.pink[†]]
+
+.footnote[
+.pink[†] With $\lambda=0$, least-squares regression only "cares about" RSS.
+]
+---
+layout: false
+class: clear, middle
+
+.b[Ridge regression coefficients] for $\lambda$ between 0.01 and 100,000
+```{r, plot-ridge-glmnet, echo = F}
+# Load the credit dataset
+credit_df = ISLR::Credit %>% clean_names()
+# Processing recipe: Define ID, standardize, create dummies, rename (lowercase)
+credit_recipe = credit_df %>% recipe(balance ~ .) %>% 
+  update_role(id, new_role = "id variable") %>% 
+  step_normalize(all_predictors() & all_numeric()) %>% 
+  step_dummy(all_predictors() & all_nominal()) %>% 
+  step_rename_at(everything(), fn = str_to_lower)
+# Time to juice
+credit_clean = credit_recipe %>% prep() %>% juice()
+
+# Define our range of lambdas (glmnet wants decreasing range)
+lambdas = 10^seq(from = 5, to = -2, length = 100)
+# Fit ridge regression
+est_ridge = glmnet(
+  x = credit_clean %>% dplyr::select(-balance, -id) %>% as.matrix(),
+  y = credit_clean$balance,
+  standardize = F,
+  alpha = 0,
+  lambda = lambdas
+)
+
+ridge_df = est_ridge %>% coef() %>% t() %>% as.matrix() %>% as.data.frame()
+ridge_df %<>% dplyr::select(-1) %>% mutate(lambda = est_ridge$lambda)
+ridge_df %<>% gather(key = "variable", value = "coefficient", -lambda)
+ggplot(
+  data = ridge_df,
+  aes(x = lambda, y = coefficient, color = variable)
+) +
+geom_line() +
+scale_x_continuous(
+  expression(lambda),
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+  trans = "log10"
+) +
+scale_y_continuous("Ridge coefficient") +
+scale_color_viridis_d("Predictor", option = "magma", end = 0.9) +
+theme_minimal(base_size = 20, base_family = "Fira Sans Book") +
+theme(legend.position = "bottom")
+
+```
+
+---
+layout: true
+# Ridge regression
+
+---
+
+## $\lambda$ and penalization
+
+Choosing a .it[good] value for $\lambda$ is key.
+- If $\lambda$ is too small, then our model is essentially back to OLS.
+- If $\lambda$ is too large, then we shrink all of our coefficients too close to zero.
+
+--
+
+.qa[Q] So what do we do?
+--
+<br>
+.qa[A] Cross validate!
+
+---
+## Penalization
+
+.note[Note] Because we sum the .b[squared] coefficients, we penalize increasing .it[big] coefficients much more than increasing .it[small] coefficients.
+
+.ex[Example] For a value of $\beta$, we pay a penalty of $2 \lambda \beta$ for a small increase..super[.pink[†]]
+
+.footnote[
+.pink[†] This quantity comes from taking the derivative of $\lambda \beta^2$ with respect to $\beta$.
+]
+
+- At $\beta = 0$, the penalty for a small increase is $0$.
+- At $\beta = 1$, the penalty for a small increase is $2\lambda$.
+- At $\beta = 2$, the penalty for a small increase is $4\lambda$.
+- At $\beta = 3$, the penalty for a small increase is $6\lambda$.
+- At $\beta = 10$, the penalty for a small increase is $20\lambda$.
+
+Now you see why we call it .it[shrinkage]: it encourages small coefficients.
+---
+name: standardization
+## Penalization and standardization
+
+.attn[Important] Predictors' .hi[units] can drastically .hi[affect ridge regression results].
+
+.b[Why?]
+--
+ Because $\mathbf{x}_j$'s units affect $\beta_j$, and ridge is very sensitive to $\beta_j$.
+
+--
+
+.ex[Example] Let $x_1$ denote distance.
+
+.b[Least-squares regression]
+<br>
+If $x_1$ is .it[meters] and $\beta_1 = 3$, then when $x_1$ is .it[km], $\beta_1 = 3,000$.
+<br>
+The scale/units of predictors do not affect least squares' estimates.
+
+--
+
+.hi[Ridge regression] pays a much larger penalty for $\beta_1=3,000$ than $\beta_1=3$.
+<br>You will not get the same (scaled) estimates when you change units.
+
+--
+
+.note[Solution] Standardize your variables, _i.e._, `x_stnd = (x - mean(x))/sd(x)`.
+
+
+
+
+
+
+
+---
+layout: true
+# Lasso
+
+---
+class: inverse, middle
+---
+name: lasso
+## Intro
+
+.attn[Lasso] simply replaces ridge's .it[squared] coefficients with absolute values.
+
+--
+
+.hi[Ridge regression]
+$$
+\begin{align}
+\min_{\hat{\beta}^R} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}
+$$
+
+.hi-grey[Lasso]
+$$
+\begin{align}
+\min_{\hat{\beta}^L} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#8AA19E}{\lambda \sum_{j=1}^{p} \big|\beta_j\big|}
+\end{align}
+$$
+
+Everything else will be the same—except one aspect...
+
+---
+name: lasso-shrinkage
+## Shrinkage
+
+Unlike ridge, lasso's penalty does not increase with the size of $\beta_j$.
+
+You always pay $\color{#8AA19E}{\lambda}$ to increase $\big|\beta_j\big|$ by one unit.
+
+--
+
+The only way to avoid lasso's penalty is to .hi[set coefficients to zero].
+
+--
+
+This feature has two .hi-slate[benefits]
+1. Some coefficients will be .hi[set to zero]—we get "sparse" models.
+1. Lasso can be used for subset/feature .hi[selection].
+
+--
+
+We will still need to carefully select $\color{#8AA19E}{\lambda}$.
+
+---
+layout: false
+class: clear, middle
+
+.b[Lasso coefficients] for $\lambda$ between 0.01 and 100,000
+```{r, plot-lasso-glmnet, echo = F}
+
+# Define our range of lambdas (glmnet wants decreasing range)
+lambdas = 10^seq(from = 5, to = -2, length = 100)
+# Fit lasso regression
+est_lasso = glmnet(
+  x = credit_clean %>% dplyr::select(-balance, -id) %>% as.matrix(),
+  y = credit_clean$balance,
+  standardize = F,
+  alpha = 1,
+  lambda = lambdas
+)
+
+lasso_df = est_lasso %>% coef() %>% t() %>% as.matrix() %>% as.data.frame()
+lasso_df %<>% dplyr::select(-1) %>% mutate(lambda = est_lasso$lambda)
+lasso_df %<>% gather(key = "variable", value = "coefficient", -lambda)
+ggplot(
+  data = lasso_df,
+  aes(x = lambda, y = coefficient, color = variable)
+) +
+geom_line() +
+scale_x_continuous(
+  expression(lambda),
+  labels = c("0.1", "10", "1,000", "100,000"),
+  breaks = c(0.1, 10, 1000, 100000),
+  trans = "log10"
+) +
+scale_y_continuous("Lasso coefficient") +
+scale_color_viridis_d("Predictor", option = "magma", end = 0.9) +
+theme_minimal(base_size = 20, base_family = "Fira Sans Book") +
+theme(legend.position = "bottom")
+```
+
+---
+class: clear, middle
+layout: false
+
+So which shrinkage method should you choose?
+
+---
+layout: true
+# Ridge or lasso?
+
+---
+name: or
+
+.col-left.pink[
+.b[Ridge regression]
+<br>
+<br>.b.orange[+] shrinks $\hat{\beta}_j$ .it[near] 0
+<br>.b.orange[-] many small $\hat\beta_j$
+<br>.b.orange[-] doesn't work for selection
+<br>.b.orange[-] difficult to interpret output
+<br>.b.orange[+] better when all $\beta_j\neq$ 0
+]
+
+.col-right.purple[
+.b[Lasso]
+<br>
+<br>.b.orange[+] shrinks $\hat{\beta}_j$ to 0
+<br>.b.orange[+] many $\hat\beta_j=$ 0
+<br>.b.orange[+] great for selection
+<br>.b.orange[+] sparse models easier to interpret
+<br>.b.orange[-] implicitly assumes some $\beta=$ 0
+]
+
+.left-full[
+> [N]either ridge... nor the lasso will universally dominate the other.
+
+.ex[ISL, p. 224]
+]
+
+---
+name: both
+layout: false
+# Ridge .it[and] lasso
+## Why not both?
+
+.hi-blue[Elasticnet] combines .pink[ridge regression] and .grey[lasso].
+
+--
+
+$$
+\begin{align}
+\min_{\beta^E} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#181485}{(1-\alpha)} \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2} + \color{#181485}{\alpha} \color{#8AA19E}{\lambda \sum_{j=1}^{p} \big|\beta_j\big|}
+\end{align}
+$$
+
+We now have two tuning parameters: $\lambda$ (penalty) and $\color{#181485}{\alpha}$ (mixture).
+
+- $\color{#e64173}{\alpha = 0}$ specifies ridge
+- $\color{#8AA19E}{\alpha=1}$ specifies lasso
+
+

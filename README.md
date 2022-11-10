@@ -117,9 +117,26 @@ Fall 2022
 * Modeling nonlinear relationships
 * Preview: Model validation
 
-**Machine Learning Fundamentals**
+[**Lecture 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/13-Learning.html)
 
-**Prediction Methods**
+* Review: Prediction
+* Statistical learning
+* Model accuracy
+* Cross-validation
+
+**Lecture 14: Prediction Methods**
+
+* [**Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction2/14a-Shrinkage.html)
+  - Shrinkage methods
+  - Ridge regression
+  - Lasso (and elasticnet)
+* [**Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction2/14b-Tidymodels.html)
+  - Setup and splitting
+  - Recipes
+  - Workflows
+  - Tuning
+  - Prediction
+  - Dependence
 
 **Classification Methods**
 

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 14a: Shrinkage Methods</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <script src="14a-Shrinkage_files/header-attrs-2.14/header-attrs.js"></script>
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 14a: Shrinkage Methods
+]
+.author[
+### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+]
+.date[
+### <br> *Adapted with permission from materials by <a href="https://github.com/edrubin/EC524W21">Ed Rubin</a>.
+]
+
+---
+
+exclude: true
+
+
+
+---
+
+# Table of contents
+
+1. [Shrinkage methods](#intro)
+
+1. [Ridge regression](#ridge)
+
+1. [Lasso (and elasticnet)](#lasso)
+
+
+---
+layout: true
+# Shrinkage methods
+
+---
+name: intro
+## Intro
+
+Linear regression is great for causal inference.
+* Best linear approximation to the CEF.
+* Best linear unbiased estimator (BLUE) (under certain assumptions).
+* Can give us unbiased treatment effects (under certain assumptions).
+
+Is it good for prediction too?
+* More advanced, nonlinear methods sometimes work better.
+* But linear regression can still work well even on fairly complex problems.
+
+---
+
+To use regression effectively in prediction, we have to deal with two issues:
+
+**Model selection.** How do we choose the `\(X_i\)`'s?
+- Which variables do you put in your regression?
+- How do you parameterize/transform/interact them?
+- What if you have more variables than observations?
+- More variables improve fit, but how do you avoid overfitting?
+
+**Variance reduction.** Can we improve predictions with some tweaks?
+* OLS tends to have low bias.super[.pink[†]] and relatively low variance.
+* But if we accept a little more bias, we can get big reductions in variance, and therefore better predictions (lower MSE).
+
+.footnote[
+.pink[†] Unbiased, in fact, when the true DGP (population CEF) is linear.
+]
+
+---
+
+## Shrinkage methods
+- fit a model that contains .pink[all] `\(\color{#e64173}{p}\)` .pink[predictors]
+- simultaneously: .pink[**shrink** coefficients] toward zero
+  - Shrink: constrain, regularize.
+
+.note[Idea:] Penalize the model for coefficients as they move away from zero.
+
+---
+## Intuition
+
+When we estimate a large, imprecise coefficient, should we just accept it?
+- Is the pattern likely to come up again, or idiosyncratic to this sample?
+- Maybe we should demand a higher bar for larger coefficients.
+
+&lt;img src="14a-Shrinkage_files/figure-html/jabba-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+name: shrinkage-why
+## Overall idea
+
+- Shrinking our coefficients toward zero .hi[reduces the model's variance]..super[.pink[†]]
+- .hi[Penalizing] our model for .hi[larger coefficients] shrinks them toward zero.
+- The .hi[optimal penalty] will balance reduced variance with increased bias.
+
+.footnote[
+.pink[†] Imagine the extreme case: a model whose coefficients are all zeros has no variance.
+]
+
+--
+
+Now you understand shrinkage methods.
+- .attn[Ridge regression]
+- .attn[Lasso]
+- .attn[Elasticnet]
+
+---
+layout: true
+# Ridge regression
+
+---
+class: inverse, middle
+
+---
+name: ridge
+## Back to least squares
+
+.note[Recall] Least-squares regression gets `\(\hat{\beta}_j\)`'s by minimizing RSS, _i.e._,
+$$
+`\begin{align}
+  \min_{\hat{\beta}} \text{RSS} = \min_{\hat{\beta}} \sum_{i=1}^{n} e_i^2 = \min_{\hat{\beta}} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\underbrace{\left[ \hat{\beta}_0 + \hat{\beta}_1 x_{i,1} + \cdots + \hat{\beta}_p x_{i,p} \right]}_{=\hat{y}_i}} \bigg)^2
+\end{align}`
+$$
+
+--
+
+.attn[Ridge regression] makes a small change
+- .pink[adds a shrinkage penalty] = the sum of squared coefficients `\(\left( \color{#e64173}{\lambda\sum_{j}\beta_j^2} \right)\)`
+- .pink[minimizes] the (weighted) sum of .pink[RSS and the shrinkage penalty]
+
+--
+
+$$
+`\begin{align}
+  \min_{\hat{\beta}^R} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}`
+$$
+
+---
+name: ridge-penalization
+
+.col-left[
+.hi[Ridge regression]
+$$
+`\begin{align}
+\min_{\hat{\beta}^R} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}`
+$$
+]
+
+.col-right[
+.b[Least squares]
+$$
+`\begin{align}
+\min_{\hat{\beta}} \sum_{i=1}^{n} \bigg( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \bigg)^2
+\end{align}`
+$$
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+`\(\color{#e64173}{\lambda}\enspace (\geq0)\)` is a tuning parameter for the harshness of the penalty.
+&lt;br&gt;
+`\(\color{#e64173}{\lambda} = 0\)` implies no penalty: we are back to least squares.
+--
+&lt;br&gt;
+Each value of `\(\color{#e64173}{\lambda}\)` produces a new set of coefficients.
+
+--
+
+Ridge's approach to the bias-variance tradeoff: Balance
+- reducing .b[RSS], _i.e._, `\(\sum_i\left( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \right)^2\)`
+- reducing .b[coefficients] .grey-light[(ignoring the intercept)]
+
+`\(\color{#e64173}{\lambda}\)` determines how much ridge "cares about" these two quantities..super[.pink[†]]
+
+.footnote[
+.pink[†] With `\(\lambda=0\)`, least-squares regression only "cares about" RSS.
+]
+---
+layout: false
+class: clear, middle
+
+.b[Ridge regression coefficients] for `\(\lambda\)` between 0.01 and 100,000
+&lt;img src="14a-Shrinkage_files/figure-html/plot-ridge-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Ridge regression
+
+---
+
+## `\(\lambda\)` and penalization
+
+Choosing a .it[good] value for `\(\lambda\)` is key.
+- If `\(\lambda\)` is too small, then our model is essentially back to OLS.
+- If `\(\lambda\)` is too large, then we shrink all of our coefficients too close to zero.
+
+--
+
+.qa[Q] So what do we do?
+--
+&lt;br&gt;
+.qa[A] Cross validate!
+
+---
+## Penalization
+
+.note[Note] Because we sum the .b[squared] coefficients, we penalize increasing .it[big] coefficients much more than increasing .it[small] coefficients.
+
+.ex[Example] For a value of `\(\beta\)`, we pay a penalty of `\(2 \lambda \beta\)` for a small increase..super[.pink[†]]
+
+.footnote[
+.pink[†] This quantity comes from taking the derivative of `\(\lambda \beta^2\)` with respect to `\(\beta\)`.
+]
+
+- At `\(\beta = 0\)`, the penalty for a small increase is `\(0\)`.
+- At `\(\beta = 1\)`, the penalty for a small increase is `\(2\lambda\)`.
+- At `\(\beta = 2\)`, the penalty for a small increase is `\(4\lambda\)`.
+- At `\(\beta = 3\)`, the penalty for a small increase is `\(6\lambda\)`.
+- At `\(\beta = 10\)`, the penalty for a small increase is `\(20\lambda\)`.
+
+Now you see why we call it .it[shrinkage]: it encourages small coefficients.
+---
+name: standardization
+## Penalization and standardization
+
+.attn[Important] Predictors' .hi[units] can drastically .hi[affect ridge regression results].
+
+.b[Why?]
+--
+ Because `\(\mathbf{x}_j\)`'s units affect `\(\beta_j\)`, and ridge is very sensitive to `\(\beta_j\)`.
+
+--
+
+.ex[Example] Let `\(x_1\)` denote distance.
+
+.b[Least-squares regression]
+&lt;br&gt;
+If `\(x_1\)` is .it[meters] and `\(\beta_1 = 3\)`, then when `\(x_1\)` is .it[km], `\(\beta_1 = 3,000\)`.
+&lt;br&gt;
+The scale/units of predictors do not affect least squares' estimates.
+
+--
+
+.hi[Ridge regression] pays a much larger penalty for `\(\beta_1=3,000\)` than `\(\beta_1=3\)`.
+&lt;br&gt;You will not get the same (scaled) estimates when you change units.
+
+--
+
+.note[Solution] Standardize your variables, _i.e._, `x_stnd = (x - mean(x))/sd(x)`.
+
+
+
+
+
+
+
+---
+layout: true
+# Lasso
+
+---
+class: inverse, middle
+---
+name: lasso
+## Intro
+
+.attn[Lasso] simply replaces ridge's .it[squared] coefficients with absolute values.
+
+--
+
+.hi[Ridge regression]
+$$
+`\begin{align}
+\min_{\hat{\beta}^R} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2}
+\end{align}`
+$$
+
+.hi-grey[Lasso]
+$$
+`\begin{align}
+\min_{\hat{\beta}^L} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#8AA19E}{\lambda \sum_{j=1}^{p} \big|\beta_j\big|}
+\end{align}`
+$$
+
+Everything else will be the same—except one aspect...
+
+---
+name: lasso-shrinkage
+## Shrinkage
+
+Unlike ridge, lasso's penalty does not increase with the size of `\(\beta_j\)`.
+
+You always pay `\(\color{#8AA19E}{\lambda}\)` to increase `\(\big|\beta_j\big|\)` by one unit.
+
+--
+
+The only way to avoid lasso's penalty is to .hi[set coefficients to zero].
+
+--
+
+This feature has two .hi-slate[benefits]
+1. Some coefficients will be .hi[set to zero]—we get "sparse" models.
+1. Lasso can be used for subset/feature .hi[selection].
+
+--
+
+We will still need to carefully select `\(\color{#8AA19E}{\lambda}\)`.
+
+---
+layout: false
+class: clear, middle
+
+.b[Lasso coefficients] for `\(\lambda\)` between 0.01 and 100,000
+&lt;img src="14a-Shrinkage_files/figure-html/plot-lasso-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+class: clear, middle
+layout: false
+
+So which shrinkage method should you choose?
+
+---
+layout: true
+# Ridge or lasso?
+
+---
+name: or
+
+.col-left.pink[
+.b[Ridge regression]
+&lt;br&gt;
+&lt;br&gt;.b.orange[+] shrinks `\(\hat{\beta}_j\)` .it[near] 0
+&lt;br&gt;.b.orange[-] many small `\(\hat\beta_j\)`
+&lt;br&gt;.b.orange[-] doesn't work for selection
+&lt;br&gt;.b.orange[-] difficult to interpret output
+&lt;br&gt;.b.orange[+] better when all `\(\beta_j\neq\)` 0
+]
+
+.col-right.purple[
+.b[Lasso]
+&lt;br&gt;
+&lt;br&gt;.b.orange[+] shrinks `\(\hat{\beta}_j\)` to 0
+&lt;br&gt;.b.orange[+] many `\(\hat\beta_j=\)` 0
+&lt;br&gt;.b.orange[+] great for selection
+&lt;br&gt;.b.orange[+] sparse models easier to interpret
+&lt;br&gt;.b.orange[-] implicitly assumes some `\(\beta=\)` 0
+]
+
+.left-full[
+&gt; [N]either ridge... nor the lasso will universally dominate the other.
+
+.ex[ISL, p. 224]
+]
+
+---
+name: both
+layout: false
+# Ridge .it[and] lasso
+## Why not both?
+
+.hi-blue[Elasticnet] combines .pink[ridge regression] and .grey[lasso].
+
+--
+
+$$
+`\begin{align}
+\min_{\beta^E} \sum_{i=1}^{n} \big( \color{#FFA500}{y_i} - \color{#6A5ACD}{\hat{y}_i} \big)^2 + \color{#181485}{(1-\alpha)} \color{#e64173}{\lambda \sum_{j=1}^{p} \beta_j^2} + \color{#181485}{\alpha} \color{#8AA19E}{\lambda \sum_{j=1}^{p} \big|\beta_j\big|}
+\end{align}`
+$$
+
+We now have two tuning parameters: `\(\lambda\)` (penalty) and `\(\color{#181485}{\alpha}\)` (mixture).
+
+- `\(\color{#e64173}{\alpha = 0}\)` specifies ridge
+- `\(\color{#8AA19E}{\alpha=1}\)` specifies lasso
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

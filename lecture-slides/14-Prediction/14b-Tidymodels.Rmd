@@ -1,0 +1,647 @@
+---
+title: "Lecture 14b: Learning with tidymodels"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+---
+name: toc
+
+```{css, echo=FALSE}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+```
+
+```{r, setup, include = F}
+library(knitr)
+library(DT)
+# Define colors
+red_pink   = "#e64173"
+turquoise  = "#20B2AA"
+orange     = "#FFA500"
+red        = "#fb6107"
+blue       = "#3b3b9a"
+green      = "#8bb174"
+grey_light = "grey70"
+grey_mid   = "grey50"
+grey_dark  = "grey20"
+purple     = "#6A5ACD"
+slate      = "#314f4f"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  cache = T,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(knitr.table.format = "html")
+```
+
+
+# Table of contents
+
+1. [Setup and splitting](#tidymodels)
+
+1. [Recipes](#recipes)
+
+1. [Workflows](#workflows)
+
+1. [Tuning](#tuning)
+
+1. [Prediction](#prediction)
+
+1. [Dependence](#dependence)
+
+
+---
+layout: true
+# Setting up tidymodels
+
+---
+class: inverse, middle
+name: tidymodels
+
+---
+
+`tidymodels` is a set of packages that makes it easy to set up, estimate, tune, and use predictive models.
+- There are many other approaches; this is just one.
+
+Load the following packages:
+```{r}
+library(pacman)
+p_load(
+  tidyverse, modeldata, skimr, janitor, summarytools,
+  tidymodels, magrittr, glmnet, ISLR
+)
+```
+
+---
+
+Let's try to **predict people's credit scores,** using other information about them and their credit cards. We'll work with the `Credit` dataset from the `ISLR` package.
+
+.scroll-output-75[
+  .smallest[
+```{r}
+# Load the credit dataset
+data(Credit)
+# Take a look at the data
+skim(Credit)
+```
+  ]
+]
+
+---
+layout: true
+# Split the data
+
+---
+
+The first thing we need to do is set aside a (randomly selected) subset of our data for testing.
+* Remember, **testing is separate from (cross-)validation.** We only look at the test set once we're happy with our predictive model.
+
+We can use some functions from the `rsample` package within `tidymodels`:
+```{r}
+# Set a seed (ensures reproducible results)
+set.seed(12345)
+# Create an 80/20 split by random sampling
+credit_split = Credit %>% initial_split(prop = 0.8)
+# Grab each subset
+credit_train = credit_split %>% training()
+credit_test  = credit_split %>% testing()
+credit_split
+```
+
+
+---
+layout: true
+# Recipes
+
+---
+name: recipes
+class: inverse, middle
+
+---
+
+One advantage of `tidymodels` is that it makes it really easy to **clean** a lot of variables at once.
+
+Examples of operations in which this might be useful:
+* standardize *all* your numeric variables
+* create dummies for *all* your categorical variables
+* remove variables that are perfectly determined by other variables
+* impute missing values
+
+---
+
+First, we **define the recipe.** This step is like listing the ingredients.
+* The syntax is like `lm()`, but we aren't estimating anything yet.
+* We're going to predict `Rating`, so it goes on the left-hand side.
+* `.` means "all other variables".
+* No transformations yet - we're just defining the roles of each variable.
+
+```{r}
+recipe_all = recipe(Rating ~ ., data = credit_train)
+recipe_all
+```
+
+---
+
+.smaller[
+We now can **add cleaning steps** to the recipe to pre-process our data. The tidymodels galaxy has [many](https://recipes.tidymodels.org/reference/index.html) possible steps for
+* imputation: `step_impute_mean()`, `step_impute_mode()`
+* transformation: `step_log()`, `step_poly()`, `step_mutate()`
+* dummying and discretization: `step_dummy()`, `step_discretize()`
+* and many other things: `step_center()`, `step_normalize()`, `step_lag()`
+
+To apply any of these steps, you just need to tell the `step_*()` function which variables you want it to target:
+* All: `all_vars()`
+* Role: `all_predictors()` or `all_outcomes()` or `has_role()`
+* Type: `all_nominal()` or `all_numeric()`
+* Variable names, or selectors (e.g., `starts_with()` or `contains()`)
+* Unselect using the minus sign (-).
+
+If you have an "ID" variable, you can give it an "ID" role using `update_role(id_var, new_role = "ID")`.
+]
+
+---
+
+**Add cleaning steps:** Let's write a step that creates indicator variables for each of our predictors that are categorical or string variables.
+
+```{r}
+recipe_all %>% step_dummy(all_nominal_predictors())
+```
+
+---
+
+**Prep and juice:** To get the processed data frame, we need to add two more things to our recipe:
+* `prep()` does the prep work (estimating means for imputation).
+* `juice()` applies the preprocessing to the training dataset.
+
+Now the original categorical variables are replaced by indicators for each of their levels.
+
+```{r, eval=F}
+credit_clean = recipe_all %>% 
+  step_dummy(all_nominal_predictors()) %>% 
+  prep() %>%
+  juice()
+credit_clean %>% skim()
+```
+
+---
+
+Let's set up and apply a more complex recipe:
+
+.small[
+```{r}
+credit_recipe = 
+  # Define the recipe: Rating predicted by all other vars in credit_train
+  recipe(Rating ~ ., data = credit_train) %>%
+  # Define ID variable (so it's not used in the model)
+  update_role(ID, new_role = "ID") %>%
+  # Impute missing values (use means) for numeric predictors
+  step_impute_mean(all_numeric_predictors()) %>% 
+  # Impute missing values (by k-nearest neighbors) for categorical predictors
+  step_impute_knn(all_nominal_predictors(), neighbors = 5) %>%
+  # Create polynomial terms for numeric predictors
+  step_poly(all_numeric_predictors(), degree=2) %>%
+  # Create indicators for categorical predictors
+  step_dummy(all_nominal_predictors()) %>%
+  # Create interactions (all possible first-degree terms)
+  step_interact(~all_predictors():all_predictors()) %>%
+  # Remove predictors with near-zero variance (improves stability)
+  step_nzv(all_predictors())
+# Create the cleaned dataset
+credit_clean = credit_recipe %>% prep() %>% juice()
+# Skim the cleaned (full) dataset
+credit_clean %>% skim()
+```
+]
+
+---
+layout: true
+# Workflows
+
+---
+name: workflows
+class: inverse, middle
+
+---
+
+After preprocessing, the next step is to **define a model.** This includes:
+* The **model specification** (the general type of model).
+* The **engine** (the specific function/package).
+
+Here's a simple linear regression using `lm()`:
+
+```{r}
+model_lm = 
+  linear_reg() %>%
+  set_engine("lm")
+```
+
+---
+
+To fit the model to our data we could run:
+```{r}
+est_reg = model_lm %>%
+  fit(Rating ~ ., data = credit_clean)
+```
+
+This will give you the exact same results as:
+```{r, eval=F}
+lm(Rating ~ ., data=credit_clean)
+```
+
+---
+
+Last, we want to **set up any resampling** methods we're going to apply.
+
+Define folds for 5-fold cross-validation:
+
+```{r}
+credit_cv = credit_train %>% vfold_cv(v = 5)
+tidy(credit_cv)
+```
+
+---
+
+Now we can **put it all together** with `workflow()`.
+
+```{r}
+fit_lm_cv =
+  workflow() %>%                 # Define a workflow
+  add_model(model_lm) %>%        # Choose the model
+  add_recipe(credit_recipe) %>%  # Clean the data
+  fit_resamples(credit_cv)       # Estimate & cross-validate
+# Check the performance
+fit_lm_cv %>% collect_metrics()
+```
+
+---
+
+To see the performance within each fold:
+
+```{r}
+fit_lm_cv %>% collect_metrics(summarize = F)
+```
+
+
+---
+layout: false
+class: inverse, middle
+# Tuning
+
+---
+layout: true
+# Lasso regression example
+
+---
+name: tuning
+
+In lasso regression, we don't just want to estimate one model, we also want to **tune** the penalty $\lambda$. That means:
+- Estimate the same regression for different values of $\lambda$.
+- Choose the one that performs best in cross-validation.
+
+Remember, we also need to standardize all our predictors beforehand.
+* Lucky for us, R's `glmnet` engine standardizes everything automatically by default.
+
+---
+
+The first change to make is the **model:**
+
+```{r}
+model_lasso = 
+  linear_reg(penalty = tune(), mixture = 1) %>% 
+  set_engine("glmnet")
+```
+
+- `penalty = tune()` tells R what parameter we want to tune.
+- Set `mixture = 1` means $\alpha=1$ (for ridge, set `mixture = 0`).
+- Use the `glmnet` engine.
+
+---
+
+**Then,** instead of using `fit_resamples()`, we're going to `tune_grid()`.
+
+For that we need to define a set of $\lambda$'s to try, spanning several orders of magnitude. Try this:
+
+```{r}
+lambdas = 10 ^ seq(from = 5, to = -2, length = 1e3)
+```
+
+--
+
+**Now** we can calculate cross-validated MSE for each value of $\lambda$:
+
+```{r}
+workflow_lasso = workflow() %>%
+  add_model(model_lasso) %>%
+  add_recipe(credit_recipe)
+lasso_cv = workflow_lasso %>%
+  tune_grid(
+    credit_cv,
+    grid = data.frame(penalty = lambdas),
+    metrics = metric_set(rmse)
+  )
+```
+
+---
+
+Which values of $\lambda$ performed best?
+
+```{r}
+lasso_cv %>% show_best()
+```
+
+---
+
+Let's plot the results for all values of $\lambda$:
+
+```{r, fig.height=4.25, fig.width=8}
+autoplot(lasso_cv, metric = "rmse")
+```
+```{r eval=FALSE, include=FALSE}
+# Unused code to plot coefficients by value of lambda
+coefs = workflow_lasso %>%
+  fit(credit_train) %>%
+  extract_fit_engine() %>%
+  tidy()
+coefs
+coefs %>%
+  ggplot(aes(x=lambda, y=estimate, color=term)) +
+    geom_line(show.legend=FALSE) +
+    scale_x_log10()
+```
+
+---
+layout: false
+# Ridge example
+
+What if we want to use **ridge** instead of lasso? Just switch `mixture = 0`.
+
+```{r, eval=F}
+model_ridge = 
+  linear_reg(penalty = tune(), mixture = 0) %>% 
+  set_engine("glmnet")
+workflow_ridge = workflow() %>%
+  add_model(model_ridge) %>%
+  add_recipe(credit_recipe2)
+credit_cv = credit_train %>% vfold_cv(v = 5)
+ridge_cv = workflow_ridge %>%
+  tune_grid(
+    credit_cv,
+    grid = data.frame(penalty = lambdas),
+    metrics = metric_set(rmse)
+  )
+autoplot(ridge_cv, metric = "rmse")
+ridge_cv %>% show_best()
+```
+
+---
+# Elasticnet example
+
+We can use `tune()` to cross validate both $\alpha$ and $\lambda$.
+
+.note[Note] You need to consider all combinations of the two parameters.
+<br>This combination can create *a lot* of models to estimate.
+
+1,000 values of $\lambda$ $\times$ 1,000 values of $\alpha$ =
+- 1,000,000 models to estimate
+- 5,000,000 if you're doing 5-fold CV
+
+To keep your computer from going forever, use a **coarser grid** (i.e., try fewer values).
+
+---
+layout: false
+class: clear, middle
+
+**Cross-validating elasticnet:**
+
+```{r, credit-net-ex, eval = F}
+# Ranges of λ and α
+lambdas = 10 ^ seq(from = 5, to = -2, length = 1e2)
+alphas = seq(from = 0, to = 1, by = 0.1)
+
+# Define the elasticnet model
+model_net = linear_reg(penalty = tune(), mixture = tune()) %>%
+  set_engine("glmnet")
+
+# Define the workflow
+workflow_net = workflow() %>%
+  add_recipe(credit_recipe) %>%
+  add_model(model_net)
+
+# CV elasticnet with our ranges of lambdas and alphas
+cv_net = 
+  workflow_net %>%
+  tune_grid(
+    credit_cv,
+    grid = expand_grid(mixture = alphas, penalty = lambdas),
+    metrics = metric_set(rmse)
+  )
+```
+
+---
+layout: false
+class: clear, middle
+
+**Alternative approach:** `grid_regular()` automatically chooses sensible values of your parameters to try.
+
+```{r, credit-net-ex2, eval = F}
+# Define the elasticnet model
+model_net = linear_reg(penalty = tune(), mixture = tune()) %>%
+  set_engine("glmnet")
+
+# Define the workflow
+workflow_net = workflow() %>%
+  add_recipe(credit_recipe) %>%
+  add_model(model_net)
+
+# CV elasticnet with grid_regular()
+cv_net = 
+  workflow_net %>%
+  tune_grid(
+    credit_cv,
+    grid = grid_regular(mixture(), penalty(), levels=5:5), #<<
+    metrics = metric_set(rmse)
+  )
+```
+
+
+---
+layout: true
+# Prediction
+
+---
+name: prediction
+class: inverse, middle
+
+---
+
+After tuning the penalty through cross-validation, we need to:
+1. **Tell** R which model we're choosing to carry forward.
+1. **Fit** the model on the *entire* training dataset (not just 4 of 5 folds).
+1. **Make predictions** in the testing dataset.
+
+---
+
+Tell R which model we're choosing:
+
+.smaller[
+```{r}
+final_lasso = 
+  workflow_lasso %>%
+  finalize_workflow(select_best(lasso_cv, metric = "rmse"))
+final_lasso
+```
+]
+
+---
+
+Fit the model and make predictions in the test set:
+
+```{r}
+final_fit_lasso = final_lasso %>% last_fit(credit_split)
+final_fit_lasso %>% collect_metrics()
+```
+
+---
+
+.smaller[
+
+Now let's take a look at the coefficients from the best model:
+
+```{r}
+coefs = final_fit_lasso %>%
+  extract_fit_parsnip() %>%
+  tidy()
+```
+
+```{R, echo = F}
+datatable(coefs, options = list(dom = 'tp'))
+```
+
+]
+
+---
+
+How about listing only the non-zero coefficients?
+
+```{r}
+coefs_nonzero = coefs %>%
+  filter(estimate > 0)
+```
+
+```{R, echo = F}
+datatable(coefs_nonzero, options = list(dom = 'tp'))
+```
+
+---
+
+Finally, we can plot the predictions against the true values:
+
+```{r, fig.height=3.75, fig.width=8}
+final_fit_lasso %>% collect_predictions() %>%
+  ggplot(aes(x=.pred, y=Rating)) + 
+  geom_abline(slope=1) +
+  geom_point(color="blue")
+```
+
+---
+layout: true
+# Dependence
+
+---
+class: inverse, middle
+
+---
+name: dependence
+
+.b[Resampling methods] assume something similar to independence: our resampling must match the original sampling procedure.
+
+If observations are "linked" but we resample independently, CV may break.
+
+If we have .hi-pink[repeated observations] on individuals $i$ through time $t$ (i.e., time series or panel data):
+- It's pretty likely $y_{i,t}$ and $y_{i,t+1}$ are related—and maybe $y_{i,t+\ell}$.
+- Initial sample may draw individuals $i$, but .it[standard] CV ignores time.
+
+In other case, .hi-pink[some individuals are linked with other individuals], *e.g.*,
+- $y_{i,t}$ and $y_{j,t}$ my be correlated if $i$ and $j$ live togother
+- Also: $y_{i,t}$ and $y_{j,t+\ell}$ could be correlated
+
+---
+
+In other words: Spatial or temporal dependence between observations .b[breaks the separation between training and testing samples].
+
+Breaking this separation train-test separation leads us back to
+
+- .b[Overfitting] the sample—since training and testing samples are linked
+
+- .b[Overestimating model performance]—the estimated test MSE will be more of a training MSE.
+
+.b[Solutions] to this problem involve .hi-pink[matching the resampling process] to the .hi-pink[original sampling and underlying dependence].
+
+---
+## 1. Cross-sectional spatial data
+
+.small[
+Observations near each other in space are probably related to each other. We may want to resample blocks of larger areas, not individual observations.
+
+- **Training/testing split?** Use `group_initial_split()` instead of `initial_split()` to keep groups of observations together when splitting the data.
+
+- **Cross-validation:** Use `group_vfold_cv()` instead of `vfold_cv()` to resample by grabbing entire blocks at once (e.g., all counties for a given state, instead of treating each county as independent). Example:
+]
+```{r, eval=F}
+# 5-fold CV grabbing entire states at once
+cv_block = df_train %>% group_vfold_cv(group=state, v=5)
+```
+
+---
+## 2. Panel data
+
+.small[
+Repeated observations for the same unit (person, county, etc.) are related to each other. We want to resample entire units at a time, not allow data from the same unit to show up in both training & testing data. 
+
+- **Training/testing split?** Use `group_initial_split()`, setting the `group` argument to the unit ID variable.
+
+- **Cross-validation:** Use `group_vfold_cv()`, setting the `group` argument to the unit ID variable.
+
+*Time series or panel?* Let $N=$ number of units, $T=$ number of time periods. Generally, if $N>T$ you have panel data; if $T>N$ you have time series data.
+]
+
+---
+## 3. Time series data
+
+.small[
+Later observations may "remember" (contain information about) earlier observations. We need to train *only* on data that comes *before* the testing or validation set.
+
+- **Training/testing split:** Use `initial_time_split()` instead of `initial_split()`. This makes your training data come first in time, and your training data last, instead of random sampling.
+
+- **Cross-validation:** Use `sliding_index()` (or related functions [here](https://rsample.tidymodels.org/reference/slide-resampling.html)) instead of `vfold_cv()` to resample by choosing points at which we will train in the "past" and validate in the "future" ([more info](https://medium.com/@soumyachess1496/cross-validation-in-time-series-566ae4981ce4)). Example:
+]
+```{r, eval=F}
+# This generates folds with 7 days for training, 1 day for assessment.
+cv_time = df_train %>% sliding_index(index=DATE_VAR, lookback=7, assess_stop=1)
+```
+
+
+
