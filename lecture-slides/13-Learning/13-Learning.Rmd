@@ -114,8 +114,6 @@ Key differences among the 3 goals:
 
 # How do we predict?
 
-For prediction, we want "nice"-performing estimates $\hat y$ instead of $\hat\beta$.
-
 .qa[Q] Can we just use the same methods (_i.e._, OLS)?
 
 --

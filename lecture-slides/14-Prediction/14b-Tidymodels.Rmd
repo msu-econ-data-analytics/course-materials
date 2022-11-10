@@ -1,5 +1,6 @@
 ---
-title: "Lecture 14b: Learning with tidymodels"
+title: "Lecture 14: Prediction Methods"
+subtitle: "Part 2: Learning with tidymodels"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
 date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
 output:

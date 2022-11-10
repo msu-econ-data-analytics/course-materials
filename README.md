@@ -126,11 +126,11 @@ Fall 2022
 
 **Lecture 14: Prediction Methods**
 
-* [**Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction2/14a-Shrinkage.html)
+* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14a-Shrinkage.html)
   - Shrinkage methods
   - Ridge regression
   - Lasso (and elasticnet)
-* [**Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction2/14b-Tidymodels.html)
+* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14b-Tidymodels.html)
   - Setup and splitting
   - Recipes
   - Workflows
@@ -263,12 +263,12 @@ This is a list of further resources that you may find helpful throughout (and af
 ### Fundamentals of machine learning
 * [*ISLR* Ch. 2: Statistical Learning](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Statistical learning, assessing model accuracy.
 * [*ISLR* Ch. 5: Resampling Methods](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Cross-validation, the bootstrap.
+* [*Introduction to Data Science* Chapters 27 & 29](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry). Chapter 27: Introduction to machine learning. Chapter 29: Cross validation.
 * [*Prediction and Machine Learning* Lectures 0-3](https://github.com/edrubin/EC524W21) (Ed Rubin).
   - Lecture 000: Overview (Why predict?)
   - Lecture 001: Statistical learning foundations
   - Lecture 002: Model accuracy
   - Lecture 003: Resampling Methods
-* [*Introduction to Data Science* Chapters 27 & 29](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry). Chapter 27: Introduction to machine learning. Chapter 29: Cross validation.
 
 ### Shrinkage methods
 * [*ISLR* Ch. 6: Linear Model Selection & Regularization](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Subset selection, shrinkage (ridge, lasso), dimension reduction.
@@ -280,7 +280,7 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Modern Data Science with R* Chapters 10-11](https://mdsr-book.github.io/mdsr2e/ch-vizI.html) (Baumer, Kaplan, and Horton). Chapter 10: Predictive modeling. Chapter 3: Supervised learning.
 * [*Introduction to Data Science* Chapters 31-32](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry). Chapter 31: Examples of algorithms. Chapter 32: Machine learning in practice.
 
-### Machine learning with tidymodels
+### Machine learning with `tidymodels`
 * [ISLR tidymodels Labs](https://emilhvitfeldt.github.io/ISLR-tidymodels-labs/index.html) (Emil Hvitfeldt). All labs from *ISLR* written using the tidymodels library.
 * [*Prediction and Machine Learning* Labs](https://github.com/edrubin/EC524W21) (Ed Rubin and Stephen Reed). 
   - Kaggle notebooks on "tidymodels-ing"
