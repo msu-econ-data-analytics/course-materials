@@ -344,10 +344,10 @@ We can use some functions from the `rsample` package within `tidymodels`:
 # Set a seed (ensures reproducible results)
 set.seed(12345)
 # Create an 80/20 split by random sampling
-credit_split = Credit %&gt;% initial_split(prop = 0.8)
+credit_split = Credit |&gt; initial_split(prop = 0.8)
 # Grab each subset
-credit_train = credit_split %&gt;% training()
-credit_test  = credit_split %&gt;% testing()
+credit_train = credit_split |&gt; training()
+credit_test  = credit_split |&gt; testing()
 credit_split
 ```
 
@@ -424,7 +424,7 @@ If you have an "ID" variable, you can give it an "ID" role using `update_role(id
 
 
 ```r
-recipe_all %&gt;% step_dummy(all_nominal_predictors())
+recipe_all |&gt; step_dummy(all_nominal_predictors())
 ```
 
 ```
@@ -451,11 +451,11 @@ Now the original categorical variables are replaced by indicators for each of th
 
 
 ```r
-credit_clean = recipe_all %&gt;% 
-  step_dummy(all_nominal_predictors()) %&gt;% 
-  prep() %&gt;%
+credit_clean = recipe_all |&gt; 
+  step_dummy(all_nominal_predictors()) |&gt; 
+  prep() |&gt;
   juice()
-credit_clean %&gt;% skim()
+credit_clean |&gt; skim()
 ```
 
 ---
@@ -467,25 +467,25 @@ Let's set up and apply a more complex recipe:
 ```r
 credit_recipe = 
   # Define the recipe: Rating predicted by all other vars in credit_train
-  recipe(Rating ~ ., data = credit_train) %&gt;%
+  recipe(Rating ~ ., data = credit_train) |&gt;
   # Define ID variable (so it's not used in the model)
-  update_role(ID, new_role = "ID") %&gt;%
+  update_role(ID, new_role = "ID") |&gt;
   # Impute missing values (use means) for numeric predictors
-  step_impute_mean(all_numeric_predictors()) %&gt;% 
+  step_impute_mean(all_numeric_predictors()) |&gt; 
   # Impute missing values (by k-nearest neighbors) for categorical predictors
-  step_impute_knn(all_nominal_predictors(), neighbors = 5) %&gt;%
+  step_impute_knn(all_nominal_predictors(), neighbors = 5) |&gt;
   # Create polynomial terms for numeric predictors
-  step_poly(all_numeric_predictors(), degree=2) %&gt;%
+  step_poly(all_numeric_predictors(), degree=2) |&gt;
   # Create indicators for categorical predictors
-  step_dummy(all_nominal_predictors()) %&gt;%
+  step_dummy(all_nominal_predictors()) |&gt;
   # Create interactions (all possible first-degree terms)
-  step_interact(~all_predictors():all_predictors()) %&gt;%
+  step_interact(~all_predictors():all_predictors()) |&gt;
   # Remove predictors with near-zero variance (improves stability)
   step_nzv(all_predictors())
 # Create the cleaned dataset
-credit_clean = credit_recipe %&gt;% prep() %&gt;% juice()
+credit_clean = credit_recipe |&gt; prep() |&gt; juice()
 # Skim the cleaned (full) dataset
-credit_clean %&gt;% skim()
+credit_clean |&gt; skim()
 ```
 
 
@@ -495,7 +495,7 @@ credit_clean %&gt;% skim()
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Name &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Piped data &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; credit_clean &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Number of rows &lt;/td&gt;
@@ -2456,23 +2456,8 @@ Here's a simple linear regression using `lm()`:
 
 ```r
 model_lm = 
-  linear_reg() %&gt;%
+  linear_reg() |&gt;
   set_engine("lm")
-```
-
----
-
-To fit the model to our data we could run:
-
-```r
-est_reg = model_lm %&gt;%
-  fit(Rating ~ ., data = credit_clean)
-```
-
-This will give you the exact same results as:
-
-```r
-lm(Rating ~ ., data=credit_clean)
 ```
 
 ---
@@ -2483,7 +2468,7 @@ Define folds for 5-fold cross-validation:
 
 
 ```r
-credit_cv = credit_train %&gt;% vfold_cv(v = 5)
+credit_cv = credit_train |&gt; vfold_cv(v = 5)
 tidy(credit_cv)
 ```
 
@@ -2512,12 +2497,12 @@ Now we can **put it all together** with `workflow()`.
 
 ```r
 fit_lm_cv =
-  workflow() %&gt;%                 # Define a workflow
-  add_model(model_lm) %&gt;%        # Choose the model
-  add_recipe(credit_recipe) %&gt;%  # Clean the data
+  workflow() |&gt;                 # Define a workflow
+  add_model(model_lm) |&gt;        # Choose the model
+  add_recipe(credit_recipe) |&gt;  # Clean the data
   fit_resamples(credit_cv)       # Estimate &amp; cross-validate
 # Check the performance
-fit_lm_cv %&gt;% collect_metrics()
+fit_lm_cv |&gt; collect_metrics()
 ```
 
 ```
@@ -2534,7 +2519,7 @@ To see the performance within each fold:
 
 
 ```r
-fit_lm_cv %&gt;% collect_metrics(summarize = F)
+fit_lm_cv |&gt; collect_metrics(summarize = F)
 ```
 
 ```
@@ -2580,7 +2565,7 @@ The first change to make is the **model:**
 
 ```r
 model_lasso = 
-  linear_reg(penalty = tune(), mixture = 1) %&gt;% 
+  linear_reg(penalty = tune(), mixture = 1) |&gt; 
   set_engine("glmnet")
 ```
 
@@ -2605,10 +2590,10 @@ lambdas = 10 ^ seq(from = 5, to = -2, length = 1e3)
 
 
 ```r
-workflow_lasso = workflow() %&gt;%
-  add_model(model_lasso) %&gt;%
+workflow_lasso = workflow() |&gt;
+  add_model(model_lasso) |&gt;
   add_recipe(credit_recipe)
-lasso_cv = workflow_lasso %&gt;%
+lasso_cv = workflow_lasso |&gt;
   tune_grid(
     credit_cv,
     grid = data.frame(penalty = lambdas),
@@ -2622,7 +2607,7 @@ Which values of `\(\lambda\)` performed best?
 
 
 ```r
-lasso_cv %&gt;% show_best()
+lasso_cv |&gt; show_best()
 ```
 
 ```
@@ -2645,7 +2630,7 @@ Let's plot the results for all values of `\(\lambda\)`:
 autoplot(lasso_cv, metric = "rmse")
 ```
 
-&lt;img src="14b-Tidymodels_files/figure-html/unnamed-chunk-19-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="14b-Tidymodels_files/figure-html/unnamed-chunk-17-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -2657,20 +2642,20 @@ What if we want to use **ridge** instead of lasso? Just switch `mixture = 0`.
 
 ```r
 model_ridge = 
-  linear_reg(penalty = tune(), mixture = 0) %&gt;% 
+  linear_reg(penalty = tune(), mixture = 0) |&gt; 
   set_engine("glmnet")
-workflow_ridge = workflow() %&gt;%
-  add_model(model_ridge) %&gt;%
+workflow_ridge = workflow() |&gt;
+  add_model(model_ridge) |&gt;
   add_recipe(credit_recipe2)
-credit_cv = credit_train %&gt;% vfold_cv(v = 5)
-ridge_cv = workflow_ridge %&gt;%
+credit_cv = credit_train |&gt; vfold_cv(v = 5)
+ridge_cv = workflow_ridge |&gt;
   tune_grid(
     credit_cv,
     grid = data.frame(penalty = lambdas),
     metrics = metric_set(rmse)
   )
 autoplot(ridge_cv, metric = "rmse")
-ridge_cv %&gt;% show_best()
+ridge_cv |&gt; show_best()
 ```
 
 ---
@@ -2700,17 +2685,17 @@ lambdas = 10 ^ seq(from = 5, to = -2, length = 1e2)
 alphas = seq(from = 0, to = 1, by = 0.1)
 
 # Define the elasticnet model
-model_net = linear_reg(penalty = tune(), mixture = tune()) %&gt;%
+model_net = linear_reg(penalty = tune(), mixture = tune()) |&gt;
   set_engine("glmnet")
 
 # Define the workflow
-workflow_net = workflow() %&gt;%
-  add_recipe(credit_recipe) %&gt;%
+workflow_net = workflow() |&gt;
+  add_recipe(credit_recipe) |&gt;
   add_model(model_net)
 
 # CV elasticnet with our ranges of lambdas and alphas
 cv_net = 
-  workflow_net %&gt;%
+  workflow_net |&gt;
   tune_grid(
     credit_cv,
     grid = expand_grid(mixture = alphas, penalty = lambdas),
@@ -2727,17 +2712,17 @@ class: clear, middle
 
 ```r
 # Define the elasticnet model
-model_net = linear_reg(penalty = tune(), mixture = tune()) %&gt;%
+model_net = linear_reg(penalty = tune(), mixture = tune()) |&gt;
   set_engine("glmnet")
 
 # Define the workflow
-workflow_net = workflow() %&gt;%
-  add_recipe(credit_recipe) %&gt;%
+workflow_net = workflow() |&gt;
+  add_recipe(credit_recipe) |&gt;
   add_model(model_net)
 
 # CV elasticnet with grid_regular()
 cv_net = 
-  workflow_net %&gt;%
+  workflow_net |&gt;
   tune_grid(
     credit_cv,
 *   grid = grid_regular(mixture(), penalty(), levels=5:5),
@@ -2769,7 +2754,7 @@ Tell R which model we're choosing:
 
 ```r
 final_lasso = 
-  workflow_lasso %&gt;%
+  workflow_lasso |&gt;
   finalize_workflow(select_best(lasso_cv, metric = "rmse"))
 final_lasso
 ```
@@ -2806,8 +2791,8 @@ Fit the model and make predictions in the test set:
 
 
 ```r
-final_fit_lasso = final_lasso %&gt;% last_fit(credit_split)
-final_fit_lasso %&gt;% collect_metrics()
+final_fit_lasso = final_lasso |&gt; last_fit(credit_split)
+final_fit_lasso |&gt; collect_metrics()
 ```
 
 ```
@@ -2826,8 +2811,8 @@ Now let's take a look at the coefficients from the best model:
 
 
 ```r
-coefs = final_fit_lasso %&gt;%
-  extract_fit_parsnip() %&gt;%
+coefs = final_fit_lasso |&gt;
+  extract_fit_parsnip() |&gt;
   tidy()
 ```
 
@@ -2842,7 +2827,7 @@ How about listing only the non-zero coefficients?
 
 
 ```r
-coefs_nonzero = coefs %&gt;%
+coefs_nonzero = coefs |&gt;
   filter(estimate &gt; 0)
 ```
 
@@ -2855,13 +2840,13 @@ Finally, we can plot the predictions against the true values:
 
 
 ```r
-final_fit_lasso %&gt;% collect_predictions() %&gt;%
+final_fit_lasso |&gt; collect_predictions() |&gt;
   ggplot(aes(x=.pred, y=Rating)) + 
   geom_abline(slope=1) +
   geom_point(color="blue")
 ```
 
-&lt;img src="14b-Tidymodels_files/figure-html/unnamed-chunk-28-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="14b-Tidymodels_files/figure-html/unnamed-chunk-26-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: true
@@ -2910,7 +2895,7 @@ Observations near each other in space are probably related to each other. We may
 
 ```r
 # 5-fold CV grabbing entire states at once
-cv_block = df_train %&gt;% group_vfold_cv(group=state, v=5)
+cv_block = df_train |&gt; group_vfold_cv(group=state, v=5)
 ```
 
 ---
@@ -2939,7 +2924,7 @@ Later observations may "remember" (contain information about) earlier observatio
 
 ```r
 # This generates folds with 7 days for training, 1 day for assessment.
-cv_time = df_train %&gt;% sliding_index(index=DATE_VAR, lookback=7, assess_stop=1)
+cv_time = df_train |&gt; sliding_index(index=DATE_VAR, lookback=7, assess_stop=1)
 ```
 
 

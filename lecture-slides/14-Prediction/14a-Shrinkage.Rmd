@@ -78,6 +78,8 @@ Linear regression is great for causal inference.
 * Best linear unbiased estimator (BLUE) (under certain assumptions).
 * Can give us unbiased treatment effects (under certain assumptions).
 
+--
+
 Is it good for prediction too?
 * More advanced, nonlinear methods sometimes work better.
 * But linear regression can still work well even on fairly complex problems.
@@ -114,7 +116,7 @@ To use regression effectively in prediction, we have to deal with two issues:
 
 When we estimate a large, imprecise coefficient, should we just accept it?
 - Is the pattern likely to come up again, or idiosyncratic to this sample?
-- Maybe we should demand a higher bar for larger coefficients.
+- Maybe we should demand stronger evidence for larger coefficients.
 
 ```{r jabba, echo=FALSE, fig.height=3.6, fig.width=7}
 ggplot(starwars %>% filter(height>140, height<180) %>% slice(1:16), aes(x=height, y=mass)) +
@@ -426,17 +428,15 @@ theme(legend.position = "bottom")
 ```
 
 ---
-class: clear, middle
-layout: false
-
-So which shrinkage method should you choose?
-
----
 layout: true
 # Ridge or lasso?
 
 ---
 name: or
+
+So which shrinkage method should you choose?
+
+--
 
 .col-left.pink[
 .b[Ridge regression]

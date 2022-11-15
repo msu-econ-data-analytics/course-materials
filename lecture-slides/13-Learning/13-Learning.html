@@ -90,8 +90,6 @@ Key differences among the 3 goals:
 
 # How do we predict?
 
-For prediction, we want "nice"-performing estimates `\(\hat y\)` instead of `\(\hat\beta\)`.
-
 .qa[Q] Can we just use the same methods (_i.e._, OLS)?
 
 --
@@ -410,60 +408,43 @@ How do we calculate model performance?
 layout: false
 # Resampling methods
 
-We know how to define model performance, and we've discussed the need for separate training and testing data.
-
-Now, how do we use these concepts to actually estimate MSE (or whatever your loss function is)?
-
-Multiple answers, but the most important is .hi[resampling methods].
+If we just need to **train** a model once and then **evaluate** its performance...
+- We can use the training set to fit the model...
+- And then the test set to calculate MSE and see how it did.
 
 --
 
-Resampling methods can be used for 2 important modeling tasks:
+But what if we also need to **choose** a model / **tune** its parameter(s)?
+- We could estimate the **test MSE** for each model we're considering, and then choose the best one.
 
-- .hi-purple[Model assessment] Evaluating a model's accuracy
+--
 
-- .hi-purple[Model selection] Choosing and tuning a model
+But wait -- now, how do we **evaluate** the model we've chosen?
+- We already used up the test set during the training process!
+- We chose the model based on this sample, so of course its MSE will be low (too low).
 
 ---
 layout: false
 # Resampling methods
 
-The process:
-
-1. .b[Repeatedly draw samples] from the .b[training data].
-
-1. .b[Fit your model](s) on each random sample.
-
-1. .b[Compare] model performance (or estimates) .b[across samples].
-
-1. Infer the .b[variability/uncertainty in your model] from (3).
-
----
-name: resampling-holdout
-# Resampling methods
-## Hold out
-
-.note[Recall:] We want to find the model that .b[minimizes out-of-sample test error].
-
-If we have a large test dataset, we can use it (once).
-
-.qa[Q.sub[1]] What if we don't have a test set?
-&lt;br&gt;
-.qa[Q.sub[2]] What if we need to select and train a model?
-&lt;br&gt;
-.qa[Q.sub[3]] How can we avoid overfitting our training.super[.pink[†]] data during model selection?
-
-.footnote[
-.normal[.pink[†]] Also relevant for .it[testing] data.
-]
+Instead, we can use .hi[resampling methods] to conduct model selection entirely within the training set.
+- Hold out a mini "test" sample of the training data that we use to estimate the test error.
 
 --
 
-.qa[A.sub[1,2,3]] .b[Hold-out methods] (_e.g._, cross validation) use training data to estimate test performance—.b[holding out] a mini "test" sample of the training data that we use to estimate the test error.
+The process:
+
+1. **Fit your model(s)** on only one part of the training data (a sample).
+2. **Estimate the test MSE** using the other part of the training data.
+3. **Repeat steps 1-2** for different random splits of the training data.
+4. **Select a model** based on your estimated test MSE.
+5. Finally, **evaluate your chosen model** by estimating MSE in the *real* test set. (Don't touch it until the very end!)
+
+
 ---
 name: resampling-validation
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 1: The .it[validation set] approach
 
 To estimate the .hi-pink[test error], we can .it[hold out] a subset of our .hi-purple[training data] and then .hi-slate[validate] (evaluate) our model on this held out .hi-slate[validation set].
@@ -498,7 +479,7 @@ To estimate the .hi-pink[test error], we can .it[hold out] a subset of our .hi-p
 
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 1: The .it[validation set] approach
 
 ---
@@ -538,7 +519,7 @@ class: clear, middle
 &lt;img src="13-Learning_files/figure-html/plot-vset-sim-2-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
-# Hold-out methods
+# Resampling methods
 ## Option 1: The .it[validation set] approach
 
 Put differently: The validation-set approach has (≥) two major drawbacks:
@@ -554,7 +535,7 @@ Put differently: The validation-set approach has (≥) two major drawbacks:
 Even if the validation-set approach provides an unbiased estimator for test error, it is likely a pretty noisy estimator.
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 2: Leave-one-out cross validation
 
 ---
@@ -573,7 +554,7 @@ name: resampling-loocv
 
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 2: Leave-one-out cross validation
 
 Each observation takes a turn as the .hi-slate[validation set],
@@ -612,7 +593,7 @@ exclude: true
 .slate[Observation n's turn for validation produces MSE.sub[n]].
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 2: Leave-one-out cross validation
 
 ---
@@ -648,7 +629,7 @@ class: clear, middle
 &lt;img src="13-Learning_files/figure-html/plot-loocv-mse-1.svg" style="display: block; margin: auto;" /&gt;
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 3: k-fold cross validation
 
 ---
@@ -684,7 +665,7 @@ exclude: true
 
 ---
 layout: true
-# Hold-out methods
+# Resampling methods
 ## Option 3: k-fold cross validation
 
 With `\(k\)`-fold cross validation, we estimate test MSE as
@@ -743,20 +724,17 @@ class: clear, middle
 ---
 name: holdout-caveats
 layout: false
-# Hold-out methods
+# Resampling methods
 ## Caveat
 
-So far, we've treated each observation as separate/independent from each other observation. But exceptions are everywhere:
+So far, we've treated each observation as independent of each other observation. But exceptions are everywhere:
 - Individuals in a household (cross-sectional data)
 - Days of stock returns (time series data)
 - Panel data (panel data)
-- Pixels of land use categories (spatial data)
+- Pixels of satellite imagery (spatial data)
 
-For cases like these, we need to modify the cross-validation procedures to take dependence into account.
-- Time series data: Train on earlier data, validate on later data.
-- Other types of data: Keep related groups of observations together when randomly dividing the data.
-
-We'll see methods for doing this next week.
+For cases like these, we need to modify the cross-validation procedures to take **dependence** into account.
+- We'll come back to methods for doing this soon.
 
 
 ---
