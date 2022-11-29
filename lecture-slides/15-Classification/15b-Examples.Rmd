@@ -1,0 +1,518 @@
+---
+title: "Lecture 15: Classification"
+subtitle: "Part 2: Examples"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{css, echo=FALSE}
+.scroll-output-full {
+  height: 90%;
+  overflow-y: scroll;
+}
+.scroll-output-75 {
+  height: 75%;
+  overflow-y: scroll;
+}
+```
+
+```{r, setup, include = F}
+library(knitr)
+library(tidyverse)
+library(DT)
+library(huxtable)
+# Define colors
+red_pink   = "#e64173"
+turquoise  = "#20B2AA"
+orange     = "#FFA500"
+red        = "#fb6107"
+blue       = "#181485"
+navy       = "#150E37FF"
+green      = "#8bb174"
+yellow     = "#D8BD44"
+grey_light = "grey70"
+grey_mid   = "grey50"
+grey_dark  = "grey20"
+purple     = "#6A5ACD"
+slate      = "#314f4f"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  cache = T,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(knitr.table.format = "html")
+```
+
+
+# Table of contents
+
+1. [Setup: Credit card default data](#setup)
+
+1. [Logistic regression and KNN](#simple)
+
+1. [Cross-validation](#cv)
+
+1. [Decision trees](#trees)
+
+1. [Teach your laptop how to read](#read)
+
+---
+layout: true
+# Setup: Credit card default data
+
+---
+name: setup
+class: inverse, middle
+
+---
+
+**1.** Load some libraries:
+
+```{r}
+library(pacman)
+p_load(tidyverse, skimr, janitor, tidymodels, magrittr, tune,
+       glmnet, readxl, kknn, rpart.plot)
+```
+
+And this data on credit card defaults:
+
+```{r}
+default = 
+  # skip the first row to load the correct variable names
+  read_excel("data/default of credit card clients.xls", skip=1) %>%
+  # clean variable names with janitor::clean_names()
+  clean_names()
+```
+
+---
+
+.scroll-output-full[
+```{r}
+skim(default)
+```
+]
+
+---
+
+**2.** Convert categorical variables to factors (because `tidymodels` isn't so great for this step)
+
+.scroll-output-75[
+```{r}
+default2 = default %>%
+  mutate(across(sex:marriage | pay_0:pay_6 | default_payment_next_month,
+                as_factor))
+skim(default2)
+```
+]
+
+---
+
+**3.** Split the sample into training (80%) and test (20%).
+
+```{r}
+set.seed(101)
+default_split = default2 %>% initial_split(prop = 0.8)
+default_train = default_split %>% training()
+default_test  = default_split %>% testing()
+```
+
+**4.** Define a recipe. We'll be predicting whether each customer defaults on their credit card payment in the following month.
+
+```{r}
+default_recipe = default_train %>% 
+  recipe(default_payment_next_month ~ .) %>%
+  update_role(id, new_role = "ID") %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_nzv(all_predictors())
+default_clean = default_recipe %>% prep() %>% juice()
+```
+
+
+---
+layout: false
+name: simple
+class: inverse, middle
+# Logistic regression and KNN
+
+---
+layout: true
+# Logistic regression example
+
+---
+
+Fit a simple logistic regression:
+
+```{r}
+# Define a simple logistic model
+model_logistic = logistic_reg() %>%
+  set_engine("glm")
+
+# Define the workflow
+workflow_logistic = workflow() %>%
+  add_recipe(default_recipe) %>%
+  add_model(model_logistic)
+
+# Fit the model in the training set, make predictions in the test set
+predict_logistic = workflow_logistic %>%
+  fit(data = default_train) %>%
+  augment(new_data = default_test)
+```
+
+---
+
+View the results:
+
+```{r}
+head(predict_logistic %>% select(default_payment_next_month | starts_with(".")), 10)
+```
+
+---
+
+Calculate accuracy and the confusion matrix:
+
+```{r}
+accuracy(predict_logistic, 
+         truth = default_payment_next_month, 
+         estimate = .pred_class)
+conf_mat(predict_logistic, 
+         truth = default_payment_next_month, 
+         estimate = .pred_class)
+```
+
+---
+layout: false
+# KNN example
+
+Fit a k-nearest neighbors model instead (choosing $k=10$):
+
+```{r}
+# Define a simple KNN model
+model_knn = nearest_neighbor(neighbors = 10, mode = "classification") %>%
+  set_engine("kknn", scale = TRUE)
+
+# Define the workflow
+workflow_knn = workflow() %>%
+  add_recipe(default_recipe) %>%
+  add_model(model_knn)
+
+# Fit the model in the training set, make predictions in the test set
+predict_knn = workflow_knn %>%
+  fit(data = default_train) %>%
+  augment(new_data = default_test)
+
+# Calculate accuracy
+accuracy(predict_knn, truth = default_payment_next_month, estimate = .pred_class)
+```
+
+---
+# Tuning K in KNN
+
+We can optimize *k*-nearest neighbors by tuning the value of $k=$ `neighbors` through cross-validation.
+
+Note you can use KNN for regression too - just switch to `mode = "regression"`.
+
+
+---
+layout: false
+name: cv
+class: inverse, middle
+# Cross-validation
+
+---
+layout: true
+# Logistic regression + shrinkage
+
+---
+
+We can add regularization to a logistic regression in almost exactly the same way as a linear regression.
+
+```{r}
+# Create a 5-fold cross-validation split
+default_cv = default_train %>% vfold_cv(v = 5)
+
+# Define a logistic model with ridge regularization
+model_logridge = logistic_reg(penalty = tune(), mixture = 0) %>%
+  set_engine("glmnet")
+
+# Define the workflow
+workflow_logridge = workflow() %>%
+  add_recipe(default_recipe) %>%
+  add_model(model_logridge)
+
+# Define a sequence of lambdas to try
+lambdas = 10 ^ seq(from = 4, to = -2, length = 50)
+```
+
+---
+
+The difference is that we have to specify a metric appropriate to classification (i.e., `accuracy` instead of `rmse`).
+- You could also specify `sensitivity`, `specificity`, or `precision`.
+```{r}
+# Cross-validate
+cv_logridge = workflow_logridge %>% tune_grid(
+    default_cv,
+    grid = data.frame(penalty = lambdas),
+    metrics = metric_set(accuracy)
+  )
+
+# Show the best model
+cv_logridge %>% show_best(n=3)
+```
+
+---
+
+.small[
+```{r}
+# Fit the best model in the training set, make predictions in the test set
+predict_logridge = workflow_logridge %>%
+  finalize_workflow(select_best(cv_logridge, 'accuracy')) %>%
+  last_fit(default_split) %>%
+  collect_predictions()
+
+# Calculate accuracy and the confusion matrix
+accuracy(predict_logridge, 
+         truth = default_payment_next_month, estimate = .pred_class)
+conf_mat(predict_logridge, 
+         truth = default_payment_next_month, estimate = .pred_class)
+```
+]
+
+
+---
+layout: true
+# Decision trees
+
+---
+name: trees
+class: inverse, middle
+
+---
+
+Fit a decision tree (give it the raw data, not the normalized or dummy variables):
+
+```{r}
+# Define a decision tree model
+model_tree = decision_tree(mode = "classification", cost_complexity = 0.003) %>%
+  set_engine("rpart")
+
+# Define the workflow & fit the model
+fit_tree = workflow() %>%
+  add_formula(default_payment_next_month ~ .) %>%
+  add_model(model_tree) %>%
+  fit(data = default_train)
+```
+
+---
+
+.small[
+Output:
+
+```{r echo=FALSE, out.width="80%"}
+fit_tree
+```
+]
+
+---
+
+Visualize the tree:
+
+```{r, out.width="90%"}
+rpart.plot(extract_fit_engine(fit_tree))
+```
+
+---
+layout: false
+# Tuning (and pruning) the tree
+
+Decision trees have several possible tuning parameters:
+- `cost_complexity`
+- `tree_depth`
+- `min_n`
+
+You can read more about them in the R documentation, [ISLR](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) chapter 8, or by Googling (try [here](https://www.tidymodels.org/start/tuning/), [here](https://emilhvitfeldt.github.io/ISLR-tidymodels-labs/tree-based-methods.html), or [here](https://juliasilge.com/blog/wind-turbine/)).
+
+---
+layout: true
+# Teach your laptop how to read
+
+---
+name: read
+class: inverse, middle
+This section is adapted from Rafael Irizarry, [*Introduction to Data Science*](https://rafalab.github.io/dsbook/), chapters 27 & 32.
+
+---
+
+.small[
+Believe it or not, we've already gotten far enough with machine learning that you can now teach your computer how to read.
+]
+
+--
+
+.small[
+The **MNIST database** is a set of images of handwritten numerical digits. They look like this:
+
+```{r, echo=F, out.width="40%"}
+knitr::include_graphics("images/digit-images-example-1.png")
+```
+
+- The images are scanned, centered, and represented in $28 \times 28=784$ pixels.
+- Each pixel's value is a grayscale intensity between 0 (white) and 255 (black).
+- Each image has also been read by a human and identified as a digit (0-9).
+]
+
+---
+
+**1. Load the data** and take a subset (for quicker computation):
+
+```{r, cache=T}
+p_load(dslabs)
+mnist = read_mnist()
+set.seed(1990)
+index = sample(nrow(mnist$train$images), 10000)
+x = mnist$train$images[index,]
+y = factor(mnist$train$labels[index])
+numbers = bind_cols("y"=y, as_tibble(x))
+```
+
+---
+
+**2. Split the sample** and take a look at the data:
+
+```{r, cache=T}
+numbers_split = numbers %>% initial_split(prop = 0.8)
+numbers_train = numbers_split %>% training()
+numbers_test  = numbers_split %>% testing()
+head(numbers_test, 8)
+```
+
+---
+
+**3. Set up a recipe** & remove near-zero-variance predictors:
+
+```{r, cache=T}
+numbers_recipe = numbers_train %>%
+  recipe(y ~ .) %>%
+  step_nzv(all_predictors())
+numbers_clean = numbers_recipe %>% prep() %>% juice()
+head(numbers_clean, 8)
+```
+
+---
+
+**4. Fit a KNN model,** k=10 (this will take a minute or so):
+
+```{r, cache=T}
+# Define the model
+numbers_model = nearest_neighbor(neighbors = 10, mode = "classification") %>%
+  set_engine("kknn", scale = TRUE)
+
+# Fit the model
+numbers_workflow = workflow() %>%
+  add_model(numbers_model) %>%
+  add_recipe(numbers_recipe) %>%
+  fit(numbers_train)
+
+# Predict in the test set
+test_predictions = numbers_workflow %>% 
+  last_fit(numbers_split) %>% 
+  collect_predictions()
+```
+
+---
+
+**Take a look at the results!**
+
+```{r, eval=F}
+head(test_predictions)
+```
+```{r echo=FALSE}
+test_predictions %>% 
+  dplyr::select(.pred_4:.pred_9 | .pred_class | y) %>%
+  mutate(across(where(is.numeric), round, 3)) %>%
+  slice_head(n=100) %>% slice_tail(n=86) %>%
+  datatable(options = list(dom = 't'))
+```
+
+---
+
+**Confusion matrix:**
+
+```{r}
+conf_mat(test_predictions, truth=y, estimate=.pred_class)
+```
+
+---
+
+**Overall accuracy:**
+
+```{r}
+accuracy(test_predictions, truth=y, estimate=.pred_class)
+```
+
+---
+
+Let's calculate accuracy metrics by digit...
+
+```{r, cache=T}
+pred_numbers = test_predictions %>%
+  dplyr::select(y_hat = .pred_class, y) %>%
+  mutate(correct = 1*(y==y_hat))
+sens = pred_numbers %>%
+  group_by(y) %>%
+  summarize(sensitivity = mean(correct))
+prec = pred_numbers %>%
+  group_by(y_hat) %>%
+  summarize(precision = mean(correct))
+by_class = bind_cols(sens, prec) %>% dplyr::select(-y_hat)
+```
+
+---
+
+**Sensitivity and precision by digit:**
+
+```{r}
+by_class
+```
+
+```{r, include=FALSE}
+# Unused code to plot results by class
+# summary_numbers %>% 
+#   pivot_longer(cols=sensitivity:precision) %>%
+#   ggplot(aes(x=y, y=value, color=name)) +
+#     geom_line() +
+#     geom_point(size=3) +
+#     facet_grid(. ~ name)
+```
+
+---
+
+Our error rate was **4.2%.**
+
+* [Others](https://en.wikipedia.org/wiki/MNIST_database) have gotten as low as **0.52%** with KNN.
+
+* And as low as **0.17%** with convolutional neural networks.
+
+--
+
+</br>
+
+Now you basically know how to make a self-driving car!
+

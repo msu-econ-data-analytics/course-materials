@@ -138,7 +138,19 @@ Fall 2022
   - Prediction
   - Dependence
 
-**Classification Methods**
+**Lecture 15: Classification Methods**
+
+* [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-Classification/15a-Classification.html)
+  - Classification
+  - Logistic regression
+  - *k*-nearest neighbors
+  - Model assessment
+  - Decision trees
+* [**Part 2: Examples**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-Classification/15b-Examples.html)
+  - Logistic regression and KNN
+  - Cross-validation
+  - Decision trees
+  - Teach your laptop to read
 
 **Machine Learning in Economics**
 
