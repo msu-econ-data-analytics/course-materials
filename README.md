@@ -152,9 +152,14 @@ Fall 2022
   - Decision trees
   - Teach your laptop to read
 
-**Machine Learning in Economics**
+[**Lecture 16: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-ML-Applications/16-ML-Applications.html)
 
-**Big Data Tools**
+* Predicting outcomes
+* Constructing new data
+* Selecting covariates
+* Predicting causal effects
+
+**Lecture 17: Big Data Tools**
 
 
 ---
