@@ -159,8 +159,12 @@ Fall 2022
 * Selecting covariates
 * Predicting causal effects
 
-**Lecture 17: Big Data Tools**
+[**Lecture 17: Databases and Big Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html)
 
+* Tools for big data
+* Databases in R
+* Writing SQL queries
+* Distributed computing with Spark
 
 ---
 
@@ -326,5 +330,8 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Slides on Machine Learning](http://cameron.econ.ucdavis.edu/e240f/machinelearning.html) (Colin Cameron).
 * ["Machine Learning for Economists"](https://sites.google.com/view/dariosansone/resources/machine-learning) (Dario Sansone). Long list of resources, applications, and citations.
 
+### SQL (databases)
 
+
+### Distributed and cloud computing
 
