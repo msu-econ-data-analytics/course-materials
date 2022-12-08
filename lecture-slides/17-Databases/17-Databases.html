@@ -40,7 +40,7 @@ exclude: true
 
 1. [Writing SQL queries](#sql)
 
-1. [Distributed computing with Spark](#spark)
+1. [Getting started with BigQuery](#bigquery)
 
 
 ---
@@ -117,24 +117,29 @@ Better solutions:
 
 **Tutorials** by Grant McDermott: [Part 1](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/13-gce-i/13-gce-i.html), [Part 2](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/14-gce-ii/14-gce-ii.html).
 
+---
+
+# Distributed computing: Spark
+
+**Spark is a "unified analytics engine for large-scale data processing."**
+* Spark Core: enables distributed computing
+* Spark SQL: a SQL implementation
+* MLlib: An extensive machine learning library.
+
+Spark can scale in ways that other systems can't.
+* Move from a local test dataset to a massive dataset on a remote cluster, with minimal changes to your code.
+
+Key advantage: Ability to process data both **in memory** and **on disk.**
+* Deploys the optimal combination of resources for where it's deployed.
+
+**Tutorial** by Grant McDermott: [Here](https://raw.githack.com/uo-ec607/lectures/master/17-spark/17-spark.html)
+
 
 ---
 class: inverse, middle
 name: databases
 
 # Databases in R
-
----
-
-# Preliminaries
-
-Install the packages we'll be using:
-
-
-```r
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, nycflights13, tictoc)
-```
 
 ---
 
@@ -187,7 +192,15 @@ Some other (more powerful) implementations of SQL:
 
 # R packages
 
-**The R packages we need:**
+Run these preliminaries:
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, nycflights13, tictoc)
+```
+
+**The R packages we'll need:**
 1. `dbplyr` translates tidyverse code to SQL.
 2. `DBI` helps R connect to the database.
 3. A backend interface to the specific type of database we want to work with.
@@ -204,7 +217,7 @@ Open an (empty) database connection via `DBI::dbConnect`:
 
 
 ```r
-connection = dbConnect(RSQLite::SQLite(), path = ":memory:")
+lite_con = dbConnect(RSQLite::SQLite(), path = ":memory:")
 ```
 
 The path `":memory:"` creates a temporary in-memory database that we'll play around with *as if* it is a remote on-disk database.
@@ -220,7 +233,7 @@ Let's copy in our old friend, the `flights` dataframe from `nycflights13`.
 
 ```r
 copy_to(
-  dest = connection, 
+  dest = lite_con, 
   df = nycflights13::flights, 
   name = "flights",
   temporary = FALSE, 
@@ -236,7 +249,7 @@ Now we can use `dplyr::tbl` to use this database table as if it were a dataframe
 
 
 ```r
-flights_db = tbl(connection, "flights")
+flights_db = tbl(lite_con, "flights")
 class(flights_db)
 ```
 
@@ -268,7 +281,6 @@ flights_db
 #&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 #&gt; #   minute &lt;dbl&gt;, time_hour &lt;dbl&gt;, and abbreviated variable names
 #&gt; #   ¹​sched_dep_time, ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay
-#&gt; # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 ```
 
 ---
@@ -298,7 +310,6 @@ flights_db |&gt; select(year:day, dep_delay, arr_delay)
 #&gt;  9  2013     1     1        -3        -8
 #&gt; 10  2013     1     1        -2         8
 #&gt; # … with more rows
-#&gt; # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ---
@@ -331,7 +342,6 @@ flights_db |&gt; filter(dep_delay &gt; 240)
 #&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 #&gt; #   minute &lt;dbl&gt;, time_hour &lt;dbl&gt;, and abbreviated variable names
 #&gt; #   ¹​sched_dep_time, ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay
-#&gt; # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 ```
 
 ---
@@ -344,7 +354,7 @@ flights_db |&gt; filter(dep_delay &gt; 240)
 # Calculate the mean delay by destination
 flights_db |&gt;
   group_by(dest) |&gt;
-  summarize(delay = mean(dep_time))
+  summarize(delay = mean(dep_delay))
 ```
 
 ```
@@ -352,18 +362,17 @@ flights_db |&gt;
 #&gt; # Database: sqlite 3.39.4 []
 #&gt;    dest  delay
 #&gt;    &lt;chr&gt; &lt;dbl&gt;
-#&gt;  1 ABQ   2006.
-#&gt;  2 ACK   1033.
-#&gt;  3 ALB   1627.
-#&gt;  4 ANC   1635.
-#&gt;  5 ATL   1293.
-#&gt;  6 AUS   1521.
-#&gt;  7 AVL   1175.
-#&gt;  8 BDL   1490.
-#&gt;  9 BGR   1690.
-#&gt; 10 BHM   1944.
+#&gt;  1 ABQ   13.7 
+#&gt;  2 ACK    6.46
+#&gt;  3 ALB   23.6 
+#&gt;  4 ANC   12.9 
+#&gt;  5 ATL   12.5 
+#&gt;  6 AUS   13.0 
+#&gt;  7 AVL    8.19
+#&gt;  8 BDL   17.7 
+#&gt;  9 BGR   19.5 
+#&gt; 10 BHM   29.7 
 #&gt; # … with more rows
-#&gt; # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ---
@@ -392,7 +401,7 @@ tailnum_delay_tv = flights |&gt;
     mean_dep_delay = mean(dep_delay),
     mean_arr_delay = mean(arr_delay),
     n = n()
-    ) %&gt;% 
+    ) |&gt; 
   filter(n &gt; 100) |&gt;
   arrange(desc(mean_arr_delay))
 toc()
@@ -416,14 +425,14 @@ tailnum_delay_db = flights_db |&gt;
     mean_dep_delay = mean(dep_delay),
     mean_arr_delay = mean(arr_delay),
     n = n()
-    ) %&gt;% 
+    ) |&gt; 
   filter(n &gt; 100) |&gt;
   arrange(desc(mean_arr_delay))
 toc()
 ```
 
 ```
-#&gt; 0.02 sec elapsed
+#&gt; 0.01 sec elapsed
 ```
 --
 
@@ -438,7 +447,7 @@ Only when you print the object does it generate the SQL and query the database:
 
 ```r
 tic()
-print(tailnum_delay_db, n = 4)
+print(tailnum_delay_db, n = 2)
 ```
 
 ```
@@ -449,10 +458,7 @@ print(tailnum_delay_db, n = 4)
 #&gt;   &lt;chr&gt;            &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
 #&gt; 1 N11119            32.6           30.3   148
 #&gt; 2 N16919            32.4           29.9   251
-#&gt; 3 N14998            29.4           27.9   230
-#&gt; 4 N15910            29.3           27.6   280
 #&gt; # … with more rows
-#&gt; # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ```r
@@ -460,10 +466,10 @@ toc()
 ```
 
 ```
-#&gt; 1.51 sec elapsed
+#&gt; 1.5 sec elapsed
 ```
 
-Even then it tries to do as little work as possible and only pulls down a few rows.
+Even then it only pulls down exactly as many rows as you request.
 
 ---
 
@@ -500,7 +506,6 @@ tailnum_delay
 #&gt;  9 N24128            24.8           24.9   129
 #&gt; 10 N22971            26.5           24.7   230
 #&gt; # … with 1,191 more rows
-#&gt; # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ---
@@ -538,7 +543,7 @@ tailnum_delay_db = flights_db |&gt;
     mean_dep_delay = mean(dep_delay),
     mean_arr_delay = mean(arr_delay),
     n = n()
-    ) %&gt;% 
+    ) |&gt; 
   filter(n &gt; 100) |&gt;
   arrange(desc(mean_arr_delay))
 ```
@@ -755,7 +760,7 @@ Using `DBI::dbGetQuery()`:
 
 
 ```r
-dbGetQuery(connection, "SELECT * FROM flights WHERE dep_delay &gt; 240.0 LIMIT 5")
+dbGetQuery(lite_con, "SELECT * FROM flights WHERE dep_delay &gt; 240.0 LIMIT 5")
 ```
 
 ```
@@ -786,7 +791,7 @@ dbGetQuery(connection, "SELECT * FROM flights WHERE dep_delay &gt; 240.0 LIMIT 5
 What tables do we have in our database?
 
 ```r
-dbListTables(connection)
+dbListTables(lite_con)
 ```
 
 ```
@@ -796,7 +801,7 @@ dbListTables(connection)
 Show the columns/fields of a table:
 
 ```r
-dbListFields(connection, "flights")
+dbListFields(lite_con, "flights")
 ```
 
 ```
@@ -1173,7 +1178,7 @@ Let's put the `weather` data frame in the database as well:
 
 ```r
 copy_to(
-  dest = connection,
+  dest = lite_con,
   df = nycflights13::weather,
   name = "weather",
   temporary = FALSE,
@@ -1191,7 +1196,8 @@ Here's an example:
 SELECT *
 FROM flights AS f
 LEFT JOIN weather AS w 
-ON f.year = w.year AND f.month = w.month AND f.day = w.day AND f.hour = w.hour
+ON f.year = w.year AND f.month = w.month 
+  AND f.day = w.day AND f.hour = w.hour
 ```
 
 
@@ -1608,47 +1614,227 @@ ON f.year = w.year AND f.month = w.month AND f.day = w.day AND f.hour = w.hour
 | &lt;code&gt;dataset &amp;vert;&gt;&lt;/code&gt;  | `FROM dataset` |
 | `select()`     | `SELECT` |
 | `filter()`     | `WHERE` |
-| `mutate()`     | `SELECT AS` |
+| `mutate()`     | `SELECT ... AS` |
 | `arrange()`     | `ORDER BY` |
-| &lt;code&gt;group_by() &amp;vert;&gt; summarize()&lt;/code&gt;   | `SELECT AS ... GROUP BY` |
+| &lt;code&gt;group_by() &amp;vert;&gt; summarize()&lt;/code&gt;   | `SELECT ... AS ... GROUP BY` |
 | `left_join()`   | `LEFT JOIN ... ON` |
 | `head()`        | `LIMIT` |
 
 ---
 
-# Disconnect
+# More challenges
 
-When you're done using a database, **disconnect** from the connection:
+**Use SQL queries to answer these questions for year 2013:**
 
+1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows.
 
-```r
-dbDisconnect(connection)
-```
+2. List the number of flights to Bozeman per month, naming this column `flights_count`. Were they year-round or in specific seasons?
+
+3. What were the top 10 longest flights out of NYC airports?
+
+4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
+
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing -- calculating the percentage within SQL requires a subquery.)*
+
 
 ---
 
-# Learn more SQL
+# Disconnect
 
-If you want to learn more SQL, I suggest you play around with **Google BigQuery** using the [web interface](https://console.cloud.google.com/bigquery). 
-- Cheap: Analyze 1 TB for free each month, after that it's half a cent per GB.
-- Incredible [public datasets](https://www.reddit.com/r/bigquery/wiki/datasets/). E.g.:
-  * All open-source code on GitHub (1.7+ TB)
-  * 1.9 billion comments on Reddit (546+ GB)
-  * 1 billion taxi trips in NYC (130+ GB)
-  * Global Fishing Watch (300+ MB)
+When you're done using a database, make sure to **disconnect** from the connection:
+
+
+```r
+dbDisconnect(lite_con)
+```
 
 
 ---
 class: inverse, middle
-name: spark
+name: bigquery
 
-# Distributed computing with Spark
+# Getting started with BigQuery
 
 ---
 
+# Google Cloud BigQuery
+
+If you want to learn more SQL, I suggest you play around with **Google BigQuery** using the [web interface](https://console.cloud.google.com/bigquery). 
+- Sandbox (Google Cloud Free Tier): Free to analyze 1 TB per month.
+- Free trial of Google Cloud: Gives you a $300 credit to use for 90 days.
+- Cheap after that: Half a cent per GB.
+
+Incredible [public datasets](https://www.reddit.com/r/bigquery/wiki/datasets/). E.g.:
+* All open-source code on GitHub (1.7+ TB)
+* 1.9 billion comments on Reddit (546+ GB)
+* 1 billion taxi trips in NYC (130+ GB)
+
+You can get started with Google's tutorial on [how to query a public dataset](https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console).
+
+---
+
+# Try it out
+
+**Start here:** [https://console.cloud.google.com/bigquery](https://console.cloud.google.com/bigquery)
+1. Log in with your personal Google account
+2. Agree to the terms to use BigQuery
+3. **DISMISS** the banner asking you to start your free trial (do not activate it unless you want to)
+4. Create a project (Select a Project --&gt; New Project)
+5. Copy your Project Number (click on the Google Cloud logo)
+
+Store your project number as an **environment variable,** like with API keys.
+* Run this line **IN YOUR R CONSOLE,** replacing the fake string of digits with your project number:
+
+```r
+Sys.setenv(GCE_DEFAULT_PROJECT_ID = "1234567890")
+```
+
+---
+
+# Connect to BigQuery
+
+In particular, using public data from Global Fishing Watch:
 
 
+```r
+gfw_con = dbConnect(
+  bigrquery::bigquery(),
+  project = "global-fishing-watch",
+  dataset = "global_footprint_of_fisheries",
+  billing = Sys.getenv("GCE_DEFAULT_PROJECT_ID")
+  )
 
+dbListTables(gfw_con)
+```
+
+```
+#&gt; [1] "fishing_effort"          "fishing_effort_byvessel"
+#&gt; [3] "fishing_vessels"         "vessels"
+```
+
+---
+
+# Which countries fish the most?
+
+
+```sql
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+```
+
+What this looks like in the R Markdown script:
+````markdown
+```{sql connection = gfw_con, output.var = "effort_by_country"}
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+```
+
+Running job '1234567890.job_HiDalrETlYSSTb6XvKty8tMX4j_f.US' [|]  2s
+Complete
+Billed: 2.35 GB
+Downloading first chunk of data.
+Downloading the remaining 10,412 rows in 2 chunks of (up to) 10,000 rows.
+````
+
+---
+
+# Which countries fish the most?
+
+
+```r
+effort_by_country
+```
+
+```
+#&gt; # A tibble: 126 × 2
+#&gt;    flag  total_fishing_hours
+#&gt;    &lt;chr&gt;               &lt;dbl&gt;
+#&gt;  1 CHN             57711389.
+#&gt;  2 ESP              8806223.
+#&gt;  3 ITA              6790417.
+#&gt;  4 FRA              6122613.
+#&gt;  5 RUS              5660001.
+#&gt;  6 KOR              5585248.
+#&gt;  7 TWN              5337054.
+#&gt;  8 GBR              4383738.
+#&gt;  9 JPN              4347252.
+#&gt; 10 NOR              4128516.
+#&gt; # … with 116 more rows
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+We need a nested query:
+
+
+```sql
+SELECT
+  lat_bin_center,
+  lon_bin_center,
+  SUM(fishing_hours) AS fishing_hours
+FROM (
+  SELECT
+    *,
+    FLOOR(lat_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lat_bin_center,
+    FLOOR(lon_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lon_bin_center
+  FROM fishing_effort
+  WHERE
+    _PARTITIONTIME &gt;= '2016-01-01 00:00:00' AND
+    _PARTITIONTIME &lt;= '2016-12-31 00:00:00'
+    AND fishing_hours &gt; 0.0
+)
+GROUP BY lat_bin_center, lon_bin_center
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+Here are the results:
+
+
+```r
+globe
+```
+
+```
+#&gt; # A tibble: 20,412 × 3
+#&gt;    lat_bin_center lon_bin_center fishing_hours
+#&gt;             &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;
+#&gt;  1           51.5           -5.5        20432.
+#&gt;  2           51.5            3.5        91539.
+#&gt;  3           48.5         -126.          6405.
+#&gt;  4           73.5           50.5         1464.
+#&gt;  5           65.5          -30.5         2525.
+#&gt;  6           51.5           -6.5        62724.
+#&gt;  7           75.5           22.5         1273.
+#&gt;  8           71.5           26.5        23877.
+#&gt;  9           67.5           -1.5          220.
+#&gt; 10           54.5          142.           597.
+#&gt; # … with 20,402 more rows
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+
+&lt;img src="17-Databases_files/figure-html/unnamed-chunk-19-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Always disconnect
+
+
+```r
+dbDisconnect(gfw_con)
+```
 
 
 ---
@@ -1661,7 +1847,7 @@ name: spark
 
 1. [Writing SQL queries](#sql)
 
-1. [Distributed computing with Spark](#spark)
+1. [Getting started with BigQuery](#bigquery)
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

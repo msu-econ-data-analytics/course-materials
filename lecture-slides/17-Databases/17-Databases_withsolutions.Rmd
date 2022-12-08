@@ -1,0 +1,868 @@
+---
+title: "Lecture 17: Databases and Big Data"
+author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> *Based partly on materials by [Grant McDermott](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/15-databases/15-databases.html) under an MIT license."
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      highlightSpans: true
+      countIncrementalSlides: false
+---
+exclude: true
+
+```{r, setup, include = F}
+library(knitr)
+# Define colors
+red_pink   = "#e64173"
+turquoise  = "#20B2AA"
+orange     = "#FFA500"
+red        = "#fb6107"
+blue       = "#3b3b9a"
+green      = "#8bb174"
+grey_light = "grey70"
+grey_mid   = "grey50"
+grey_dark  = "grey20"
+purple     = "#6A5ACD"
+slate      = "#314f4f"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  cache = F,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(knitr.table.format = "html")
+```
+
+---
+
+# Table of contents
+
+1. [Tools for big data](#bigdata)
+
+1. [Databases in R](#databases)
+
+1. [Writing SQL queries](#sql)
+
+1. [Getting started with BigQuery](#bigquery)
+
+
+---
+class: inverse, middle
+name: bigdata
+
+# Tools for big data
+
+---
+
+# Tools for big data
+
+**What if your datasets are too big to fit in your computer's memory?**
+
+* You probably don't have more than 32 or 64 GB of RAM.
+* Many types of data (e.g., raster data or videos) can easily exceed that.
+* Companies like Amazon and Google work with petabytes of data.
+
+--
+
+**What if your models are taking too long to run on your computer?**
+
+* OLS has a closed-form solution -- $(X'X)^{-1}X'Y$ -- but complex specifications can still take a while.
+* Many other statistical models take much longer, since they require numerical optimization.
+* Machine learning models can take orders of magnitude longer to fit and tune.
+
+--
+
+**"Big data is when your workflow breaks."** -Randall Prium
+
+---
+
+# Tools for big data
+
+Solutions that are suboptimal but might be good enough:
+
+**1. Use a random sample of your data to develop your code.**
+   * I.e., use only 10%, 1%, 0.001%, etc.
+   * And then run it on the full dataset only once at the end.
+   * Or don't -- maybe a sample is enough for your purposes!
+
+**2. Talk someone into letting you use a more powerful computer.**
+   * Not always feasible, easy, sustainable, or sufficient.
+   * Check out Montana State's [high performance computing resources](https://www.montana.edu/uit/rci/hpc/).
+
+---
+
+# Tools for big data
+
+Better solutions:
+
+1. **Databases**
+   * An architecture for storing and retrieving data that avoids loading the entire dataset into memory.
+1. **Parallelization ("embarassingly parallel")**
+   * Speed up iterations by parallelizing them across multiple cores on one computer.
+1. **Distributed computing**
+   * Parallelize tasks by breaking up data into chunks and handing it to multiple computers, then combining results.
+1. **Cloud computing**
+   * Get more computing power, memory, or processors by working on virtual machines on remote servers.
+
+---
+
+# Cloud computing
+
+**Set up a virtual machine (VM) on a cloud computing platform.**
+* Easy and cheap. (Much more so than setting up your own server!)
+* Get billed for exactly as much power, memory, and time as you need.
+* For most purposes, you won't use more than a few dollars per month.
+
+**Platforms:**
+* [Google Cloud Compute Engine](https://cloud.google.com/compute/)
+* [Amazon Web Services](https://aws.amazon.com/)
+* [Posit Cloud](https://posit.cloud/) (affiliated with RStudio).
+
+**Tutorials** by Grant McDermott: [Part 1](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/13-gce-i/13-gce-i.html), [Part 2](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/14-gce-ii/14-gce-ii.html).
+
+---
+
+# Distributed computing: Spark
+
+**Spark is a "unified analytics engine for large-scale data processing."**
+* Spark Core: enables distributed computing
+* Spark SQL: a SQL implementation
+* MLlib: An extensive machine learning library.
+
+Spark can scale in ways that other systems can't.
+* Move from a local test dataset to a massive dataset on a remote cluster, with minimal changes to your code.
+
+**Key advantage:** Ability to process data both **in memory** and **on disk.**
+* Combines the best features of cluster computing and relational databases.
+* Uses the optimal combination of resources for where it's deployed.
+* Does most of this quietly, behind the scenes.
+
+**Tutorial** by Grant McDermott: [Here](https://raw.githack.com/uo-ec607/lectures/master/17-spark/17-spark.html)
+
+
+---
+class: inverse, middle
+name: databases
+
+# Databases in R
+
+---
+
+# Preliminaries
+
+Install the packages we'll be using:
+
+```{r, cache=F, message=F, warning=F}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, nycflights13, tictoc)
+```
+
+---
+
+# Databases
+
+**Databases can help when:**
+1. Your data is too large to fit into memory at once
+   - And you don't actually need all of it, only parts or a summary.
+1. Your data is continuously updated by other people/processes.
+
+**Databases store data:**
+* On disk, not in memory.
+* On remote servers (usually, but may also be local).
+* Relationally: they contain multiple tables linked by keys.
+
+To retrieve data from a databases, we submit a **query**.
+* We only get back the results of the query, not the entire raw data.
+* Databases are extremely efficient at executing queries over data stored on disk.
+
+---
+
+# Databases and the tidyverse
+
+Basically all databases use **SQL** (Structured Query Language). SQL is:
+* SQL is powerful but old and less intuitive than the tidyverse.
+
+Fortunately, `dbplyr` makes it super easy to interact with databases from R.
+* It can automatically translate tidyverse pipelines to SQL.
+* You don't even *need* to learn any SQL to use databases in R.
+
+But we'll still cover some SQL syntax.
+* Knowing SQL gives you a lot more flexibility.
+* And it's necessary for many data science jobs.
+
+---
+
+# SQLite
+
+We'll use **SQLite** as our specific database backend.
+* Not very scalable, but lightweight and open-source.
+* Otherwise we would need to separately install a whole database system.
+
+Some other (more powerful) implementations of SQL:
+* **MySQL:** Open-source. Used by Google, Facebook, LinkedIn, Twitter.
+* **PostgreSQL:** Open-source. Used by Instagram, Reddit.
+* **Oracle** and **Microsoft SQL Server:** widespread in corporate environments.
+* **Google BigQuery:** Cloud solution that you can use with `bigrquery`.
+
+---
+
+# R packages
+
+**The R packages we need:**
+1. `dbplyr` translates tidyverse code to SQL.
+2. `DBI` helps R connect to the database.
+3. A backend interface to the specific type of database we want to work with.
+  * `RSQLite` provides this interface
+  * And also fully embeds a SQLite database.
+
+---
+
+# Connecting to a database
+
+Open an (empty) database connection via `DBI::dbConnect`:
+* The first argument is always the database backend.
+* Other arguments vary across database implementations.
+
+```{r con}
+lite_con = dbConnect(RSQLite::SQLite(), path = ":memory:")
+```
+
+The path `":memory:"` creates a temporary in-memory database that we'll play around with *as if* it is a remote on-disk database.
+
+---
+
+# Populate some tables
+
+Our database is empty so far.
+
+Let's copy in our old friend, the `flights` dataframe from `nycflights13`.
+
+```{r copy_to}
+copy_to(
+  dest = lite_con, 
+  df = nycflights13::flights, 
+  name = "flights",
+  temporary = FALSE, 
+  indexes = list(c("year", "month", "day"), "carrier", "tailnum", "dest")
+  )
+```
+
+---
+
+# Reference a database table
+
+Now we can use `dplyr::tbl` to use this database table as if it were a dataframe in R:
+
+```{r flights_db}
+flights_db = tbl(lite_con, "flights")
+class(flights_db)
+flights_db
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+```{r flights_db_try_queries1}
+# Select columns
+flights_db |> select(year:day, dep_delay, arr_delay)
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+```{r flights_db_try_queries2}
+# Filter rows
+flights_db |> filter(dep_delay > 240) 
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+```{r flights_db_try_queries3}
+# Calculate the mean delay by destination
+flights_db |>
+  group_by(dest) |>
+  summarize(delay = mean(dep_delay))
+```
+
+---
+
+# Laziness as a virtue
+
+**What does `# Source: lazy query` mean?**
+* `dbplyr` does as little in R as possible.
+* Instead it passes everything to the database.
+* It doesn't pull any data into R until you ask for it.
+* It delays the analysis until the last possible moment.
+
+**Demonstration:** How long does it take to calculate mean departure and arrival delays for each plane (i.e., unique tail number)?
+
+---
+
+# Laziness as a virtue
+
+Using the `flights` data frame:
+```{r tailnum_delay_tv}
+tic()
+tailnum_delay_tv = flights |> 
+  group_by(tailnum) |>
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |> 
+  filter(n > 100) |>
+  arrange(desc(mean_arr_delay))
+toc()
+```
+
+---
+
+# Laziness as a virtue
+
+Using the `flights_db` database table:
+```{r tailnum_delay_db}
+tic()
+tailnum_delay_db = flights_db |> 
+  group_by(tailnum) |>
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |> 
+  filter(n > 100) |>
+  arrange(desc(mean_arr_delay))
+toc()
+```
+--
+
+This code does not actually do any calculations! Or even communicate with the database!
+
+---
+
+# Laziness as a virtue
+
+Only when you print the object does it generate the SQL and query the database:
+
+```{r tailnum_delay_db_print}
+tic()
+print(tailnum_delay_db, n = 4)
+toc()
+```
+
+Even then it tries to do as little work as possible and only pulls down a few rows.
+
+---
+
+# Collect data into your R environment
+
+Once you figure out what data you need, use `collect` to pull the data into a local data frame.
+
+```{r tailnum_delay}
+tailnum_delay = tailnum_delay_db |> collect()
+class(tailnum_delay)
+tailnum_delay
+```
+
+---
+
+# Collect data into your R environment
+
+Now this is a real data frame and we can use it like any other. Is there a relationship between departure and arrival delays?
+
+```{r tailnum_delay_ggplot, out.width = "70%", fig.width = 5, fig.height = 3.2}
+tailnum_delay |> ggplot(aes(x = mean_dep_delay, y = mean_arr_delay)) +
+  geom_point(alpha = 0.3) +
+  geom_abline(intercept = 0, slope = 1, col="orange")
+```
+
+---
+class: inverse, middle
+name: sql
+
+# Writing SQL queries
+
+---
+
+# SQL queries
+
+Let's see what SQL query was generated by `dbplyr`:
+.pull-left[
+```{r, eval=F}
+tailnum_delay_db = flights_db |> 
+  group_by(tailnum) |>
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |> 
+  filter(n > 100) |>
+  arrange(desc(mean_arr_delay))
+```
+]
+.pull-right[
+```{r show_query_tailnum_delay_db}
+tailnum_delay_db |> show_query()
+```
+]
+
+The SQL code is arguably less elegant. It also does not follow the logical order of operations.
+
+---
+layout: false
+class: clear
+
+```{r select_star_from, echo = FALSE, out.width='47%'}
+knitr::include_graphics('https://wizardzines.com/zines/sql/samples/from.png')
+```
+.smaller[Source: Julia Evans, [*Become a Select Star*](https://wizardzines.com/zines/sql/)]
+
+---
+
+# Using SQL directly in R
+
+Let's first generate a simple SQL query we can use to build on:
+
+```{r sql_direct_translate}
+flights_db |> 
+  filter(dep_delay > 240) |> 
+  head(5) |> 
+  show_query()
+```
+
+Note: The backticks around objects (`flights` and `dep_delay`) are not strictly necessary.
+
+---
+
+# SQL chunks in R Markdown
+
+When you're using R Markdown, you can directly embed SQL queries:
+```{sql sql_direct_rmd, connection=lite_con}
+SELECT *
+FROM flights
+WHERE dep_delay > 240
+LIMIT 5
+```
+
+---
+
+# SQL queries in regular R scripts
+
+Using `DBI::dbGetQuery()`:
+
+```{r sql_direct}
+dbGetQuery(lite_con, "SELECT * FROM flights WHERE dep_delay > 240.0 LIMIT 5")
+```
+
+---
+
+# SQL queries in regular R scripts
+
+What tables do we have in our database?
+```{r}
+dbListTables(lite_con)
+```
+
+Show the columns/fields of a table:
+```{r}
+dbListFields(lite_con, "flights")
+```
+
+---
+
+# SQL syntax
+
+**From before:** Return the first 5 rows that meet a specified filter:
+```{sql connection=lite_con}
+SELECT *
+FROM flights
+WHERE dep_delay > 240
+LIMIT 5
+```
+
+---
+
+# SQL syntax
+
+Return only selected columns:
+```{sql connection=lite_con}
+SELECT dep_delay, arr_delay
+FROM flights
+LIMIT 5
+```
+
+---
+
+# SQL syntax
+
+Count rows:
+```{sql connection=lite_con}
+SELECT COUNT(*)
+FROM flights
+```
+
+Count distinct/unique values:
+```{sql connection=lite_con}
+SELECT COUNT(DISTINCT dep_delay)
+FROM flights
+```
+
+---
+
+# Challenge
+
+`mutate(new_var = var 1 * var2)` translates to `SELECT var1 * var2 AS near_var`.
+
+Can you translate this R code to a SQL query?
+
+```{r, eval=F}
+flights_db |>
+  select(distance, air_time) |>
+  mutate(speed = distance / (air_time / 60))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+```{sql connection=lite_con}
+SELECT distance, air_time, distance / (air_time / 60) AS speed
+FROM flights
+```
+
+---
+
+# Joins
+
+Joins are more flexible in SQL than R.
+
+Let's put the `weather` data frame in the database as well:
+```{r}
+copy_to(
+  dest = lite_con,
+  df = nycflights13::weather,
+  name = "weather",
+  temporary = FALSE,
+  indexes = list(c("year", "month", "day", "hour"))
+  )
+```
+
+---
+
+# Joins
+
+Here's an example:
+```{sql connection=lite_con}
+SELECT *
+FROM flights AS f
+LEFT JOIN weather AS w 
+ON f.origin = w.origin AND f.year = w.year AND f.month = w.month 
+  AND f.day = w.day AND f.hour = w.hour
+```
+
+---
+
+# Tidyverse-to-SQL summary table
+
+|tidyverse | SQL |
+|--|--|
+| <code>dataset &vert;></code>  | `FROM dataset` |
+| `select()`     | `SELECT` |
+| `filter()`     | `WHERE` |
+| `mutate()`     | `SELECT ... AS` |
+| `arrange()`     | `ORDER BY` |
+| <code>group_by() &vert;> summarize()</code>   | `SELECT ... AS ... GROUP BY` |
+| `left_join()`   | `LEFT JOIN ... ON` |
+| `head()`        | `LIMIT` |
+
+---
+
+# More challenges
+
+Use SQL queries to answer these questions for year 2013:
+
+1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows.
+
+2. List the number of flights to Bozeman per month, naming this column `flights_count`. Were they year-round or in specific seasons?
+
+3. What were the top 10 longest flights out of NYC airports?
+
+4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
+
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below and above freezing -- calculating the percentage within SQL requires a subquery.)*
+
+```{sql connection=lite_con, echo=F, eval=F}
+/* 1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows. */
+SELECT *
+FROM flights
+WHERE dest == "BZN"
+```
+
+```{sql connection=lite_con, echo=F, eval=F}
+/* 2. List the number of flights to Bozeman per month, naming this column `flights_count`. Were the Bozeman flights year-round or in specific seasons? */
+SELECT month, COUNT(*) AS flights_count
+FROM flights
+WHERE dest == "BZN"
+GROUP BY month
+```
+
+```{sql connection=lite_con, echo=F, eval=F}
+/* 3. What were the top 10 longest flights out of NYC airports? */
+SELECT carrier, flight, dest, air_time
+FROM flights
+ORDER BY air_time DESC
+LIMIT 10
+```
+
+```{sql connection=lite_con, echo=F, eval=F}
+/* 4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights? */
+SELECT dest, MAX(air_time) AS air_time
+FROM flights
+GROUP BY dest
+ORDER BY air_time DESC
+LIMIT 10
+```
+
+```{sql connection=lite_con, echo=F, eval=F}
+/* 5. **Advanced:** What percentage of flights took off in freezing temperatures? */
+SELECT 
+  w.temp < 32 AS freezing,
+  AVG(w.temp) AS temp,
+  COUNT(*) AS count,
+  COUNT(*) * 1.0 /(SELECT COUNT(*) FROM flights) AS proportion
+FROM flights AS f
+LEFT JOIN weather AS w 
+ON f.origin = w.origin AND f.year = w.year AND f.month = w.month AND f.day = w.day AND f.hour = w.hour
+WHERE w.temp
+GROUP BY freezing
+```
+
+
+---
+
+# Disconnect
+
+When you're done using a database, make sure to **disconnect** from the connection:
+
+```{r dbDisconnect}
+dbDisconnect(lite_con)
+```
+
+
+---
+class: inverse, middle
+name: bigquery
+
+# Getting started with BigQuery
+
+---
+
+# Google Cloud BigQuery
+
+If you want to learn more SQL, I suggest you play around with **Google BigQuery** using the [web interface](https://console.cloud.google.com/bigquery). 
+- Sandbox (Google Cloud Free Tier): Free to analyze 1 TB per month.
+- Free trial of Google Cloud: Gives you a $300 credit to use for 90 days.
+- Cheap after that: Half a cent per GB.
+
+Incredible [public datasets](https://www.reddit.com/r/bigquery/wiki/datasets/). E.g.:
+* All open-source code on GitHub (1.7+ TB)
+* 1.9 billion comments on Reddit (546+ GB)
+* 1 billion taxi trips in NYC (130+ GB)
+
+You can get started with Google's tutorial on [how to query a public dataset](https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console).
+
+---
+
+# Try it out
+
+**Start here:** [https://console.cloud.google.com/bigquery](https://console.cloud.google.com/bigquery)
+1. Log in with your personal Google account
+2. Agree to the terms to use BigQuery
+3. **DISMISS** the banner asking you to start your free trial (do not activate it unless you want to)
+4. Create a project (Select a Project --> New Project)
+5. Copy your Project Number (click on the Google Cloud logo)
+
+Store your project number as an **environment variable,** like with API keys.
+* Run this line **IN YOUR R CONSOLE,** replacing the fake string of digits with your project number:
+```{r, eval=F}
+Sys.setenv(GCE_DEFAULT_PROJECT_ID = "1234567890")
+```
+
+---
+
+# Connect to BigQuery
+
+In particular, using public data from Global Fishing Watch:
+
+```{r}
+gfw_con = dbConnect(
+  bigrquery::bigquery(),
+  project = "global-fishing-watch",
+  dataset = "global_footprint_of_fisheries",
+  billing = Sys.getenv("GCE_DEFAULT_PROJECT_ID")
+  )
+
+dbListTables(gfw_con)
+```
+
+---
+
+# Which countries fish the most?
+
+```{sql connection = gfw_con, output.var = "effort_by_country"}
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+```
+
+What this looks like in the R Markdown script:
+````markdown
+`r ''````{sql connection = gfw_con, output.var = "effort_by_country"}
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+`r ''````
+
+Running job '1234567890.job_HiDalrETlYSSTb6XvKty8tMX4j_f.US' [|]  2s
+Complete
+Billed: 2.35 GB
+Downloading first chunk of data.
+Downloading the remaining 10,412 rows in 2 chunks of (up to) 10,000 rows.
+````
+
+---
+
+# Which countries fish the most?
+
+```{r}
+effort_by_country
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+We need a nested query:
+
+```{sql connection=gfw_con, output.var = "globe"}
+SELECT
+  lat_bin_center,
+  lon_bin_center,
+  SUM(fishing_hours) AS fishing_hours
+FROM (
+  SELECT
+    *,
+    FLOOR(lat_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lat_bin_center,
+    FLOOR(lon_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lon_bin_center
+  FROM fishing_effort
+  WHERE
+    _PARTITIONTIME >= '2016-01-01 00:00:00' AND
+    _PARTITIONTIME <= '2016-12-31 00:00:00'
+    AND fishing_hours > 0.0
+)
+GROUP BY lat_bin_center, lon_bin_center
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+Here are the results:
+
+```{r}
+globe
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+
+```{r, echo = F}
+globe |>
+  filter(fishing_hours > 1) |>
+  ggplot() +
+  geom_tile(aes(x=lon_bin_center, y=lat_bin_center, fill=fishing_hours))+
+  scale_fill_viridis_c(
+    name = "Fishing hours (log scale)",
+    trans = "log",
+    breaks = scales::log_breaks(n = 5, base = 10),
+    labels = scales::comma
+    ) +
+  labs(
+    title = "Global fishing effort in 2016",
+    subtitle = "Effort binned at the 1° level.",
+    y = NULL, x = NULL,
+    caption = "Data from Global Fishing Watch"
+    ) +
+  theme_void() +
+  theme(axis.text=element_blank())
+```
+
+---
+
+# Always disconnect
+
+```{r}
+dbDisconnect(gfw_con)
+```
+
+
+---
+
+# Summary
+
+1. [Tools for big data](#bigdata)
+
+1. [Databases in R](#databases)
+
+1. [Writing SQL queries](#sql)
+
+1. [Getting started with BigQuery](#bigquery)
+

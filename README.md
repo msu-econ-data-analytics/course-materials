@@ -13,8 +13,6 @@ Nick Hagerty, Montana State University
 
 Fall 2022
 
-*These are best viewed in html format, but PDFs are also provided in case they work better for your situation.*
-
 [**Lecture 1: R Basics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html)
 ([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf))
 
@@ -115,7 +113,6 @@ Fall 2022
 * Indicator and interaction terms
 * Econometrics packages in R
 * Modeling nonlinear relationships
-* Preview: Model validation
 
 [**Lecture 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/13-Learning.html)
 
@@ -164,7 +161,7 @@ Fall 2022
 * Tools for big data
 * Databases in R
 * Writing SQL queries
-* Distributed computing with Spark
+* Getting started with BigQuery
 
 ---
 
@@ -175,7 +172,7 @@ This is a list of further resources that you may find helpful throughout (and af
 ### Basics of R
 * [*Introduction to Data Science* Ch. 3: R Basics](https://rafalab.github.io/dsbook/r-basics.html) (Rafael A. Irizarry). Data types, data frames, vectors, indexing, basic plots.
 * [*Modern Data Science with R* Appendix B: Introduction to R and RStudio](https://mdsr-book.github.io/mdsr2e/ch-R.html) (Baumer, Kaplan, and Horton). Installation, help, objects, vectors, indexing, operators, lists, matrices, data frames, attributes and classes, functions, packages.
-* [R for Social Scientists](https://datacarpentry.org/r-socialsci/) (Data Carpentry).
+* [R for Social Scientists](https://datacarpentry.org/r-socialsci/) (The Carpentries).
 * [*Big Data in Economics* Lecture 4: R Language Basics](https://raw.githack.com/uo-ec607/lectures/master/04-rlang/04-rlang.html) (Grant McDermott). Slides. Logic, evaluation, assignment, help, objects, names, indexing, lists.
 * [Cheat Sheet: Base R](https://raw.githubusercontent.com/rstudio/cheatsheets/main/base-r.pdf) (RStudio).
 * DataCamp tutorials:
@@ -330,8 +327,15 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Slides on Machine Learning](http://cameron.econ.ucdavis.edu/e240f/machinelearning.html) (Colin Cameron).
 * ["Machine Learning for Economists"](https://sites.google.com/view/dariosansone/resources/machine-learning) (Dario Sansone). Long list of resources, applications, and citations.
 
-### SQL (databases)
-
+### Databases (SQL)
+* [*Data Science for Economists* Lecture 16: Databases](https://raw.githack.com/uo-ec607/lectures/master/16-databases/16-databases.html) (Grant McDermott).
+* [SQL for R Users](https://github.com/dlab-berkeley/sql-for-r-users) (UC Berkeley D-Lab).
+* [Data Management with SQL for Social Scientists](https://datacarpentry.org/r-socialsci/) (The Carpentries).
+* [*Modern Data Science with R* Chapter 15: Database querying using SQL](https://mdsr-book.github.io/mdsr2e/ch-sql.html) (Baumer, Kaplan, and Horton).
 
 ### Distributed and cloud computing
-
+* *Data Science for Economists* (Grant McDermott):
+  - [Lecture 14: Google Compute Engine (Part I)](https://raw.githack.com/uo-ec607/lectures/master/14-gce-i/14-gce-i.html).
+  - [Lecture 14: Google Compute Engine (Part II)](https://raw.githack.com/uo-ec607/lectures/master/14-gce-ii/14-gce-ii.html).
+  - [Lecture 17: Spark](https://raw.githack.com/uo-ec607/lectures/master/17-spark/17-spark.html).
+* [*Modern Data Science with R* Chapter 21: Epilogue: Towards "big data"](https://mdsr-book.github.io/mdsr2e/ch-big.html) (Baumer, Kaplan, and Horton).
