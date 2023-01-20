@@ -20,7 +20,7 @@ class: center, middle, inverse, title-slide
 ### Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University
 ]
 .date[
-### <br> *Based on materials by <a href="https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html">Grant McDermott</a> under an MIT license.
+### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>. Images are from <a href="https://moderndive.com/3-wrangling.html">ModernDive</a> by Chester Ismay and Albert Y. Kim, used under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.]
 ]
 
 ---
@@ -142,6 +142,8 @@ The two most important properties of tidy data are:
 
 Tidy data is easier to work with, because you have a consistent way of referring to variables and observations. It then becomes easy to manipulate, visualize, and model.
 
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/tidy-data.html) by Hadley Wickham &amp; Garrett Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and is not included under this project's overall CC license.]
+
 ---
 
 # Wide vs. Long Formats
@@ -209,7 +211,7 @@ library(tidyverse)
 
 ```
 ## ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
-## ✔ tibble  3.1.7     ✔ dplyr   1.0.9
+## ✔ tibble  3.1.8     ✔ dplyr   1.0.9
 ## ✔ tidyr   1.2.0     ✔ stringr 1.4.0
 ## ✔ readr   2.1.2     ✔ forcats 0.5.1
 ```
@@ -1015,14 +1017,13 @@ There are multiple types of joins.
 An **inner join** returns a dataframe of all rows that appear in both x and y.
 - It keeps *only* rows that appear in both tables.
 
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/relational-data.html) by Hadley Wickham &amp; Garrett Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and is not included under this resource's overall CC license.]
+
 ---
 
 # Joining operations
 
 .pull-left[
-An **inner join** returns a dataframe of all rows that appear in both x and y.
-- It keeps *only* rows that appear in both tables.
-
 A **left join** keeps all rows in x.
 - For matched rows, it merges in the values of y
 - For unmatched rows, it fills in NA values for the variables coming from y.
@@ -1031,6 +1032,11 @@ A **right join** keeps all rows in y.
 - Same as a left join, just reversed.
 
 A **full join** keeps all rows in x and y.
+
+&lt;/br&gt;
+
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/relational-data.html) by Wickham &amp; Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and not included under this resource's overall CC license.]
+
 ]
 .pull-right[
 ![](img/join-outer.png)

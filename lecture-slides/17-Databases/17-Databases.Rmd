@@ -1,7 +1,7 @@
 ---
 title: "Lecture 17: Databases and Big Data"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based partly on materials by [Grant McDermott](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/15-databases/15-databases.html) under an MIT license."
+date: ".small[<br> *These slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/15-databases/15-databases.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']

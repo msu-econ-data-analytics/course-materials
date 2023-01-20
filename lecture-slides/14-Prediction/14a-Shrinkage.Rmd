@@ -2,7 +2,7 @@
 title: "Lecture 14: Prediction Methods"
 subtitle: "Part 1: Shrinkage Methods"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
+date: "<br> .smallest[*Adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission. These slides are excluded from this resource's overall CC license.]"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']

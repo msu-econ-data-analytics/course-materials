@@ -1,7 +1,7 @@
 ---
 title: "Lecture 10: Spatial Analysis, Part 2"
-author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based on materials by [UC Berkeley's D-Lab](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) under a CC license."
+author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: ".small[<br> *Adapted from [“R Geospatial Fundamentals”](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) by the UC Berkeley D-Lab, used under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).]"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts]
@@ -85,7 +85,7 @@ setwd("C:/git/491/course-materials/lecture-slides/10-Spatial")
 ```
 
 Run this (from Part 1):
-```{r, eval = F}
+```{r, results = "hide"}
 library(sf)
 library(tidyverse)
 library(tmap)

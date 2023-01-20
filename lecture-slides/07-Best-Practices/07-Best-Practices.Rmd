@@ -246,7 +246,7 @@ But also don't go nuts...
 
 ![](img/xkcd_automation.png)
 
-Source: [xkcd](https://xkcd.com/1319/)
+.small[Image from xkcd ([source](https://xkcd.com/1319/)) and not included in the CC license.]
 
 ---
 

@@ -2,7 +2,6 @@
 title: "Lecture 15: Classification"
 subtitle: "Part 2: Examples"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
@@ -356,7 +355,8 @@ layout: true
 ---
 name: read
 class: inverse, middle
-This section is adapted from Rafael Irizarry, [*Introduction to Data Science*](https://rafalab.github.io/dsbook/), chapters 27 & 32.
+
+This section is adapted from [*Introduction to Data Science*](http://rafalab.dfci.harvard.edu/dsbook/machine-learning-in-practice.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
 
 ---
 

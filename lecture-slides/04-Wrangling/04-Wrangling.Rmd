@@ -1,7 +1,7 @@
 ---
 title: "Lecture 4: Data Wrangling in the Tidyverse"
 author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based on materials by [Grant McDermott](https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html) under an MIT license."
+date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE). Images are from [ModernDive](https://moderndive.com/3-wrangling.html) by Chester Ismay and Albert Y. Kim, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts] 
@@ -138,6 +138,8 @@ The two most important properties of tidy data are:
 ![](img/tidy-1.png)
 
 Tidy data is easier to work with, because you have a consistent way of referring to variables and observations. It then becomes easy to manipulate, visualize, and model.
+
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/tidy-data.html) by Hadley Wickham & Garrett Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and is not included under this project's overall CC license.]
 
 ---
 
@@ -676,14 +678,13 @@ There are multiple types of joins.
 An **inner join** returns a dataframe of all rows that appear in both x and y.
 - It keeps *only* rows that appear in both tables.
 
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/relational-data.html) by Hadley Wickham & Garrett Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and is not included under this resource's overall CC license.]
+
 ---
 
 # Joining operations
 
 .pull-left[
-An **inner join** returns a dataframe of all rows that appear in both x and y.
-- It keeps *only* rows that appear in both tables.
-
 A **left join** keeps all rows in x.
 - For matched rows, it merges in the values of y
 - For unmatched rows, it fills in NA values for the variables coming from y.
@@ -692,6 +693,11 @@ A **right join** keeps all rows in y.
 - Same as a left join, just reversed.
 
 A **full join** keeps all rows in x and y.
+
+</br>
+
+.smaller[Image is from ["R for Data Science"](https://r4ds.had.co.nz/relational-data.html) by Wickham & Grolemund, used under [CC BY-NC-ND 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/us/) and not included under this resource's overall CC license.]
+
 ]
 .pull-right[
 ![](img/join-outer.png)

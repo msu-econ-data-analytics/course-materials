@@ -1,7 +1,7 @@
 ---
 title: "Lecture 11: Data Visualization"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based on materials by [Rafael Irizarry](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (under a CC license) and [Ed Rubin](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/05RPlot/05RPlot.html) (with permission)"
+date: ".small[<br> *Parts of these slides are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/data-visualization-principles.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).]"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts]
@@ -575,9 +575,11 @@ anim_save(
 )
 ```
 
-```{r, echo=F, out.width="90%"}
+```{r, echo=F, out.width="85%"}
 include_graphics("img/ex_gganimate.gif")
 ```
+
+.small[Image and code from ["Plotting in R"](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/05RPlot/05RPlot.html) by Edward Rubin, used with permission, and excluded from the overall CC license.]
 
 ---
 
@@ -824,15 +826,19 @@ If you use a pie chart, at least label the segments and values.
 include_graphics("img/case4-a.png")
 ```
 
+.small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
+
 ---
 
 # Choose visual cues deliberately
 
 Alternative to pie charts (1):
 
-```{r, out.width="100%", echo=F}
+```{r, out.width="95%", echo=F}
 include_graphics("img/case4-b.png")
 ```
+
+.small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
 
 ---
 
@@ -844,6 +850,7 @@ Alternative to pie charts (2):
 include_graphics("img/case4-c.png")
 ```
 
+.small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
 
 ---
 
@@ -855,6 +862,7 @@ Alternative to pie charts (3):
 include_graphics("img/case4-d.png")
 ```
 
+.small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
 
 ---
 
@@ -974,7 +982,7 @@ Log-transformed data may be great for experts, but can mislead the general publi
 ```{r, out.width="95%", echo=F}
 include_graphics("img/covid-log.png")
 ```
-Source: [New York Times, March 20, 2020](https://www.nytimes.com/2020/03/20/health/coronavirus-data-logarithm-chart.html)
+.small[Source: [New York Times, March 20, 2020](https://www.nytimes.com/2020/03/20/health/coronavirus-data-logarithm-chart.html).]
 
 ---
 
@@ -994,9 +1002,11 @@ Decide, then build your plot around that message.
 ---
 class: clear, middle, center
 
-```{r, out.width="92%", echo=F}
+```{r, out.width="85%", echo=F}
 include_graphics("img/wsj-vaccines-example-1.png")
 ```
+
+.small[Source: [Wall Street Journal, February 11, 2015](http://graphics.wsj.com/infectious-diseases-and-vaccines/).]
 
 
 ---
@@ -1005,7 +1015,7 @@ name: cases
 
 # Case studies
 
-Source: Jonathan Schwabish (2014), ["An Economist's Guide to Visualizing Data,"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) *Journal of Economic Perspectives*.
+Images from Jonathan Schwabish (2014), ["An Economist's Guide to Visualizing Data,"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) *Journal of Economic Perspectives*. This section is excluded from this resource's overall CC license.
 
 ---
 

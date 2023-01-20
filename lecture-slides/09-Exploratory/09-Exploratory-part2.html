@@ -19,9 +19,6 @@ class: center, middle, inverse, title-slide
 .author[
 ### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
 ]
-.date[
-### <br> These slides use data from <a href="https://gabors-data-analysis.com/data-and-code/">Gabors Data Analysis</a>.
-]
 
 ---
 
@@ -385,7 +382,7 @@ name: cef
 
 # Conditional Expectations
 
-This section is drawn from material by [Ed Rubin](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) (with permission).
+Images and code in this section are from ["Why Regression?"](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) by Ed Rubin, used with permission, and are not included under this resource's overall CC license.
 
 ---
 
@@ -499,9 +496,10 @@ name: adjusting
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
 &lt;img src="img/Simpsons_paradox_-_animation.gif" width="67%" style="display: block; margin: auto;" /&gt;
-Source: [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif)
 
 Which trend is the "right" one?
+
+.small[Image from [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif) and used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]
 
 ---
 
@@ -510,7 +508,7 @@ Which trend is the "right" one?
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
 &lt;img src="img/the-simpsons-paradox.jfif" width="67%" style="display: block; margin: auto;" /&gt;
-Source: [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608)
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
 
@@ -519,8 +517,7 @@ Source: [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/9845368
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
 &lt;img src="img/the-simpsons-pair-o-docs.jfif" width="73%" style="display: block; margin: auto;" /&gt;
-Source: [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608)
-
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
 
@@ -709,7 +706,7 @@ This is exactly what **fixed effects** regression does.
 # Within-unit variation
 
 &lt;img src="img/Animation of Fixed Effects.gif" style="display: block; margin: auto;" /&gt;
-Source: [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html)
+.small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
 
 
 ---
@@ -718,7 +715,7 @@ name: smooth
 
 # Smoothing
 
-This section is drawn from Rafael Irizarry, [*Introduction to Data Science*](https://rafalab.github.io/dsbook/), chapter 28.
+Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/smoothing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
 
 ---
 
@@ -785,7 +782,8 @@ Uniform kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \leq 1 \\}. $$
 
 &lt;img src="img/Kernel_uniform.svg" width="60%" style="display: block; margin: auto;" /&gt;
-Source: &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt;
+
+.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -796,7 +794,7 @@ Triangular kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
 
 &lt;img src="img/Kernel_triangle.svg" width="60%" style="display: block; margin: auto;" /&gt;
-Source: &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt;
+.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -807,7 +805,7 @@ Epanechnikov kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
 
 &lt;img src="img/Kernel_epanechnikov.svg" width="60%" style="display: block; margin: auto;" /&gt;
-Source: &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt;
+.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -818,7 +816,7 @@ Gaussian (normal) kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
 
 &lt;img src="img/Kernel_exponential.svg" width="60%" style="display: block; margin: auto;" /&gt;
-Source: &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt;
+.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 

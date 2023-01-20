@@ -1,7 +1,7 @@
 ---
 title: "Lecture 13: <br> Machine Learning Fundamentals"
-author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Adapted with permission from materials by [Ed Rubin](https://github.com/edrubin/EC524W21)."
+author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+date: "<br> .small[*Adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission. These slides are excluded from this resource's overall CC license.]"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
@@ -20,6 +20,9 @@ name: toc
 }
 .text-big {
   font-size: 150%;
+}
+.small {
+  font-size: 75%;
 }
 ```
 

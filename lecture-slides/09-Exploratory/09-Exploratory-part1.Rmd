@@ -88,7 +88,7 @@ Download this data on hotel listings in Vienna, Austria in November 2017:
 vienna = read_csv("https://osf.io/y6jvb/download")
 ```
 
-Thanks to [Gabors Data Analysis](https://gabors-data-analysis.com/data-and-code/) for curating the data.
+.small[Data from [Gabors Data Analysis](https://osf.io/7epdj/) by Gábor Békés and Gábor Kézdi, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]
 
 ---
 
@@ -392,7 +392,7 @@ How does the smoothing work?
 ```{r, out.width="60%", echo=F}
 include_graphics("img/kernel-density-animation.gif")
 ```
-Source: [David Robinson](http://varianceexplained.org/files/bandwidth.html)
+.small[Image by [David Robinson](http://varianceexplained.org/files/bandwidth.html) not included under the CC license.]
 
 ---
 
@@ -433,7 +433,7 @@ Bias is not always bad! Often we want to accept some bias (inaccuracy) in exchan
 ```{r, out.width="60%", echo=F}
 include_graphics("img/bias-variance.png")
 ```
-Source: [Scott Fortmann-Roe](http://scott.fortmann-roe.com/docs/BiasVariance.html)
+.small[Image by [Scott Fortmann-Roe](http://scott.fortmann-roe.com/docs/BiasVariance.html) not included under the CC license.]
 
 ---
 class: inverse, middle

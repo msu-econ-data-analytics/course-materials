@@ -1,7 +1,7 @@
 ---
 title: "Lecture 12: Regression Modeling"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based partly on materials by [Grant McDermott](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) and [Ed Rubin](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/04RReg/04RReg.html), with permission."
+date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 
 output:
   xaringan::moon_reader:
@@ -548,6 +548,10 @@ You want to **cluster** your standard errors whenever your observations are corr
 ![](img/slope_hypothesis_testing.png)
 
 Clustering is for cross-sectional or panel data. (Time series data calls for other solutions.)
+
+</br>
+
+.small[Image from xkcd ([source](https://xkcd.com/2533/)) and is not included in this resource's CC license.]
 
 ---
 

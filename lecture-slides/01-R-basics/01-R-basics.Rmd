@@ -2,7 +2,7 @@
 title: "Lecture 1: R Basics"
 subtitle: ""
 author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> *Based on materials by [Rafael Irizarry](https://rafalab.github.io/dsbook/r-basics.html) under a CC license."
+date: ".small[<br> *Parts of these slides are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/r-basics.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).]"
 
 output:
   xaringan::moon_reader:
@@ -114,7 +114,7 @@ name: R
 ```{r, out.width="60%", echo=F}
 include_graphics("img/r_vs_python.png")
 ```
-[(Source)](https://towardsdatascience.com/r-vs-python-comparing-data-science-job-postings-seeking-r-or-python-specialists-2c39ba36d471)
+.small[Image by Alex daSilva ([source](https://towardsdatascience.com/r-vs-python-comparing-data-science-job-postings-seeking-r-or-python-specialists-2c39ba36d471)) is not included under the CC license.]
 
 ---
 

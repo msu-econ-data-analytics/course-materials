@@ -1,7 +1,6 @@
 ---
 title: "Lecture 9: Exploratory Analysis, Part 2"
 author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
-date: "<br> These slides use data from [Gabors Data Analysis](https://gabors-data-analysis.com/data-and-code/)."
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts]
@@ -341,7 +340,7 @@ name: cef
 
 # Conditional Expectations
 
-This section is drawn from material by [Ed Rubin](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) (with permission).
+Images and code in this section are from ["Why Regression?"](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) by Ed Rubin, used with permission, and are not included under this resource's overall CC license.
 
 ---
 
@@ -563,9 +562,10 @@ A trend in a full dataset can disappear or even reverse when looking at the cons
 ```{r, out.width="67%", echo=F}
 include_graphics("img/Simpsons_paradox_-_animation.gif")
 ```
-Source: [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif)
 
 Which trend is the "right" one?
+
+.small[Image from [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif) and used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]
 
 ---
 
@@ -576,7 +576,7 @@ A trend in a full dataset can disappear or even reverse when looking at the cons
 ```{r, out.width="67%", echo=F}
 include_graphics("img/the-simpsons-paradox.jfif")
 ```
-Source: [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608)
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
 
@@ -587,8 +587,7 @@ A trend in a full dataset can disappear or even reverse when looking at the cons
 ```{r, out.width="73%", echo=F}
 include_graphics("img/the-simpsons-pair-o-docs.jfif")
 ```
-Source: [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608)
-
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
 
@@ -757,7 +756,7 @@ This is exactly what **fixed effects** regression does.
 ```{r, echo=F}
 include_graphics("img/Animation of Fixed Effects.gif")
 ```
-Source: [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html)
+.small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
 
 
 ---
@@ -766,7 +765,7 @@ name: smooth
 
 # Smoothing
 
-This section is drawn from Rafael Irizarry, [*Introduction to Data Science*](https://rafalab.github.io/dsbook/), chapter 28.
+Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/smoothing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
 
 ---
 
@@ -839,7 +838,8 @@ $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \
 ```{r, out.width="60%", echo=F}
 include_graphics("img/Kernel_uniform.svg")
 ```
-Source: <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a>
+
+.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -852,7 +852,7 @@ $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 
 ```{r, out.width="60%", echo=F}
 include_graphics("img/Kernel_triangle.svg")
 ```
-Source: <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a>
+.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -865,7 +865,7 @@ $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1
 ```{r, out.width="60%", echo=F}
 include_graphics("img/Kernel_epanechnikov.svg")
 ```
-Source: <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a>
+.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -878,7 +878,7 @@ $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\f
 ```{r, out.width="60%", echo=F}
 include_graphics("img/Kernel_exponential.svg")
 ```
-Source: <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a>
+.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
