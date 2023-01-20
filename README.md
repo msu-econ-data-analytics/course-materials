@@ -2,6 +2,8 @@
 
 Nick Hagerty, Montana State University
 
+Except where otherwise noted, this work is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>.
+
 ***
 
 **Skip to:** [Lecture slides](#Lecture-slides)
