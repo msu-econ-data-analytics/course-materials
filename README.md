@@ -7,7 +7,8 @@ Except where otherwise noted, this work is licensed under <a rel="license" href=
 ***
 
 **Skip to:** [Lecture slides](#Lecture-slides)
-| [External resources](#External-Resources)
+| [Supplemental labs](#Supplemental-labs)
+| [External resources](#External-resources)
 
 ***
 
@@ -164,6 +165,23 @@ Fall 2022
 * Databases in R
 * Writing SQL queries
 * Getting started with BigQuery
+
+---
+
+## Supplemental labs
+
+By Laura Sikoski
+
+* [Lab 0: Getting started with R](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%200%20-%20Getting%20Started.R)
+* [Lab 1: Intro](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%201%20-%20Intro.R)
+* [Lab 2: Cleaning](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%202%20-%20Cleaning.R)
+* [Lab 3: Merges](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%203%20-%20Merges.R)
+* [Lab 4: Pivots](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%204%20-%20Pivots.R)
+* [Lab 5: Regressions](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%205%20-%20OLS%20Intro.R)
+* [Lab 6: If/else statements](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%206%20-%20If%20Else%20Statements.R)
+* [Lab 7: For loops](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%207%20-%20For%20Loops.R)
+* [Lab 8: Functions](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%208%20-%20Functions.R)
+* [Lab 9: Intro to ggplot2](https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%209%20-%20Intro%20to%20ggplot.R)
 
 ---
 
