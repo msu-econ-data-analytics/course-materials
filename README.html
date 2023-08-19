@@ -297,23 +297,17 @@ overflow-y: auto;
 border: 1px solid #ddd;
 border-radius: 4px;
 }
-.tabset-dropdown > .nav-tabs > li.active:before {
-content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+content: "\e259";
 font-family: 'Glyphicons Halflings';
 display: inline-block;
 padding: 10px;
 border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-content: "";
-border: none;
-}
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-content: "";
+content: "\e258";
 font-family: 'Glyphicons Halflings';
-display: inline-block;
-padding: 10px;
-border-right: 1px solid #ddd;
+border: none;
 }
 .tabset-dropdown > .nav-tabs > li.active {
 display: block;
@@ -361,9 +355,12 @@ display: none;
 <div id="course-materials-for-advanced-data-analytics-in-economics" class="section level1">
 <h1>Course Materials for Advanced Data Analytics in Economics</h1>
 <p>Nick Hagerty, Montana State University</p>
+<p>Except where otherwise noted, this work is licensed under
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative
+Commons BY-NC-SA 4.0</a>.</p>
 <hr />
-<p><strong>Skip to:</strong> <a href="#Lecture-slides">Lecture
-slides</a> | <a href="#External-Resources">External resources</a></p>
+<p><strong>Skip to:</strong> <a href="#lecture-slides">Lecture
+slides</a> | <a href="#supplemental-labs">Supplemental labs</a> | <a href="#external-resources">External resources</a></p>
 <hr />
 <div id="lecture-slides" class="section level2">
 <h2>Lecture slides</h2>
@@ -492,7 +489,6 @@ to Geospatial Data</strong></a></li>
 <li>Indicator and interaction terms</li>
 <li>Econometrics packages in R</li>
 <li>Modeling nonlinear relationships</li>
-<li>Preview: Model validation</li>
 </ul>
 <p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/13-Learning.html"><strong>Lecture
 13: Machine Learning Fundamentals</strong></a></p>
@@ -557,6 +553,33 @@ to Geospatial Data</strong></a></li>
 <li>Databases in R</li>
 <li>Writing SQL queries</li>
 <li>Getting started with BigQuery</li>
+</ul>
+<hr />
+</div>
+<div id="supplemental-labs" class="section level2">
+<h2>Supplemental labs</h2>
+<p>By Laura Sikoski</p>
+<ul>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%200%20-%20Getting%20Started.R">Lab
+0: Getting started with R</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%201%20-%20Intro.R">Lab
+1: Intro</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%202%20-%20Cleaning.R">Lab
+2: Cleaning</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%203%20-%20Merges.R">Lab
+3: Merges</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%204%20-%20Pivots.R">Lab
+4: Pivots</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%205%20-%20OLS%20Intro.R">Lab
+5: Regressions</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%206%20-%20If%20Else%20Statements.R">Lab
+6: If/else statements</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%207%20-%20For%20Loops.R">Lab
+7: For loops</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%208%20-%20Functions.R">Lab
+8: Functions</a></li>
+<li><a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/supplemental-lab-scripts/Lecture%209%20-%20Intro%20to%20ggplot.R">Lab
+9: Intro to ggplot2</a></li>
 </ul>
 <hr />
 </div>

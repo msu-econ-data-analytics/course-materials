@@ -823,7 +823,7 @@ include_graphics("img/two-barplots-1.png")
 If you use a pie chart, at least label the segments and values.
 
 ```{r, out.width="100%", echo=F}
-include_graphics("img/case4-a.png")
+include_graphics("img/case4-a.PNG")
 ```
 
 .small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
@@ -835,7 +835,7 @@ include_graphics("img/case4-a.png")
 Alternative to pie charts (1):
 
 ```{r, out.width="95%", echo=F}
-include_graphics("img/case4-b.png")
+include_graphics("img/case4-b.PNG")
 ```
 
 .small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
@@ -847,7 +847,7 @@ include_graphics("img/case4-b.png")
 Alternative to pie charts (2):
 
 ```{r, out.width="100%", echo=F}
-include_graphics("img/case4-c.png")
+include_graphics("img/case4-c.PNG")
 ```
 
 .small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
@@ -859,7 +859,7 @@ include_graphics("img/case4-c.png")
 Alternative to pie charts (3):
 
 ```{r, out.width="100%", echo=F}
-include_graphics("img/case4-d.png")
+include_graphics("img/case4-d.PNG")
 ```
 
 .small[Image is from ["An Economist's Guide to Visualizing Data"](https://www.aeaweb.org/articles?id=10.1257/jep.28.1.209) by Jonathan Schwabish and excluded from the overall CC license.]
@@ -1022,7 +1022,7 @@ Images from Jonathan Schwabish (2014), ["An Economist's Guide to Visualizing Dat
 # Case 1: How can it be improved?
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case1-a.png")
+include_graphics("img/case1-a.PNG")
 ```
 
 
@@ -1031,7 +1031,7 @@ include_graphics("img/case1-a.png")
 # Case 1: Improved
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case1-b.png")
+include_graphics("img/case1-b.PNG")
 ```
 
 ---
@@ -1039,7 +1039,7 @@ include_graphics("img/case1-b.png")
 # Case 2: How can it be improved?
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case2-a.png")
+include_graphics("img/case2-a.PNG")
 ```
 
 ---
@@ -1047,7 +1047,7 @@ include_graphics("img/case2-a.png")
 # Case 2: Improved
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case2-b.png")
+include_graphics("img/case2-b.PNG")
 ```
 
 ---
@@ -1055,7 +1055,7 @@ include_graphics("img/case2-b.png")
 # Case 3: How can it be improved?
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case3-a.png")
+include_graphics("img/case3-a.PNG")
 ```
 
 ---
@@ -1063,7 +1063,7 @@ include_graphics("img/case3-a.png")
 # Case 3: Improved
 
 ```{r, out.width="92%", echo=F}
-include_graphics("img/case3-b.png")
+include_graphics("img/case3-b.PNG")
 ```
 
 ---

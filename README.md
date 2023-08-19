@@ -6,9 +6,9 @@ Except where otherwise noted, this work is licensed under <a rel="license" href=
 
 ***
 
-**Skip to:** [Lecture slides](#Lecture-slides)
-| [Supplemental labs](#Supplemental-labs)
-| [External resources](#External-resources)
+**Skip to:** [Lecture slides](#lecture-slides)
+| [Supplemental labs](#supplemental-labs)
+| [External resources](#external-resources)
 
 ***
 
