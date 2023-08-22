@@ -1,0 +1,16 @@
+knitr
+tidyverse
+ggplot2
+tibble
+tidyr
+readr
+purrr
+dplyr
+stringr
+forcats
+dslabs
+ggridges
+gganimate
+gapminder
+RColorBrewer
+lubridate

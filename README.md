@@ -14,9 +14,9 @@ Except where otherwise noted, this work is licensed under <a rel="license" href=
 
 ## Lecture slides
 
-Fall 2022
+Fall 2023
 
-[**Lecture 1: R Basics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html)
+[**Topic 1: R Basics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html)
 ([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf))
 
 * About R
@@ -26,7 +26,7 @@ Fall 2022
 * Vectors
 * Indexing
 
-[**Lecture 2: Programming in R**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/02-Programming/02-Programming.html)
+[**Topic 2: Programming in R**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/02-Programming/02-Programming.html)
 
 * If/else statements
 * For-loops
@@ -34,12 +34,12 @@ Fall 2022
 * Vectorization
 * Parallelization
 
-**Lecture 3: Productivity Tools**
+**Topic 3: Productivity Tools**
 
 * [**Version control**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/03-Productivity/Git_and_GitHub.pdf)
 * [**R Markdown**](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/03-Productivity/R-Markdown-example.Rmd)
 
-[**Lecture 4: Data Wrangling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/04-Wrangling/04-Wrangling.html)
+[**Topic 4: Data Wrangling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/04-Wrangling/04-Wrangling.html)
 
 * Philosophy of tidy data
 * Wrangling data with `dplyr`
@@ -47,7 +47,7 @@ Fall 2022
 * Tidying data with `tidyr`
 * Importing data with `readr`
 
-[**Lecture 5: Data Cleaning**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/05-Cleaning/05-Cleaning.html)
+[**Topic 5: Data Cleaning**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/05-Cleaning/05-Cleaning.html)
 
 * Join safety
 * Keys and relational data
@@ -55,53 +55,35 @@ Fall 2022
 * Number storage
 * Data Cleaning Checklist ([pdf version](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/data-cleaning-checklist/Data-Cleaning-Checklist.pdf))
 
-[**Lecture 6: Data Acquisition**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/06-Acquisition/06-Acquisition.html)
+[**Topic 6: Data Acquisition**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/06-Acquisition/06-Acquisition.html)
 
 * Where data comes from
 * Webscraping
 * Using APIs
 
-[**Lecture 7: Best Practices for Coding and Workflows**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html)
+[**Topic 7: Best Practices for Coding and Workflows**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html)
 
 * The perils of bad data cleaning
 * Reproducibility and transparency
 * Best practices (code organization, file organization, version control, abstraction, commenting, unit tests)
 
-[**Lecture 8: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Distinguishing-Goals/08-Distinguishing-Goals.html)
+**Topic 8: Exploratory Analysis**
 
-* The Data Generating Process
-* Potential outcomes, counterfactuals, and causal inference
-* Descriptive, Predictive, or Causal Analysis?
-
-**Lecture 9: Exploratory Analysis**
-
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part1.html)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/09-Exploratory-part1.html)
   * Summaries, frequency tables and crosstabs in R
   * Characterizing distributions
   * Handling extreme values
   * Handling variable transformations
   * Handling missing data
 
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/09-Exploratory-part2.html)
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/09-Exploratory-part2.html)
   * Characterizing relationships
   * Binscatter
   * The Conditional Expectation Function
   * Adjusting for other variables
   * Bin smoothing and local regression
 
-**Lecture 10: Spatial Analysis**
-
-* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/Overview_Geospatial_Data.pdf)
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part1.html)
-  - Spatial data and quick mapping
-  - Reference systems and projections
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Spatial/10-Spatial-part2.html)
-  - Spatial queries (measurement, relationships)
-  - Spatial subsetting
-  - Geometry operations
-  - Spatial joins
-
-[**Lecture 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/11-Visualization.html)
+[**Topic 9: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/11-Visualization.html)
 
 * Basics of `ggplot2`
 * Plotting examples
@@ -109,7 +91,13 @@ Fall 2022
 * Principles of data visualization
 * Case studies
 
-[**Lecture 12: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Regression/12-Regression.html)
+[**Topic 10: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html)
+
+* The Data Generating Process
+* Potential outcomes, counterfactuals, and causal inference
+* Descriptive, Predictive, or Causal Analysis?
+
+[**Topic 11: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/12-Regression.html)
 
 * Basic regression in R
 * Review: Interpreting coefficients
@@ -117,20 +105,20 @@ Fall 2022
 * Econometrics packages in R
 * Modeling nonlinear relationships
 
-[**Lecture 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/13-Learning.html)
+[**Topic 12: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/13-Learning.html)
 
 * Review: Prediction
 * Statistical learning
 * Model accuracy
 * Cross-validation
 
-**Lecture 14: Prediction Methods**
+**Topic 13: Prediction Methods**
 
-* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14a-Shrinkage.html)
+* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/14a-Shrinkage.html)
   - Shrinkage methods
   - Ridge regression
   - Lasso (and elasticnet)
-* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14b-Tidymodels.html)
+* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/14b-Tidymodels.html)
   - Setup and splitting
   - Recipes
   - Workflows
@@ -138,28 +126,40 @@ Fall 2022
   - Prediction
   - Dependence
 
-**Lecture 15: Classification Methods**
+**Topic 14: Classification Methods**
 
-* [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-Classification/15a-Classification.html)
+* [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/15a-Classification.html)
   - Classification
   - Logistic regression
   - *k*-nearest neighbors
   - Model assessment
   - Decision trees
-* [**Part 2: Examples**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-Classification/15b-Examples.html)
+* [**Part 2: Examples**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/15b-Examples.html)
   - Logistic regression and KNN
   - Cross-validation
   - Decision trees
   - Teach your laptop to read
 
-[**Lecture 16: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-ML-Applications/16-ML-Applications.html)
+[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/16-ML-Applications.html)
 
 * Predicting outcomes
 * Constructing new data
 * Selecting covariates
 * Predicting causal effects
 
-[**Lecture 17: Databases and Big Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html)
+**Topic 16: Spatial Analysis**
+
+* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/10-Spatial-part1.html)
+  - Spatial data and quick mapping
+  - Reference systems and projections
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/10-Spatial-part2.html)
+  - Spatial queries (measurement, relationships)
+  - Spatial subsetting
+  - Geometry operations
+  - Spatial joins
+
+[**Topic 17: Databases and Big Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html)
 
 * Tools for big data
 * Databases in R

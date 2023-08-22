@@ -1,0 +1,16 @@
+knitr
+pacman
+tidyverse
+ggplot2
+tibble
+tidyr
+readr
+purrr
+dplyr
+stringr
+forcats
+estimatr
+broom
+summarytools
+fixest
+binsreg
