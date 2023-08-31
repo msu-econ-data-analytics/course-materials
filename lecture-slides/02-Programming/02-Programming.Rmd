@@ -1,7 +1,7 @@
 ---
-title: "Lecture 2: Programming"
+title: "Topic 2: Programming"
 subtitle: ""
-author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+author: "Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/programming-basics.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0), and [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/12-parallel/12-parallel.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 
 output:
