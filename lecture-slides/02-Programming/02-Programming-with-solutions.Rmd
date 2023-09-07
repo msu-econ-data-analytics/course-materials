@@ -415,25 +415,18 @@ name: vectorization
 Another way to iterate uses the `apply` family. These functions apply a function to all elements of an object. For example:
 
 ```{r}
-nums = 1:10
+nums = data.frame(a = 1:5, b = 11:15, c = 21:25)
 sapply(X = nums, FUN = sqrt)
 ```
-* `X` is the vector of values that you want to iterate over.
+* `X` is the vector of objects that you want to iterate over.
 * `FUN` is the function you want to apply to each element of `X`.
-* `sapply` returns a vector of the same length as `X`.
-
---
-
-But this is a silly example, since `sqrt` is already vectorized:
-```{r}
-sqrt(nums)
-```
+* `sapply` returns an object of the same type and size as `X`.
 
 ---
 
 # Vectorization and functionals
 
-Say we want to apply our function `calculate_z` to all columns of `murder_numbers`. Unlike `sqrt()`, we didn't write `calculate_z` to be vectorized, so this doesn't work:
+Say we want to apply our function `calculate_z` to all columns of `murder_numbers`. We wrote `calculate_z` to work on vectors, but not lists of vectors, so this doesn't work:
 
 ```{r, error=T}
 calculate_z(murder_numbers)
