@@ -1,6 +1,6 @@
 ---
-title: "Lecture 5: Data Cleaning"
-author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+title: "Topic 5: Data Cleaning"
+author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts] 

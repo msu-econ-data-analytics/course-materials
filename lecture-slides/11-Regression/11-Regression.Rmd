@@ -1,6 +1,6 @@
 ---
-title: "Lecture 12: Regression Modeling"
-author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+title: "Topic 11: Regression Modeling"
+author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 
 output:

@@ -520,11 +520,11 @@ starwars |>
 
 # 5) dplyr::summarize
 
-The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. For example:
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function**:
 
 ```{r, summ4}
 starwars |> 
-  group_by(species) |> 
+  group_by(species) |>
   summarize(across(where(is.numeric), ~ mean(.x, na.rm=T)))
 ```
 
@@ -566,6 +566,75 @@ Take a few minutes to try this on your own:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- No really, try it on your own before scrolling further!! -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+As usual, there are multiple solutions.
+
+.pull-left[
+```{r}
+starwars |>
+  filter(sex == "female") |>
+  count(eye_color) |>
+  arrange(desc(n))
+```
+]
+.pull-right[
+```{r}
+starwars |> 
+  filter(sex == "female") |>
+  group_by(eye_color) |> 
+  summarize(n = n()) |>
+  arrange(desc(n))
+```
+]
+
 ---
 
 # Storing results in memory
@@ -579,7 +648,7 @@ women = starwars |> filter(sex == "female")
 brown_eyed_women = women |> filter(eye_color == "brown")
 ```
 
-Resist the temptation to use the same object name. This is called **clobbering** and it ruins your ability to easily look back at a previous version of your object.
+Resist the temptation to use the same object name. This is called **clobbering** since it overwrites the previous version. It ruins your ability to easily go back to previous steps.
 
 ```{r, eval=FALSE}
 # DON'T do this
@@ -899,6 +968,59 @@ gdp_u |> mutate(date = ymd(date))
 
 **Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
 
+Hint: Recall that you can tabulate summary statistics using `group_by` and `summarize`:
+```{r}
+flights |> 
+  group_by(carrier) |> 
+  summarize(avg_late = mean(arr_delay, na.rm=T))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Hey! Don't look! -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
@@ -906,12 +1028,17 @@ gdp_u |> mutate(date = ymd(date))
 
 **Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
 
-Hint: Recall that you can tabulate summary statistics using `group_by` and `summarize`:
-```{r}
-flights |> 
-  group_by(carrier) |> 
+Solution:
+```{r message=FALSE}
+delay_long = flights |> 
+  group_by(carrier, day) |> 
   summarize(avg_late = mean(arr_delay, na.rm=T))
+delay_wide = delay_long |> 
+  pivot_wider(names_from=carrier, values_from=avg_late)
+head(delay_wide, 4)
 ```
+
+Is this data frame tidy?
 
 
 ---
@@ -996,6 +1123,63 @@ str(dat)
 **Which state had the least total reported Covid-19 cases at colleges and universities?**
 
 Is it Montana?
+
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+dat2 = dat |>
+  group_by(state) |>
+  summarize(tot_cases = sum(cases)) |>
+  arrange(tot_cases)
+dat2
+```
+
 
 
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Lecture 13: <br> Machine Learning Fundamentals"
-author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+title: "Topic 12: <br> Machine Learning Fundamentals"
+author: "Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: "<br> .small[*Adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission. These slides are excluded from this resource's overall CC license.]"
 output:
   xaringan::moon_reader:

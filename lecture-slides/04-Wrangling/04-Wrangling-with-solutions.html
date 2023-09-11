@@ -234,14 +234,14 @@ tidyverse_packages()
 ```
 
 ```
-##  [1] "broom"         "cli"           "crayon"        "dbplyr"       
-##  [5] "dplyr"         "dtplyr"        "forcats"       "googledrive"  
-##  [9] "googlesheets4" "ggplot2"       "haven"         "hms"          
+##  [1] "broom"         "conflicted"    "cli"           "dbplyr"       
+##  [5] "dplyr"         "dtplyr"        "forcats"       "ggplot2"      
+##  [9] "googledrive"   "googlesheets4" "haven"         "hms"          
 ## [13] "httr"          "jsonlite"      "lubridate"     "magrittr"     
-## [17] "modelr"        "pillar"        "purrr"         "readr"        
-## [21] "readxl"        "reprex"        "rlang"         "rstudioapi"   
-## [25] "rvest"         "stringr"       "tibble"        "tidyr"        
-## [29] "xml2"          "tidyverse"
+## [17] "modelr"        "pillar"        "purrr"         "ragg"         
+## [21] "readr"         "readxl"        "reprex"        "rlang"        
+## [25] "rstudioapi"    "rvest"         "stringr"       "tibble"       
+## [29] "tidyr"         "xml2"          "tidyverse"
 ```
 
 All of these are super useful
@@ -376,16 +376,14 @@ starwars |&gt;
 
 ```
 ## # A tibble: 4 × 14
-##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
-##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-## 1 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
-## 2 Qui-Gon Jinn    193    89 brown   fair    blue       92   male  mascu… &lt;NA&gt;   
-## 3 Dooku           193    80 white   fair    brown     102   male  mascu… Serenno
-## 4 Bail Presto…    191    NA black   tan     brown      67   male  mascu… Aldera…
-## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
-## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
-## # ℹ Use `colnames()` to see all variable names
+##   name      height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Darth Va…    202   136 none       white      yellow          41.9 male  mascu…
+## 2 Qui-Gon …    193    89 brown      fair       blue            92   male  mascu…
+## 3 Dooku        193    80 white      fair       brown          102   male  mascu…
+## 4 Bail Pre…    191    NA black      tan        brown           67   male  mascu…
+## # ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
 ```
 
 ---
@@ -423,18 +421,16 @@ starwars |&gt;
 
 ```
 ## # A tibble: 6 × 14
-##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
-##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-## 1 Arvel Crynyd     NA    NA brown   fair    brown        NA male  mascu… &lt;NA&gt;   
-## 2 Finn             NA    NA black   dark    dark         NA male  mascu… &lt;NA&gt;   
-## 3 Rey              NA    NA brown   light   hazel        NA fema… femin… &lt;NA&gt;   
-## 4 Poe Dameron      NA    NA brown   light   brown        NA male  mascu… &lt;NA&gt;   
-## 5 BB8              NA    NA none    none    black        NA none  mascu… &lt;NA&gt;   
-## 6 Captain Pha…     NA    NA unknown unknown unknown      NA &lt;NA&gt;  &lt;NA&gt;   &lt;NA&gt;   
-## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
-## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
-## # ℹ Use `colnames()` to see all variable names
+##   name      height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Arvel Cr…     NA    NA brown      fair       brown             NA male  mascu…
+## 2 Finn          NA    NA black      dark       dark              NA male  mascu…
+## 3 Rey           NA    NA brown      light      hazel             NA fema… femin…
+## 4 Poe Dame…     NA    NA brown      light      brown             NA male  mascu…
+## 5 BB8           NA    NA none       none       black             NA none  mascu…
+## 6 Captain …     NA    NA unknown    unknown    unknown           NA &lt;NA&gt;  &lt;NA&gt;  
+## # ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
 ```
 
 --
@@ -462,22 +458,21 @@ starwars |&gt;
 
 ```
 ## # A tibble: 87 × 14
-##    name        height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
-##    &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-##  1 Wicket Sys…     88  20   brown   brown   brown       8   male  mascu… Endor  
-##  2 IG-88          200 140   none    metal   red        15   none  mascu… &lt;NA&gt;   
-##  3 Luke Skywa…    172  77   blond   fair    blue       19   male  mascu… Tatooi…
-##  4 Leia Organa    150  49   brown   light   brown      19   fema… femin… Aldera…
-##  5 Wedge Anti…    170  77   brown   fair    hazel      21   male  mascu… Corell…
-##  6 Plo Koon       188  80   none    orange  black      22   male  mascu… Dorin  
-##  7 Biggs Dark…    183  84   black   light   brown      24   male  mascu… Tatooi…
-##  8 Han Solo       180  80   brown   fair    brown      29   male  mascu… Corell…
-##  9 Lando Calr…    177  79   black   dark    brown      31   male  mascu… Socorro
-## 10 Boba Fett      183  78.2 black   fair    brown      31.5 male  mascu… Kamino 
-## # … with 77 more rows, 4 more variables: species &lt;chr&gt;, films &lt;list&gt;,
-## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated variable names
-## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld
-## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+##    name     height  mass hair_color skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Wicket …     88  20   brown      brown      brown            8   male  mascu…
+##  2 IG-88       200 140   none       metal      red             15   none  mascu…
+##  3 Luke Sk…    172  77   blond      fair       blue            19   male  mascu…
+##  4 Leia Or…    150  49   brown      light      brown           19   fema… femin…
+##  5 Wedge A…    170  77   brown      fair       hazel           21   male  mascu…
+##  6 Plo Koon    188  80   none       orange     black           22   male  mascu…
+##  7 Biggs D…    183  84   black      light      brown           24   male  mascu…
+##  8 Han Solo    180  80   brown      fair       brown           29   male  mascu…
+##  9 Lando C…    177  79   black      dark       brown           31   male  mascu…
+## 10 Boba Fe…    183  78.2 black      fair       brown           31.5 male  mascu…
+## # ℹ 77 more rows
+## # ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
 ```
 
 ---
@@ -493,22 +488,21 @@ starwars |&gt;
 
 ```
 ## # A tibble: 87 × 14
-##    name        height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
-##    &lt;chr&gt;        &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-##  1 Yoda            66    17 white   green   brown       896 male  mascu… &lt;NA&gt;   
-##  2 Jabba Desi…    175  1358 &lt;NA&gt;    green-… orange      600 herm… mascu… Nal Hu…
-##  3 Chewbacca      228   112 brown   unknown blue        200 male  mascu… Kashyy…
-##  4 C-3PO          167    75 &lt;NA&gt;    gold    yellow      112 none  mascu… Tatooi…
-##  5 Dooku          193    80 white   fair    brown       102 male  mascu… Serenno
-##  6 Qui-Gon Ji…    193    89 brown   fair    blue         92 male  mascu… &lt;NA&gt;   
-##  7 Ki-Adi-Mun…    198    82 white   pale    yellow       92 male  mascu… Cerea  
-##  8 Finis Valo…    170    NA blond   fair    blue         91 male  mascu… Corusc…
-##  9 Palpatine      170    75 grey    pale    yellow       82 male  mascu… Naboo  
-## 10 Cliegg Lars    183    NA brown   fair    blue         82 male  mascu… Tatooi…
-## # … with 77 more rows, 4 more variables: species &lt;chr&gt;, films &lt;list&gt;,
-## #   vehicles &lt;list&gt;, starships &lt;list&gt;, and abbreviated variable names
-## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld
-## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+##    name     height  mass hair_color skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Yoda         66    17 white      green      brown            896 male  mascu…
+##  2 Jabba D…    175  1358 &lt;NA&gt;       green-tan… orange           600 herm… mascu…
+##  3 Chewbac…    228   112 brown      unknown    blue             200 male  mascu…
+##  4 C-3PO       167    75 &lt;NA&gt;       gold       yellow           112 none  mascu…
+##  5 Dooku       193    80 white      fair       brown            102 male  mascu…
+##  6 Qui-Gon…    193    89 brown      fair       blue              92 male  mascu…
+##  7 Ki-Adi-…    198    82 white      pale       yellow            92 male  mascu…
+##  8 Finis V…    170    NA blond      fair       blue              91 male  mascu…
+##  9 Palpati…    170    75 grey       pale       yellow            82 male  mascu…
+## 10 Cliegg …    183    NA brown      fair       blue              82 male  mascu…
+## # ℹ 77 more rows
+## # ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
 ```
 
 ---
@@ -542,8 +536,7 @@ starwars |&gt;
 ##  8 R5-D4                 32 &lt;NA&gt;          white, red  Droid  
 ##  9 Biggs Darklighter     84 black         light       Human  
 ## 10 Obi-Wan Kenobi        77 auburn, white fair        Human  
-## # … with 77 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 77 more rows
 ```
 
 ---
@@ -603,8 +596,7 @@ starwars |&gt;
 ##  8 R5-D4              &lt;NA&gt;          white, red  red      
 ##  9 Biggs Darklighter  black         light       brown    
 ## 10 Obi-Wan Kenobi     auburn, white fair        blue-gray
-## # … with 77 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 77 more rows
 ```
 
 Some other selection helpers: `starts_with()`, `ends_with()`, `all_of(c("name1", "name2"))`, `matches()`.
@@ -642,8 +634,7 @@ starwars |&gt;
 ##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
 ##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year…
 ## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
-## # … with 77 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 77 more rows
 ```
 
 ---
@@ -676,8 +667,7 @@ starwars |&gt;
 ##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
 ##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year…
 ## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
-## # … with 77 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 77 more rows
 ```
 
 ---
@@ -729,8 +719,7 @@ starwars |&gt;
 ##  8 R5-D4                  97    32 &lt;NA&gt;          WHITE, RED  RED      
 ##  9 BIGGS DARKLIGHTER     183    84 BLACK         LIGHT       BROWN    
 ## 10 OBI-WAN KENOBI        182    77 AUBURN, WHITE FAIR        BLUE-GRAY
-## # … with 77 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 77 more rows
 ```
 
 ---
@@ -767,8 +756,7 @@ starwars |&gt;
 ##  8 Ewok              88 
 ##  9 Geonosian        183 
 ## 10 Gungan           209.
-## # … with 28 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 28 more rows
 ```
 
 ---
@@ -798,20 +786,19 @@ starwars |&gt;
 ##  8 Ewok              88 
 ##  9 Geonosian        183 
 ## 10 Gungan           209.
-## # … with 28 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 28 more rows
 ```
 
 ---
 
 # 5) dplyr::summarize
 
-The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. For example:
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function**:
 
 
 ```r
 starwars |&gt; 
-  group_by(species) |&gt; 
+  group_by(species) |&gt;
   summarize(across(where(is.numeric), ~ mean(.x, na.rm=T)))
 ```
 
@@ -871,6 +858,99 @@ Take a few minutes to try this on your own:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;!-- No really, try it on your own before scrolling further!! --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+As usual, there are multiple solutions.
+
+.pull-left[
+
+```r
+starwars |&gt;
+  filter(sex == "female") |&gt;
+  count(eye_color) |&gt;
+  arrange(desc(n))
+```
+
+```
+## # A tibble: 5 × 2
+##   eye_color     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 blue          6
+## 2 brown         5
+## 3 black         2
+## 4 hazel         2
+## 5 yellow        1
+```
+]
+.pull-right[
+
+```r
+starwars |&gt; 
+  filter(sex == "female") |&gt;
+  group_by(eye_color) |&gt; 
+  summarize(n = n()) |&gt;
+  arrange(desc(n))
+```
+
+```
+## # A tibble: 5 × 2
+##   eye_color     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 blue          6
+## 2 brown         5
+## 3 black         2
+## 4 hazel         2
+## 5 yellow        1
+```
+]
+
 ---
 
 # Storing results in memory
@@ -885,7 +965,7 @@ women = starwars |&gt; filter(sex == "female")
 brown_eyed_women = women |&gt; filter(eye_color == "brown")
 ```
 
-Resist the temptation to use the same object name. This is called **clobbering** and it ruins your ability to easily look back at a previous version of your object.
+Resist the temptation to use the same object name. This is called **clobbering** since it overwrites the previous version. It ruins your ability to easily go back to previous steps.
 
 
 ```r
@@ -982,7 +1062,7 @@ flights |&gt;
 ```
 
 ```
-## Joining, by = c("year", "tailnum")
+## Joining with `by = join_by(year, tailnum)`
 ```
 
 ```
@@ -999,8 +1079,7 @@ flights |&gt;
 ##  8  2013     1     1      557      709 EV        5708 N829AS  &lt;NA&gt;  &lt;NA&gt; 
 ##  9  2013     1     1      557      838 B6          79 N593JB  &lt;NA&gt;  &lt;NA&gt; 
 ## 10  2013     1     1      558      753 AA         301 N3ALAA  &lt;NA&gt;  &lt;NA&gt; 
-## # … with 336,766 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 336,766 more rows
 ```
 
 ---
@@ -1078,12 +1157,12 @@ flights |&gt;
 
 ```
 ## # A tibble: 3 × 11
-##    year month   day dep_time arr_time carrier flight tailnum year_…¹ type  model
-##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
-## 1  2013     1     1      517      830 UA        1545 N14228     1999 Fixe… 737-…
-## 2  2013     1     1      533      850 UA        1714 N24211     1998 Fixe… 737-…
-## 3  2013     1     1      542      923 AA        1141 N619AA     1990 Fixe… 757-…
-## # … with abbreviated variable name ¹​year_built
+##    year month   day dep_time arr_time carrier flight tailnum year_built type    
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;   
+## 1  2013     1     1      517      830 UA        1545 N14228        1999 Fixed w…
+## 2  2013     1     1      533      850 UA        1714 N24211        1998 Fixed w…
+## 3  2013     1     1      542      923 AA        1141 N619AA        1990 Fixed w…
+## # ℹ 1 more variable: model &lt;chr&gt;
 ```
 
 
@@ -1127,9 +1206,9 @@ stocks
 ```
 
 ```
-##         time        X         Y         Z
-## 1 2009-01-01 9.353794 10.892745  9.648994
-## 2 2009-01-02 9.657906  7.384239 19.472134
+##         time         X        Y        Z
+## 1 2009-01-01  8.397525 12.66681 6.583549
+## 2 2009-01-02 11.196419 12.19795 3.351606
 ```
 
 ```r
@@ -1142,12 +1221,12 @@ tidy_stocks
 ## # A tibble: 6 × 3
 ##   time       stock price
 ##   &lt;date&gt;     &lt;chr&gt; &lt;dbl&gt;
-## 1 2009-01-01 X      9.35
-## 2 2009-01-01 Y     10.9 
-## 3 2009-01-01 Z      9.65
-## 4 2009-01-02 X      9.66
-## 5 2009-01-02 Y      7.38
-## 6 2009-01-02 Z     19.5
+## 1 2009-01-01 X      8.40
+## 2 2009-01-01 Y     12.7 
+## 3 2009-01-01 Z      6.58
+## 4 2009-01-02 X     11.2 
+## 5 2009-01-02 Y     12.2 
+## 6 2009-01-02 Z      3.35
 ```
 
 ---
@@ -1165,8 +1244,8 @@ tidy_stocks |&gt; pivot_wider(names_from=stock, values_from=price)
 ## # A tibble: 2 × 4
 ##   time           X     Y     Z
 ##   &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 2009-01-01  9.35 10.9   9.65
-## 2 2009-01-02  9.66  7.38 19.5
+## 1 2009-01-01  8.40  12.7  6.58
+## 2 2009-01-02 11.2   12.2  3.35
 ```
 
 Or, we can put it into a new ("transposed") format, in which the observations are stocks and the columns are dates:
@@ -1180,9 +1259,9 @@ tidy_stocks |&gt; pivot_wider(names_from=time, values_from=price)
 ## # A tibble: 3 × 3
 ##   stock `2009-01-01` `2009-01-02`
 ##   &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-## 1 X             9.35         9.66
-## 2 Y            10.9          7.38
-## 3 Z             9.65        19.5
+## 1 X             8.40        11.2 
+## 2 Y            12.7         12.2 
+## 3 Z             6.58         3.35
 ```
 
 
@@ -1278,10 +1357,10 @@ gdp
 
 ```
 ##     yr mnth dy       gdp
-## 1 2016    1  1  98.44216
-## 2 2016    1  2  98.98793
-## 3 2016    1  3  99.91618
-## 4 2016    1  4 100.97192
+## 1 2016    1  1 100.69100
+## 2 2016    1  2 101.58270
+## 3 2016    1  3 101.16019
+## 4 2016    1  4  97.66085
 ```
 
 ```r
@@ -1291,10 +1370,10 @@ gdp |&gt; unite(date, c("yr", "mnth", "dy"), sep = "-")
 
 ```
 ##       date       gdp
-## 1 2016-1-1  98.44216
-## 2 2016-1-2  98.98793
-## 3 2016-1-3  99.91618
-## 4 2016-1-4 100.97192
+## 1 2016-1-1 100.69100
+## 2 2016-1-2 101.58270
+## 3 2016-1-3 101.16019
+## 4 2016-1-4  97.66085
 ```
 
 ---
@@ -1312,10 +1391,10 @@ gdp_u
 ## # A tibble: 4 × 2
 ##   date       gdp
 ##   &lt;chr&gt;    &lt;dbl&gt;
-## 1 2016-1-1  98.4
-## 2 2016-1-2  99.0
-## 3 2016-1-3  99.9
-## 4 2016-1-4 101.
+## 1 2016-1-1 101. 
+## 2 2016-1-2 102. 
+## 3 2016-1-3 101. 
+## 4 2016-1-4  97.7
 ```
 
 ---
@@ -1334,18 +1413,11 @@ gdp_u |&gt; mutate(date = ymd(date))
 ## # A tibble: 4 × 2
 ##   date         gdp
 ##   &lt;date&gt;     &lt;dbl&gt;
-## 1 2016-01-01  98.4
-## 2 2016-01-02  99.0
-## 3 2016-01-03  99.9
-## 4 2016-01-04 101.
+## 1 2016-01-01 101. 
+## 2 2016-01-02 102. 
+## 3 2016-01-03 101. 
+## 4 2016-01-04  97.7
 ```
-
-
----
-
-# Challenge
-
-**Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
 
 
 ---
@@ -1383,6 +1455,83 @@ flights |&gt;
 ## 15 WN         9.65 
 ## 16 YV        15.6
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;!-- Hey! Don't look! --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Challenge
+
+**Using `nycflights13`, create a table of average arrival delay (in minutes) by day (in rows) and carrier (in columns).**
+
+Solution:
+
+```r
+delay_long = flights |&gt; 
+  group_by(carrier, day) |&gt; 
+  summarize(avg_late = mean(arr_delay, na.rm=T))
+delay_wide = delay_long |&gt; 
+  pivot_wider(names_from=carrier, values_from=avg_late)
+head(delay_wide, 4)
+```
+
+```
+## # A tibble: 4 × 17
+##     day  `9E`     AA     AS      B6     DL    EV    F9    FL    HA    MQ    OO
+##   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1  7.21 -1.23   -5.96 11.9     0.866 21.3  21.7  22.7  -15.4 12.9   NA  
+## 2     2  7.35 -0.905 -13.7   9.90    3.05  18.0   7.71 20.9  -16.1  9.04 NaN  
+## 3     3  5.80 -3.09  -20.8   5.26   -0.204 15.3  18.0  19.6  -16.8 13.7    0.5
+## 4     4 -2.11 -5.80  -22.3  -0.0939 -6.24   3.87 14.5   4.38 -15.2  3.82 -12  
+## # ℹ 5 more variables: UA &lt;dbl&gt;, US &lt;dbl&gt;, VX &lt;dbl&gt;, WN &lt;dbl&gt;, YV &lt;dbl&gt;
+```
+
+Is this data frame tidy?
 
 
 ---
@@ -1428,7 +1577,7 @@ getwd()
 * If you had a file saved at `"C:/git/ecns-560/assignment-3/assignment-3.Rmd"`
 * Its relative path would be `"assignment-3/assignment-3.Rmd"`
 
-It's always best to use **relative paths,** though you *can* use an absolute path in any given situation.
+It's always best to use **relative paths,** though you *can* also use an absolute path in any given situation.
 
 ---
   
@@ -1501,6 +1650,81 @@ str(dat)
 **Which state had the least total reported Covid-19 cases at colleges and universities?**
 
 Is it Montana?
+
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```r
+dat2 = dat |&gt;
+  group_by(state) |&gt;
+  summarize(tot_cases = sum(cases)) |&gt;
+  arrange(tot_cases)
+dat2
+```
+
+```
+## # A tibble: 57 × 2
+##    state                    tot_cases
+##    &lt;chr&gt;                        &lt;dbl&gt;
+##  1 American Samoa                   0
+##  2 Marshall Islands                 0
+##  3 Northern Mariana Islands         0
+##  4 Virgin Islands                   6
+##  5 Guam                            12
+##  6 Puerto Rico                    118
+##  7 Hawaii                         153
+##  8 Alaska                         430
+##  9 Vermont                       1405
+## 10 Maine                         1689
+## # ℹ 47 more rows
+```
+
 
 
 ---

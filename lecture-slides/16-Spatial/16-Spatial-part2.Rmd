@@ -1,6 +1,6 @@
 ---
-title: "Lecture 10: Spatial Analysis, Part 2"
-author: "Nick Hagerty* <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+title: "Lecture 16: Spatial Analysis, Part 2"
+author: "Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: ".small[<br> *Adapted from [“R Geospatial Fundamentals”](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) by the UC Berkeley D-Lab, used under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).]"
 output:
   xaringan::moon_reader:

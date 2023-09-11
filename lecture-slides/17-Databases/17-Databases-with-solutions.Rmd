@@ -1,6 +1,6 @@
 ---
-title: "Lecture 17: Databases and Big Data"
-author: "Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University"
+title: "Topic 17: Databases and Big Data"
+author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: "<br> *Based partly on materials by [Grant McDermott](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/15-databases/15-databases.html) under an MIT license."
 output:
   xaringan::moon_reader:
