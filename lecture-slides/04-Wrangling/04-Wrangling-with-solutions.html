@@ -793,7 +793,37 @@ starwars |&gt;
 
 # 5) dplyr::summarize
 
-The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function**:
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`.
+
+
+```r
+starwars |&gt; 
+  group_by(species) |&gt;
+  summarize(across(where(is.numeric), mean))
+```
+
+```
+## # A tibble: 38 × 4
+##    species   height  mass birth_year
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Aleena       79     15         NA
+##  2 Besalisk    198    102         NA
+##  3 Cerean      198     82         92
+##  4 Chagrian    196     NA         NA
+##  5 Clawdite    168     55         NA
+##  6 Droid        NA     NA         NA
+##  7 Dug         112     40         NA
+##  8 Ewok         88     20          8
+##  9 Geonosian   183     80         NA
+## 10 Gungan      209.    NA         NA
+## # ℹ 28 more rows
+```
+
+---
+
+# 5) dplyr::summarize
+
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function:**
 
 
 ```r
@@ -1309,20 +1339,20 @@ economists |&gt; separate(name, c("first_name", "last_name"), sep = "_")
 
 # 3) tidyr::separate
 
-A related function is `separate_rows`, for splitting up cells that contain multiple fields or observations:
+Related is `separate_rows`, for splitting cells with multiple values into multiple rows:
 
 ```r
 jobs = data.frame(
-  name = c("Jack", "Jill"),
-  occupation = c("Homemaker", "Philosopher, Philanthropist, Troublemaker")
+  name = c("Joe", "Jill"),
+  occupation = c("President", "First Lady, Professor, Grandmother")
   ) 
 jobs
 ```
 
 ```
-##   name                                occupation
-## 1 Jack                                 Homemaker
-## 2 Jill Philosopher, Philanthropist, Troublemaker
+##   name                         occupation
+## 1  Joe                          President
+## 2 Jill First Lady, Professor, Grandmother
 ```
 
 ```r
@@ -1331,13 +1361,49 @@ jobs |&gt; separate_rows(occupation)
 ```
 
 ```
+## # A tibble: 5 × 2
+##   name  occupation 
+##   &lt;chr&gt; &lt;chr&gt;      
+## 1 Joe   President  
+## 2 Jill  First      
+## 3 Jill  Lady       
+## 4 Jill  Professor  
+## 5 Jill  Grandmother
+```
+
+---
+
+# 3) tidyr::separate
+
+Related is `separate_rows`, for splitting cells with multiple values into multiple rows:
+
+```r
+jobs = data.frame(
+  name = c("Joe", "Jill"),
+  occupation = c("President", "First Lady, Professor, Grandmother")
+  ) 
+jobs
+```
+
+```
+##   name                         occupation
+## 1  Joe                          President
+## 2 Jill First Lady, Professor, Grandmother
+```
+
+```r
+# Now split out Jill's various occupations into different rows
+jobs |&gt; separate_rows(occupation, sep = ", ")
+```
+
+```
 ## # A tibble: 4 × 2
-##   name  occupation    
-##   &lt;chr&gt; &lt;chr&gt;         
-## 1 Jack  Homemaker     
-## 2 Jill  Philosopher   
-## 3 Jill  Philanthropist
-## 4 Jill  Troublemaker
+##   name  occupation 
+##   &lt;chr&gt; &lt;chr&gt;      
+## 1 Joe   President  
+## 2 Jill  First Lady 
+## 3 Jill  Professor  
+## 4 Jill  Grandmother
 ```
 
 ---
@@ -1380,26 +1446,7 @@ gdp |&gt; unite(date, c("yr", "mnth", "dy"), sep = "-")
 
 # 4) tidyr::unite
 
-Note that `unite` will automatically create a character variable. You can see this better if we convert it to a tibble. 
-
-```r
-gdp_u = gdp |&gt; unite(date, c("yr", "mnth", "dy"), sep = "-") |&gt; as_tibble()
-gdp_u
-```
-
-```
-## # A tibble: 4 × 2
-##   date       gdp
-##   &lt;chr&gt;    &lt;dbl&gt;
-## 1 2016-1-1 101. 
-## 2 2016-1-2 102. 
-## 3 2016-1-3 101. 
-## 4 2016-1-4  97.7
-```
-
----
-
-# 4) tidyr::unite
+Note that `unite` will automatically create a character variable.
 
 If you want to convert it to something else (e.g. date or numeric) then you will need to modify it using `mutate`. This example uses the [lubridate](https://lubridate.tidyverse.org/) package's super helpful date conversion functions.
 

@@ -520,7 +520,19 @@ starwars |>
 
 # 5) dplyr::summarize
 
-The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function**:
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`.
+
+```{r, summ3}
+starwars |> 
+  group_by(species) |>
+  summarize(across(where(is.numeric), mean))
+```
+
+---
+
+# 5) dplyr::summarize
+
+The same `across`-based workflow that we saw with `mutate` a few slides back also works with `summarize`. Though to add arguments, we have to use an **anonymous function:**
 
 ```{r, summ4}
 starwars |> 
@@ -913,15 +925,30 @@ economists |> separate(name, c("first_name", "last_name"), sep = "_")
 
 # 3) tidyr::separate
 
-A related function is `separate_rows`, for splitting up cells that contain multiple fields or observations:
-```{r sep2}
+Related is `separate_rows`, for splitting cells with multiple values into multiple rows:
+```{r sep2a}
 jobs = data.frame(
-  name = c("Jack", "Jill"),
-  occupation = c("Homemaker", "Philosopher, Philanthropist, Troublemaker")
+  name = c("Joe", "Jill"),
+  occupation = c("President", "First Lady, Professor, Grandmother")
   ) 
 jobs
 # Now split out Jill's various occupations into different rows
 jobs |> separate_rows(occupation)
+```
+
+---
+
+# 3) tidyr::separate
+
+Related is `separate_rows`, for splitting cells with multiple values into multiple rows:
+```{r sep2}
+jobs = data.frame(
+  name = c("Joe", "Jill"),
+  occupation = c("President", "First Lady, Professor, Grandmother")
+  ) 
+jobs
+# Now split out Jill's various occupations into different rows
+jobs |> separate_rows(occupation, sep = ", ")
 ```
 
 ---
@@ -944,15 +971,7 @@ gdp |> unite(date, c("yr", "mnth", "dy"), sep = "-")
 
 # 4) tidyr::unite
 
-Note that `unite` will automatically create a character variable. You can see this better if we convert it to a tibble. 
-```{r unite2}
-gdp_u = gdp |> unite(date, c("yr", "mnth", "dy"), sep = "-") |> as_tibble()
-gdp_u
-```
-
----
-
-# 4) tidyr::unite
+Note that `unite` will automatically create a character variable.
 
 If you want to convert it to something else (e.g. date or numeric) then you will need to modify it using `mutate`. This example uses the [lubridate](https://lubridate.tidyverse.org/) package's super helpful date conversion functions.
 
