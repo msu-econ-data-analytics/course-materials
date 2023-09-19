@@ -8,9 +8,9 @@ purrr
 dplyr
 stringr
 forcats
+lubridate
 dslabs
 ggridges
 gganimate
 gapminder
 RColorBrewer
-lubridate
