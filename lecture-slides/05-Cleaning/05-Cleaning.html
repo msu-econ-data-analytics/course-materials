@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 5: Data Cleaning</title>
+    <title>Topic 5: Data Cleaning</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,10 +17,10 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 5: Data Cleaning
+# Topic 5: Data Cleaning
 ]
 .author[
-### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
 ]
 
 ---
@@ -54,9 +54,9 @@ name: toc
 
 1. [Keys and relational data](#keys)
 
-1. [String cleaning](#strings)
-
 1. [Number storage](#numbers)
+
+1. [String cleaning](#strings)
 
 1. [Data Cleaning Checklist](#checklist)
 
@@ -98,6 +98,20 @@ flights_planes |&gt; summarize(across(c(air_time, distance, seats), mean, na.rm=
 ```
 
 Can you find the problem here? Try to figure out how it arises and why.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -375,7 +389,7 @@ Already we can see some of the biggest advantages of R over Stata:
 * Missing values are treated in a safe and sensible way.
   * NA's propagate through calculations unless you specifically choose to set `na.rm=TRUE`.
   * In Stata, missing values equal `\(+\infty\)` (with `. &lt; .a &lt; .b &lt; .c &lt; ...`).
-  * In Stata, `drop if x &gt; 1000` will **drop all observations with missing values of x**!
+  * In Stata, `drop if x &gt; 1000` will **drop all observations with missing values of x!**
   * (To fix this, ALWAYS add `drop if x&gt;1000 &amp; !missing(x)` to all your `if` conditions.)
 
 
@@ -392,9 +406,9 @@ Images in this section are from ["R for Data Science"](https://r4ds.had.co.nz/re
 
 # Relational data
 
-**Relational data**: multiple tables of data that have relations to each other (i.e., that you might join).
+**Relational data**: multiple tables of data that have relationships to each other (i.e., tables that you would ever consider joining).
 
-* Relational data is most often discussed in the context of *databases* like SQL, which we will (try to!) cover briefly at the end of the course.
+* Relational data is most often discussed in the context of *databases* like SQL.
 
 * But we also use it when doing any form of data wrangling that involves joins, so it's helpful to think more formally about it.
 
@@ -451,6 +465,27 @@ planes |&gt;
 ## # ℹ Use `colnames()` to see all variable names
 ```
 
+--
+
+Here's another:
+
+```r
+nrow(planes)
+```
+
+```
+## [1] 3322
+```
+
+```r
+nrow(planes |&gt; distinct(tailnum))
+```
+
+```
+## [1] 3322
+```
+
+
 ---
 
 # Keys
@@ -472,6 +507,20 @@ stopifnot(nrow(dups_weather) == 0)
 ```
 ## Error: nrow(dups_weather) == 0 is not TRUE
 ```
+
+--
+
+Alternatively:
+
+```r
+stopifnot(nrow(planes) == nrow(planes |&gt; distinct(tailnum)))
+stopifnot(nrow(weather) == nrow(weather |&gt; distinct(year, month, day, hour, origin)))
+```
+
+```
+## Error: nrow(weather) == nrow(distinct(weather, year, month, day, hour,  .... is not TRUE
+```
+
 
 ---
 
@@ -504,8 +553,7 @@ flights |&gt;
 ##  8  2013     7    27 WN        2269     2
 ##  9  2013     8     3 WN        2269     2
 ## 10  2013     8    10 WN        2269     2
-## # … with 14 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+## # ℹ 14 more rows
 ```
 
 
@@ -525,23 +573,22 @@ flights2
 
 ```
 ## # A tibble: 336,776 × 20
-##       id  year month   day dep_time sched_dep_…¹ dep_d…² arr_t…³ sched…⁴ arr_d…⁵
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;        &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;
-##  1     1  2013     1     1     1825         1829      -4    2056    2053       3
-##  2     2  2013     1     1     1452         1455      -3    1637    1639      -2
-##  3     3  2013     1     1     2015         2005      10    2149    2144       5
-##  4     4  2013     1     1     1637         1545      52    1858    1819      39
-##  5     5  2013     1     1     1939         1840      59      29    2151      NA
-##  6     6  2013     1     1     1554         1600      -6    1701    1734     -33
-##  7     7  2013     1     1     1546         1540       6    1753    1748       5
-##  8     8  2013     1     1     2115         1700     255    2330    1920     250
-##  9     9  2013     1     1     2023         1945      38    2240    2206      34
-## 10    10  2013     1     1     2046         2035      11    2144    2213     -29
-## # … with 336,766 more rows, 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;,
-## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
-## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;, and abbreviated variable names
-## #   ¹​sched_dep_time, ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay
-## # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+##       id  year month   day dep_time sched_dep_time dep_delay arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+##  1     1  2013     1     1     1825           1829        -4     2056
+##  2     2  2013     1     1     1452           1455        -3     1637
+##  3     3  2013     1     1     2015           2005        10     2149
+##  4     4  2013     1     1     1637           1545        52     1858
+##  5     5  2013     1     1     1939           1840        59       29
+##  6     6  2013     1     1     1554           1600        -6     1701
+##  7     7  2013     1     1     1546           1540         6     1753
+##  8     8  2013     1     1     2115           1700       255     2330
+##  9     9  2013     1     1     2023           1945        38     2240
+## 10    10  2013     1     1     2046           2035        11     2144
+## # ℹ 336,766 more rows
+## # ℹ 12 more variables: sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
 
 ---
@@ -582,7 +629,18 @@ You'll get extra rows:
 
 ```r
 flights_weather = flights |&gt; 
-  left_join(weather, by=c("year", "month", "day", "origin"))
+  left_join(weather, by = c("year", "month", "day", "origin"))
+```
+
+```
+## Warning in left_join(flights, weather, by = c("year", "month", "day", "origin")): Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 1 of `x` matches multiple rows in `y`.
+## ℹ Row 8704 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   "many-to-many"` to silence this warning.
+```
+
+```r
 nrow(flights_weather)
 ```
 
@@ -618,7 +676,7 @@ stopifnot(nrow(dups_planes) == 0)
 
 # Join, keeping the join keys from both datasets
 flights_planes = flights |&gt;
-  left_join(planes |&gt; rename(year_built = year), by="tailnum", keep=TRUE) |&gt;
+  left_join(planes |&gt; rename(year_built = year), by = "tailnum", keep = TRUE) |&gt;
   rename(tailnum = tailnum.x, tailnum_planes = tailnum.y)
 
 # Confirm the join was 1:many
@@ -628,11 +686,9 @@ stopifnot(nrow(flights) == nrow(flights_planes))
 
 ---
 class: inverse, middle
-name: strings
+name: numbers
 
-# String cleaning
-
-Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/string-processing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
+# Number storage
 
 ---
 
@@ -656,6 +712,128 @@ What types of variables might you encounter in a raw dataset?
 
 ---
 
+# Floating point problems
+
+Simplify this expression: `\(1-\frac{1}{49}*49\)`
+
+It's obviously 0. Now ask R:
+
+
+```r
+1 - (1/49)*49
+```
+--
+
+
+```
+## [1] 1.110223e-16
+```
+
+This is called a **floating point** problem. It arises from the way computers store numbers.
+
+R doesn't notice that `\(49/49\)` simplifies to 1. It just follows the order of operations. So the first thing it does is calculate:
+
+```r
+(1/49)
+```
+
+```
+## [1] 0.02040816
+```
+Which is an irrational number. So R rounds it to 53 significant digits before multiplying by 49.
+
+---
+
+# Floating point problems
+
+Most of the time, 53 digits is plenty of precision. But sometimes it creates problems.
+
+Note: This explanation is actually too simple. The floating-point issue goes deeper than just irrational numbers. Here's another example:
+
+
+```r
+1 - 0.9 - 0.1
+```
+
+```
+## [1] -2.775558e-17
+```
+
+--
+
+In 1996, a floating-point error caused a European Space Agency rocket to self-destruct 37 seconds after it was launched.
+
+---
+
+# Avoiding floating-point errors
+
+Pay attention to the data type of your variables.
+
+Avoid using logical conditions like `height == 180` for numeric variables.
+* `height` may even read as `180` in the `View` window
+* But under the hood, it might still be stored as `180.000000000000173...`.
+
+What you can do instead:
+* **Best option:** `dplyr::near` compares numbers with a built-in tolerance.
+* Use `&gt;` and `&lt;` comparisons, or `between(height, 179.9, 180.1)`.
+* Convert in place: `as.integer(height) == 180`
+* Or with finer control: `round(height, digits=6) == 180`
+* If all values are integers, store the variable as an integer in the first place.
+
+---
+
+# How to store a number?
+
+**Numeric** variables are stored in scientific notation.
+* Use to represent a single value, for which digits decrease in importance from left to right.
+* Example: My height is `182.2469405113283` cm.
+
+**Integer** variables lack decimal places.
+* Saves memory relative to numeric variables.
+* Stores values exactly, avoiding some floating-point problems.
+
+**Character** (string) variables store the full sequence of digits literally.
+* Use when digits lack quantitative information, and each digit is equally important.
+* Phone numbers, credit card numbers, etc.
+* No chance of the right-most digits getting lost or corrupted.
+
+---
+
+# More variable formats
+
+**Dates and times** allow you to easily do math and logic on dates and times.
+* See tidyverse package `lubridate`.
+
+**Factors** allow you to store values as numbers, but *display* them as strings.
+* This is useful for sorting things like month names: "Jan", "Feb", "Mar", "Apr"....
+* See tidyverse packages `forcats`.
+
+---
+
+# Memory space
+
+Memory space quickly becomes a problem when you work with large datasets.
+* But R does a reasonably good job of handling storage efficiently.
+
+Logical variables are smaller than integers, which are smaller than numeric.
+
+Does it save memory to store a variable as a factor instead of a string?
+* This used to be true: factor variables only store the factor labels once.
+* But no longer: R uses a global string pool -- each unique string is only stored once.
+
+`pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
+
+
+---
+class: inverse, middle
+name: strings
+
+# String cleaning
+
+Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/string-processing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
+
+---
+
 # String cleaning example
 
 Let's clean this raw data, the result of a web form in which students were asked for their height in inches:
@@ -673,7 +851,14 @@ str(reported_heights)
 ##  $ height    : chr  "75" "70" "68" "74" ...
 ```
 
-Unfortunately `height` is not numeric. Can we coerce it to numeric?
+Unfortunately `height` is not numeric. What if we just coerce it to numeric?
+
+---
+
+# String cleaning example
+
+Unfortunately `height` is not numeric. What if we just coerce it to numeric?
+
 
 ```r
 heights2 = reported_heights |&gt;
@@ -681,7 +866,10 @@ heights2 = reported_heights |&gt;
 ```
 
 ```
-## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+## Warning: There was 1 warning in `mutate()`.
+## ℹ In argument: `height_num = as.numeric(height)`.
+## Caused by warning:
+## ! NAs introduced by coercion
 ```
 
 ```r
@@ -692,11 +880,13 @@ sum(is.na(heights2$height_num))
 ## [1] 81
 ```
 
+R let us do this... but we lost a lot of information.
+
 ---
 
 # String cleaning example
 
-Yes, but we lose a lot of information. Let's see some examples of non-numeric entries:
+Let's see some examples of non-numeric entries:
 
 ```r
 heights_probs = filter(heights2, is.na(height_num))
@@ -967,25 +1157,25 @@ This looks pretty good, so let's apply this code to the original data:
 ```r
 heights3 = reported_heights |&gt;
   # Preserve original height column
-  rename(original = height) |&gt;
-  mutate(clean = original) |&gt;
+  rename(height_orig = height) |&gt;
+  mutate(height_clean = height_orig) |&gt;
   # Clean height values
   mutate(
-    clean = str_replace_all(clean, "'|,|\"|,|\\*|ft|feet|inches|and", " "),
-    clean = str_squish(clean),
-    clean = str_replace_all(clean, " \\.", " ")
+    height_clean = str_replace_all(height_clean, "'|,|\"|,|\\*|ft|feet|inches|and", " "),
+    height_clean = str_squish(height_clean),
+    height_clean = str_replace_all(height_clean, " \\.", " ")
     )
 
 # Calculate total inches
 heights4 = heights3 |&gt;
   # Separate feet and inches into 2 columns
-  separate(clean, sep = " ", into = c("feet", "inches"), fill = "left") |&gt;
+  separate(height_clean, sep = " ", into = c("feet", "inches"), fill = "left") |&gt;
   # Coerce them to numeric
   mutate(across(c(feet, inches), as.numeric)) |&gt;
   # Replace NAs in feet with 0's
   mutate(feet = replace_na(feet, 0)) |&gt;
   # Calculate new height
-  mutate(clean = feet * 12 + inches)
+  mutate(height_clean = feet * 12 + inches)
 ```
 
 ```
@@ -993,9 +1183,12 @@ heights4 = heights3 |&gt;
 ```
 
 ```
-## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+## Warning: There were 2 warnings in `mutate()`.
+## The first warning was:
+## ℹ In argument: `across(c(feet, inches), as.numeric)`.
+## Caused by warning:
+## ! NAs introduced by coercion
+## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 ```
 
 ---
@@ -1005,16 +1198,16 @@ heights4 = heights3 |&gt;
 Great. Now let's go back and look at the remaining non-numeric values:
 
 ```r
-filter(heights4, is.na(clean))
+filter(heights4, is.na(height_clean))
 ```
 
 ```
-##            time_stamp    sex               original feet inches clean
-## 1 2014-09-02 15:16:37 Female                  165cm    0     NA    NA
-## 2 2014-09-02 15:16:56   Male                  &gt;9000    0     NA    NA
-## 3 2014-10-08 19:19:33 Female Five foot eight inches    0     NA    NA
-## 4 2015-05-12 19:23:51 Female                    yyy    0     NA    NA
-## 5 2017-06-19 04:20:32   Male                 170 cm  170     NA    NA
+##            time_stamp    sex            height_orig feet inches height_clean
+## 1 2014-09-02 15:16:37 Female                  165cm    0     NA           NA
+## 2 2014-09-02 15:16:56   Male                  &gt;9000    0     NA           NA
+## 3 2014-10-08 19:19:33 Female Five foot eight inches    0     NA           NA
+## 4 2015-05-12 19:23:51 Female                    yyy    0     NA           NA
+## 5 2017-06-19 04:20:32   Male                 170 cm  170     NA           NA
 ```
 
 Only 5 left. We could do a bit more with them, but let's set them aside for now.
@@ -1022,7 +1215,7 @@ Only 5 left. We could do a bit more with them, but let's set them aside for now.
 Next, look at the numerical range of height values. Do they make sense?
 
 ```r
-summary(heights4$clean)
+summary(heights4$height_clean)
 ```
 
 ```
@@ -1034,22 +1227,22 @@ summary(heights4$clean)
 
 # String cleaning example
 
-If you `View` the data (I recommend sorting with `arrange(clean)`), you'll find:
+If you `View` the data (I recommend sorting with `arrange(height_clean)`), you'll find:
 * Many values between 5 and 7 which are clearly in **feet** instead of inches.
 * Many values between 150 and 214 which are clearly in **cm** instead of inches.
 
 
 ```r
 heights5 = heights4 |&gt;
-  mutate(clean = case_when(
+  mutate(height_clean = case_when(
     # Convert values in feet
-    clean &gt;= 5 &amp; clean &lt;= 7 ~ clean * 12,
+    height_clean &gt;= 5 &amp; height_clean &lt;= 7 ~ height_clean * 12,
     # Convert values in cm
-    between(clean, 150, 214) ~ clean / 2.54,
+    between(height_clean, 150, 214) ~ height_clean / 2.54,
     # Otherwise keep same value
-    TRUE ~ clean
+    TRUE ~ height_clean
   )) |&gt;
-  arrange(clean)
+  arrange(height_clean)
 ```
 
 ---
@@ -1060,7 +1253,7 @@ Now, how many values are outside of plausible values?
 
 ```r
 heights5 |&gt;
-  mutate(ok = between(clean, 3.5*12, 7.5*12)) |&gt;
+  mutate(ok = between(height_clean, 3.5*12, 7.5*12)) |&gt;
   count(ok)
 ```
 
@@ -1092,8 +1285,17 @@ names = c("Python", "SPSS", "Stata", "Julia")
 str_view_all(names, "t")
 ```
 
-<div id="htmlwidget-589fd784096d9bee82a9" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-589fd784096d9bee82a9">{"x":{"html":"<ul>\n  <li>Py<span class='match'>t<\/span>hon<\/li>\n  <li>SPSS<\/li>\n  <li>S<span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+
+```
+## Warning: `str_view()` was deprecated in stringr 1.5.0.
+## ℹ Please use `str_view_all()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bda3dd4b35e8dd6add74" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-bda3dd4b35e8dd6add74">{"x":{"html":"<ul>\n  <li><pre>Py<span class='match'>t<\/span>hon<\/pre><\/li>\n  <li><pre>SPSS<\/pre><\/li>\n  <li><pre>S<span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/pre><\/li>\n  <li><pre>Julia<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -1105,9 +1307,8 @@ Match strings that START with a capital "S":
 ```r
 str_view_all(names, "^S")
 ```
-
-<div id="htmlwidget-6a63b9ef67d61d14f4be" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6a63b9ef67d61d14f4be">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>S<\/span>PSS<\/li>\n  <li><span class='match'>S<\/span>tata<\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a035c695749c67225937" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-a035c695749c67225937">{"x":{"html":"<ul>\n  <li><pre>Python<\/pre><\/li>\n  <li><pre><span class='match'>S<\/span>PSS<\/pre><\/li>\n  <li><pre><span class='match'>S<\/span>tata<\/pre><\/li>\n  <li><pre>Julia<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 .pull-right[
 Match strings that END with a lowercase "a":
@@ -1115,9 +1316,8 @@ Match strings that END with a lowercase "a":
 ```r
 str_view_all(names, "a$")
 ```
-
-<div id="htmlwidget-85fd57498c2a69370238" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-85fd57498c2a69370238">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li>SPSS<\/li>\n  <li>Stat<span class='match'>a<\/span><\/li>\n  <li>Juli<span class='match'>a<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-570d3474978e1181eae7" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-570d3474978e1181eae7">{"x":{"html":"<ul>\n  <li><pre>Python<\/pre><\/li>\n  <li><pre>SPSS<\/pre><\/li>\n  <li><pre>Stat<span class='match'>a<\/span><\/pre><\/li>\n  <li><pre>Juli<span class='match'>a<\/span><\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 
 `^` and `$` are called **anchors**.
@@ -1132,9 +1332,8 @@ Match all lowercase vowels:
 ```r
 str_view_all(names, "[aeiou]")
 ```
-
-<div id="htmlwidget-78cd131e4d3bb3cbe933" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-78cd131e4d3bb3cbe933">{"x":{"html":"<ul>\n  <li>Pyth<span class='match'>o<\/span>n<\/li>\n  <li>SPSS<\/li>\n  <li>St<span class='match'>a<\/span>t<span class='match'>a<\/span><\/li>\n  <li>J<span class='match'>u<\/span>l<span class='match'>i<\/span><span class='match'>a<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-acc7dc1c95061844e0cd" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-acc7dc1c95061844e0cd">{"x":{"html":"<ul>\n  <li><pre>Pyth<span class='match'>o<\/span>n<\/pre><\/li>\n  <li><pre>SPSS<\/pre><\/li>\n  <li><pre>St<span class='match'>a<\/span>t<span class='match'>a<\/span><\/pre><\/li>\n  <li><pre>J<span class='match'>u<\/span>l<span class='match'>i<\/span><span class='match'>a<\/span><\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 
 .pull-right[
@@ -1143,19 +1342,13 @@ Match everything BUT lowercase vowels:
 ```r
 str_view_all(names, "[^aeiou]")
 ```
-
-<div id="htmlwidget-081f7df4c4ebfef0fbc0" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-081f7df4c4ebfef0fbc0">{"x":{"html":"<ul>\n  <li><span class='match'>P<\/span><span class='match'>y<\/span><span class='match'>t<\/span><span class='match'>h<\/span>o<span class='match'>n<\/span><\/li>\n  <li><span class='match'>S<\/span><span class='match'>P<\/span><span class='match'>S<\/span><span class='match'>S<\/span><\/li>\n  <li><span class='match'>S<\/span><span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/li>\n  <li><span class='match'>J<\/span>u<span class='match'>l<\/span>ia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2c672b9ccebd3dac43cd" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-2c672b9ccebd3dac43cd">{"x":{"html":"<ul>\n  <li><pre><span class='match'>P<\/span><span class='match'>y<\/span><span class='match'>t<\/span><span class='match'>h<\/span>o<span class='match'>n<\/span><\/pre><\/li>\n  <li><pre><span class='match'>S<\/span><span class='match'>P<\/span><span class='match'>S<\/span><span class='match'>S<\/span><\/pre><\/li>\n  <li><pre><span class='match'>S<\/span><span class='match'>t<\/span>a<span class='match'>t<\/span>a<\/pre><\/li>\n  <li><pre><span class='match'>J<\/span>u<span class='match'>l<\/span>ia<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
 
 # Common regular expressions
-
-
-```r
-g = c("grey", "gray")
-```
 
 .pull-left[
 Use a vertical bar for "or":
@@ -1163,9 +1356,8 @@ Use a vertical bar for "or":
 ```r
 str_view_all(names, "Stata|SPSS")
 ```
-
-<div id="htmlwidget-d602ebe81ed336fb1627" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d602ebe81ed336fb1627">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>SPSS<\/span><\/li>\n  <li><span class='match'>Stata<\/span><\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-de05ec29bf703fc1acc4" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-de05ec29bf703fc1acc4">{"x":{"html":"<ul>\n  <li><pre>Python<\/pre><\/li>\n  <li><pre><span class='match'>SPSS<\/span><\/pre><\/li>\n  <li><pre><span class='match'>Stata<\/span><\/pre><\/li>\n  <li><pre>Julia<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 
 .pull-right[
@@ -1174,9 +1366,8 @@ And parentheses to clarify:
 ```r
 str_view_all(names, "S(tata|PSS)")
 ```
-
-<div id="htmlwidget-1c996af763ecb7ab5773" style="width:960px;height:100%;" class="str_view html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1c996af763ecb7ab5773">{"x":{"html":"<ul>\n  <li>Python<\/li>\n  <li><span class='match'>SPSS<\/span><\/li>\n  <li><span class='match'>Stata<\/span><\/li>\n  <li>Julia<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<div class="str_view html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d6cc374dfda14932ee0c" style="width:960px;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-d6cc374dfda14932ee0c">{"x":{"html":"<ul>\n  <li><pre>Python<\/pre><\/li>\n  <li><pre><span class='match'>SPSS<\/span><\/pre><\/li>\n  <li><pre><span class='match'>Stata<\/span><\/pre><\/li>\n  <li><pre>Julia<\/pre><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
@@ -1200,7 +1391,7 @@ This is (the start of) a real regular expression that checks whether an email ad
 
 ---
 
-# Some useful functions for cleaning data
+# Useful functions for cleaning strings
 
 `stringr` functions we've used here:
 * `str_replace` and `str_replace_all`: Replace parts of strings.
@@ -1220,126 +1411,6 @@ Other useful tidyverse functions:
 * `na_if`: Set a certain value to missing.
 * `bind_rows`: Append two datasets that have the same variable structure.
 
-
----
-class: inverse, middle
-name: numbers
-
-# Number storage
-
----
-
-# Floating point problems
-
-Simplify this expression: `\(1-\frac{1}{49}*49\)`
-
-It's obviously 0. Now ask R:
-
-
-```r
-1 - (1/49)*49
-```
---
-
-
-```
-## [1] 1.110223e-16
-```
-
-This is called a **floating point** problem. It arises from the way computers store numbers.
-
-R doesn't notice that `\(49/49\)` simplifies to 1. It just follows the order of operations. So the first thing it does is calculate:
-
-```r
-(1/49)
-```
-
-```
-## [1] 0.02040816
-```
-Which is an irrational number. So R rounds it to 53 significant digits before multiplying by 49.
-
----
-
-# Floating point problems
-
-Most of the time, 53 digits is plenty of precision. But sometimes it creates problems.
-
-Note: This explanation is actually too simple. The floating-point issue goes deeper than just irrational numbers. Here's another example:
-
-
-```r
-1 - 0.9 - 0.1
-```
-
-```
-## [1] -2.775558e-17
-```
-
---
-
-In 1996, a floating-point error caused a European Space Agency rocket to self-destruct 37 seconds after it was launched.
-
----
-
-# Avoiding floating-point errors
-
-Pay attention to the data type of your variables.
-
-Avoid using logical conditions like `height==180` for numeric variables.
-* `height` may even read as `180` in the `View` window
-* But under the hood, it might still be stored as `180.000000000000173...`.
-
-What you can do instead:
-* **Best option:** `dplyr::near` compares numbers with a built-in tolerance.
-* Use `&gt;` and `&lt;` comparisons, or `between(height, 179.9, 180.1)`.
-* Convert in place: `as.integer(height)==180`
-* Or with finer control: `round(height, digits=6)==180`
-* If all values are integers, store the variable as an integer in the first place.
-
-
----
-
-# How to store a number?
-
-**Numeric** variables are stored in scientific notation.
-* Use to represent a single value, for which digits decrease in importance from left to right.
-* Example: My height is `182.2469405113283` cm.
-
-**Integer** variables lack decimal places.
-* Saves memory relative to numeric variables.
-* Stores values exactly, avoiding some floating-point problems.
-
-**Character** variables store the full sequence of digits literally.
-* Use when digits lack quantitative information, and each digit is equally important.
-* Phone numbers, credit card numbers, etc.
-* No chance of the right-most digits getting lost or corrupted.
-
----
-
-# More variable formats
-
-**Dates and times** allow you to easily do math and logic on dates and times.
-* See tidyverse package `lubridate`.
-
-**Factors** allow you to store values as numbers, but *display* them as strings.
-* This is useful for sorting things like month names: "Jan", "Feb", "Mar", "Apr"....
-* See tidyverse packages `forcats`.
-
----
-
-# Memory space
-
-Memory space quickly becomes a problem when you work with large datasets.
-* But R does a reasonably good job of handling storage efficiently.
-
-Logical variables are smaller than integers, which are smaller than numeric.
-
-Does it save memory to store a variable as a factor instead of a string?
-* This used to be true: factor variables only store the factor labels once.
-* But no longer: R uses a global string pool -- each unique string is only stored once.
-
-`pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
 
 
 ---
@@ -1470,9 +1541,9 @@ You want the changes you make to be rule-based, for 2 reasons:
 
 1. [Keys and relational data](#keys)
 
-1. [String cleaning](#strings)
-
 1. [Number storage](#numbers)
+
+1. [String cleaning](#strings)
 
 1. [Data Cleaning Checklist](#checklist)
 

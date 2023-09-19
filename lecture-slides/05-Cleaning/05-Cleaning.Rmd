@@ -35,6 +35,7 @@ name: toc
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+options(stringr.html = TRUE)
 library(knitr)
 knitr::opts_chunk$set(
 	fig.align = "center",
@@ -49,9 +50,9 @@ knitr::opts_chunk$set(
 
 1. [Keys and relational data](#keys)
 
-1. [String cleaning](#strings)
-
 1. [Number storage](#numbers)
+
+1. [String cleaning](#strings)
 
 1. [Data Cleaning Checklist](#checklist)
 
@@ -89,6 +90,20 @@ flights_planes |> summarize(across(c(air_time, distance, seats), mean, na.rm=T))
 ```
 
 Can you find the problem here? Try to figure out how it arises and why.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -284,7 +299,7 @@ Already we can see some of the biggest advantages of R over Stata:
 * Missing values are treated in a safe and sensible way.
   * NA's propagate through calculations unless you specifically choose to set `na.rm=TRUE`.
   * In Stata, missing values equal $+\infty$ (with `. < .a < .b < .c < ...`).
-  * In Stata, `drop if x > 1000` will **drop all observations with missing values of x**!
+  * In Stata, `drop if x > 1000` will **drop all observations with missing values of x!**
   * (To fix this, ALWAYS add `drop if x>1000 & !missing(x)` to all your `if` conditions.)
 
 
@@ -301,9 +316,9 @@ Images in this section are from ["R for Data Science"](https://r4ds.had.co.nz/re
 
 # Relational data
 
-**Relational data**: multiple tables of data that have relations to each other (i.e., that you might join).
+**Relational data**: multiple tables of data that have relationships to each other (i.e., tables that you would ever consider joining).
 
-* Relational data is most often discussed in the context of *databases* like SQL, which we will (try to!) cover briefly at the end of the course.
+* Relational data is most often discussed in the context of *databases* like SQL.
 
 * But we also use it when doing any form of data wrangling that involves joins, so it's helpful to think more formally about it.
 
@@ -355,6 +370,15 @@ planes |>
   filter(n > 1)
 ```
 
+--
+
+Here's another:
+```{r}
+nrow(planes)
+nrow(planes |> distinct(tailnum))
+```
+
+
 ---
 
 # Keys
@@ -371,6 +395,15 @@ dups_weather = weather |>
   filter(n > 1)
 stopifnot(nrow(dups_weather) == 0)
 ```
+
+--
+
+Alternatively:
+```{r, error=TRUE}
+stopifnot(nrow(planes) == nrow(planes |> distinct(tailnum)))
+stopifnot(nrow(weather) == nrow(weather |> distinct(year, month, day, hour, origin)))
+```
+
 
 ---
 
@@ -444,7 +477,7 @@ You'll get extra rows:
 
 ```{r}
 flights_weather = flights |> 
-  left_join(weather, by=c("year", "month", "day", "origin"))
+  left_join(weather, by = c("year", "month", "day", "origin"))
 nrow(flights_weather)
 ```
 
@@ -471,7 +504,7 @@ stopifnot(nrow(dups_planes) == 0)
 
 # Join, keeping the join keys from both datasets
 flights_planes = flights |>
-  left_join(planes |> rename(year_built = year), by="tailnum", keep=TRUE) |>
+  left_join(planes |> rename(year_built = year), by = "tailnum", keep = TRUE) |>
   rename(tailnum = tailnum.x, tailnum_planes = tailnum.y)
 
 # Confirm the join was 1:many
@@ -482,11 +515,9 @@ stopifnot(nrow(flights) == nrow(flights_planes))
 
 ---
 class: inverse, middle
-name: strings
+name: numbers
 
-# String cleaning
-
-Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/string-processing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
+# Number storage
 
 ---
 
@@ -510,6 +541,116 @@ What types of variables might you encounter in a raw dataset?
 
 ---
 
+# Floating point problems
+
+Simplify this expression: $1-\frac{1}{49}*49$
+
+It's obviously 0. Now ask R:
+
+```{r, eval=F}
+1 - (1/49)*49
+```
+--
+
+```{r echo=FALSE}
+1 - (1/49)*49
+```
+
+This is called a **floating point** problem. It arises from the way computers store numbers.
+
+R doesn't notice that $49/49$ simplifies to 1. It just follows the order of operations. So the first thing it does is calculate:
+```{r}
+(1/49)
+```
+Which is an irrational number. So R rounds it to 53 significant digits before multiplying by 49.
+
+---
+
+# Floating point problems
+
+Most of the time, 53 digits is plenty of precision. But sometimes it creates problems.
+
+Note: This explanation is actually too simple. The floating-point issue goes deeper than just irrational numbers. Here's another example:
+
+```{r}
+1 - 0.9 - 0.1
+```
+
+--
+
+In 1996, a floating-point error caused a European Space Agency rocket to self-destruct 37 seconds after it was launched.
+
+---
+
+# Avoiding floating-point errors
+
+Pay attention to the data type of your variables.
+
+Avoid using logical conditions like `height == 180` for numeric variables.
+* `height` may even read as `180` in the `View` window
+* But under the hood, it might still be stored as `180.000000000000173...`.
+
+What you can do instead:
+* **Best option:** `dplyr::near` compares numbers with a built-in tolerance.
+* Use `>` and `<` comparisons, or `between(height, 179.9, 180.1)`.
+* Convert in place: `as.integer(height) == 180`
+* Or with finer control: `round(height, digits=6) == 180`
+* If all values are integers, store the variable as an integer in the first place.
+
+---
+
+# How to store a number?
+
+**Numeric** variables are stored in scientific notation.
+* Use to represent a single value, for which digits decrease in importance from left to right.
+* Example: My height is `182.2469405113283` cm.
+
+**Integer** variables lack decimal places.
+* Saves memory relative to numeric variables.
+* Stores values exactly, avoiding some floating-point problems.
+
+**Character** (string) variables store the full sequence of digits literally.
+* Use when digits lack quantitative information, and each digit is equally important.
+* Phone numbers, credit card numbers, etc.
+* No chance of the right-most digits getting lost or corrupted.
+
+---
+
+# More variable formats
+
+**Dates and times** allow you to easily do math and logic on dates and times.
+* See tidyverse package `lubridate`.
+
+**Factors** allow you to store values as numbers, but *display* them as strings.
+* This is useful for sorting things like month names: "Jan", "Feb", "Mar", "Apr"....
+* See tidyverse packages `forcats`.
+
+---
+
+# Memory space
+
+Memory space quickly becomes a problem when you work with large datasets.
+* But R does a reasonably good job of handling storage efficiently.
+
+Logical variables are smaller than integers, which are smaller than numeric.
+
+Does it save memory to store a variable as a factor instead of a string?
+* This used to be true: factor variables only store the factor labels once.
+* But no longer: R uses a global string pool -- each unique string is only stored once.
+
+`pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
+
+
+---
+class: inverse, middle
+name: strings
+
+# String cleaning
+
+Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/string-processing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
+
+---
+
 # String cleaning example
 
 Let's clean this raw data, the result of a web form in which students were asked for their height in inches:
@@ -519,18 +660,27 @@ data(reported_heights)
 str(reported_heights)
 ```
 
-Unfortunately `height` is not numeric. Can we coerce it to numeric?
+Unfortunately `height` is not numeric. What if we just coerce it to numeric?
+
+---
+
+# String cleaning example
+
+Unfortunately `height` is not numeric. What if we just coerce it to numeric?
+
 ```{r}
 heights2 = reported_heights |>
   mutate(height_num = as.numeric(height))
 sum(is.na(heights2$height_num))
 ```
 
+R let us do this... but we lost a lot of information.
+
 ---
 
 # String cleaning example
 
-Yes, but we lose a lot of information. Let's see some examples of non-numeric entries:
+Let's see some examples of non-numeric entries:
 ```{r}
 heights_probs = filter(heights2, is.na(height_num))
 View(heights_probs)
@@ -632,25 +782,25 @@ This looks pretty good, so let's apply this code to the original data:
 ```{r}
 heights3 = reported_heights |>
   # Preserve original height column
-  rename(original = height) |>
-  mutate(clean = original) |>
+  rename(height_orig = height) |>
+  mutate(height_clean = height_orig) |>
   # Clean height values
   mutate(
-    clean = str_replace_all(clean, "'|,|\"|,|\\*|ft|feet|inches|and", " "),
-    clean = str_squish(clean),
-    clean = str_replace_all(clean, " \\.", " ")
+    height_clean = str_replace_all(height_clean, "'|,|\"|,|\\*|ft|feet|inches|and", " "),
+    height_clean = str_squish(height_clean),
+    height_clean = str_replace_all(height_clean, " \\.", " ")
     )
 
 # Calculate total inches
 heights4 = heights3 |>
   # Separate feet and inches into 2 columns
-  separate(clean, sep = " ", into = c("feet", "inches"), fill = "left") |>
+  separate(height_clean, sep = " ", into = c("feet", "inches"), fill = "left") |>
   # Coerce them to numeric
   mutate(across(c(feet, inches), as.numeric)) |>
   # Replace NAs in feet with 0's
   mutate(feet = replace_na(feet, 0)) |>
   # Calculate new height
-  mutate(clean = feet * 12 + inches)
+  mutate(height_clean = feet * 12 + inches)
 ```
 
 ---
@@ -659,35 +809,35 @@ heights4 = heights3 |>
 
 Great. Now let's go back and look at the remaining non-numeric values:
 ```{r}
-filter(heights4, is.na(clean))
+filter(heights4, is.na(height_clean))
 ```
 
 Only 5 left. We could do a bit more with them, but let's set them aside for now.
 
 Next, look at the numerical range of height values. Do they make sense?
 ```{r}
-summary(heights4$clean)
+summary(heights4$height_clean)
 ```
 
 ---
 
 # String cleaning example
 
-If you `View` the data (I recommend sorting with `arrange(clean)`), you'll find:
+If you `View` the data (I recommend sorting with `arrange(height_clean)`), you'll find:
 * Many values between 5 and 7 which are clearly in **feet** instead of inches.
 * Many values between 150 and 214 which are clearly in **cm** instead of inches.
 
 ```{r}
 heights5 = heights4 |>
-  mutate(clean = case_when(
+  mutate(height_clean = case_when(
     # Convert values in feet
-    clean >= 5 & clean <= 7 ~ clean * 12,
+    height_clean >= 5 & height_clean <= 7 ~ height_clean * 12,
     # Convert values in cm
-    between(clean, 150, 214) ~ clean / 2.54,
+    between(height_clean, 150, 214) ~ height_clean / 2.54,
     # Otherwise keep same value
-    TRUE ~ clean
+    TRUE ~ height_clean
   )) |>
-  arrange(clean)
+  arrange(height_clean)
 ```
 
 ---
@@ -697,7 +847,7 @@ heights5 = heights4 |>
 Now, how many values are outside of plausible values?
 ```{r}
 heights5 |>
-  mutate(ok = between(clean, 3.5*12, 7.5*12)) |>
+  mutate(ok = between(height_clean, 3.5*12, 7.5*12)) |>
   count(ok)
 ```
 
@@ -714,11 +864,18 @@ heights5 |>
 
 Regular expressions are code to describe patterns within strings. They are not specific to R but work across basically all programming languages.
 
-```{r}
+```{r, eval = F}
 names = c("Python", "SPSS", "Stata", "Julia")
 
 # Match strings that CONTAIN a lowercase "t"
 str_view_all(names, "t")
+```
+
+```{r, echo = F}
+names = c("Python", "SPSS", "Stata", "Julia")
+
+# Match strings that CONTAIN a lowercase "t"
+str_view_all(names, "t", html = T)
 ```
 
 ---
@@ -727,14 +884,20 @@ str_view_all(names, "t")
 
 .pull-left[
 Match strings that START with a capital "S":
-```{r}
+```{r, eval = F}
 str_view_all(names, "^S")
+```
+```{r, echo = F}
+str_view_all(names, "^S", html = T)
 ```
 ]
 .pull-right[
 Match strings that END with a lowercase "a":
-```{r}
+```{r, eval = F}
 str_view_all(names, "a$")
+```
+```{r, echo = F}
+str_view_all(names, "a$", html = T)
 ```
 ]
 
@@ -746,15 +909,21 @@ str_view_all(names, "a$")
 
 .pull-left[
 Match all lowercase vowels:
-```{r}
+```{r, eval = F}
 str_view_all(names, "[aeiou]")
+```
+```{r, echo = F}
+str_view_all(names, "[aeiou]", html = T)
 ```
 ]
 
 .pull-right[
 Match everything BUT lowercase vowels:
-```{r}
+```{r, eval = F}
 str_view_all(names, "[^aeiou]")
+```
+```{r, echo = F}
+str_view_all(names, "[^aeiou]", html = T)
 ```
 ]
 
@@ -762,21 +931,23 @@ str_view_all(names, "[^aeiou]")
 
 # Common regular expressions
 
-```{r}
-g = c("grey", "gray")
-```
-
 .pull-left[
 Use a vertical bar for "or":
-```{r}
+```{r, eval = F}
 str_view_all(names, "Stata|SPSS")
+```
+```{r, echo = F}
+str_view_all(names, "Stata|SPSS", html = T)
 ```
 ]
 
 .pull-right[
 And parentheses to clarify:
-```{r}
+```{r, eval = F}
 str_view_all(names, "S(tata|PSS)")
+```
+```{r, echo = F}
+str_view_all(names, "S(tata|PSS)", html = T)
 ```
 ]
 
@@ -801,7 +972,7 @@ This is (the start of) a real regular expression that checks whether an email ad
 
 ---
 
-# Some useful functions for cleaning data
+# Useful functions for cleaning strings
 
 `stringr` functions we've used here:
 * `str_replace` and `str_replace_all`: Replace parts of strings.
@@ -821,114 +992,6 @@ Other useful tidyverse functions:
 * `na_if`: Set a certain value to missing.
 * `bind_rows`: Append two datasets that have the same variable structure.
 
-
----
-class: inverse, middle
-name: numbers
-
-# Number storage
-
----
-
-# Floating point problems
-
-Simplify this expression: $1-\frac{1}{49}*49$
-
-It's obviously 0. Now ask R:
-
-```{r, eval=F}
-1 - (1/49)*49
-```
---
-
-```{r echo=FALSE}
-1 - (1/49)*49
-```
-
-This is called a **floating point** problem. It arises from the way computers store numbers.
-
-R doesn't notice that $49/49$ simplifies to 1. It just follows the order of operations. So the first thing it does is calculate:
-```{r}
-(1/49)
-```
-Which is an irrational number. So R rounds it to 53 significant digits before multiplying by 49.
-
----
-
-# Floating point problems
-
-Most of the time, 53 digits is plenty of precision. But sometimes it creates problems.
-
-Note: This explanation is actually too simple. The floating-point issue goes deeper than just irrational numbers. Here's another example:
-
-```{r}
-1 - 0.9 - 0.1
-```
-
---
-
-In 1996, a floating-point error caused a European Space Agency rocket to self-destruct 37 seconds after it was launched.
-
----
-
-# Avoiding floating-point errors
-
-Pay attention to the data type of your variables.
-
-Avoid using logical conditions like `height==180` for numeric variables.
-* `height` may even read as `180` in the `View` window
-* But under the hood, it might still be stored as `180.000000000000173...`.
-
-What you can do instead:
-* **Best option:** `dplyr::near` compares numbers with a built-in tolerance.
-* Use `>` and `<` comparisons, or `between(height, 179.9, 180.1)`.
-* Convert in place: `as.integer(height)==180`
-* Or with finer control: `round(height, digits=6)==180`
-* If all values are integers, store the variable as an integer in the first place.
-
-
----
-
-# How to store a number?
-
-**Numeric** variables are stored in scientific notation.
-* Use to represent a single value, for which digits decrease in importance from left to right.
-* Example: My height is `182.2469405113283` cm.
-
-**Integer** variables lack decimal places.
-* Saves memory relative to numeric variables.
-* Stores values exactly, avoiding some floating-point problems.
-
-**Character** variables store the full sequence of digits literally.
-* Use when digits lack quantitative information, and each digit is equally important.
-* Phone numbers, credit card numbers, etc.
-* No chance of the right-most digits getting lost or corrupted.
-
----
-
-# More variable formats
-
-**Dates and times** allow you to easily do math and logic on dates and times.
-* See tidyverse package `lubridate`.
-
-**Factors** allow you to store values as numbers, but *display* them as strings.
-* This is useful for sorting things like month names: "Jan", "Feb", "Mar", "Apr"....
-* See tidyverse packages `forcats`.
-
----
-
-# Memory space
-
-Memory space quickly becomes a problem when you work with large datasets.
-* But R does a reasonably good job of handling storage efficiently.
-
-Logical variables are smaller than integers, which are smaller than numeric.
-
-Does it save memory to store a variable as a factor instead of a string?
-* This used to be true: factor variables only store the factor labels once.
-* But no longer: R uses a global string pool -- each unique string is only stored once.
-
-`pryr::object_size()` will tell you how much memory an object takes up (accounting for shared elements within an object).
 
 
 ---
@@ -1059,9 +1122,9 @@ You want the changes you make to be rule-based, for 2 reasons:
 
 1. [Keys and relational data](#keys)
 
-1. [String cleaning](#strings)
-
 1. [Number storage](#numbers)
+
+1. [String cleaning](#strings)
 
 1. [Data Cleaning Checklist](#checklist)
 
