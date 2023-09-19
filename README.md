@@ -83,7 +83,7 @@ Fall 2023
   * Adjusting for other variables
   * Bin smoothing and local regression
 
-[**Topic 9: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/11-Visualization.html)
+[**Topic 9: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html)
 
 * Basics of `ggplot2`
 * Plotting examples
