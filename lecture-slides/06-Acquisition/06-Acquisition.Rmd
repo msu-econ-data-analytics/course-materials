@@ -67,14 +67,16 @@ There is a whole spectrum, from DIY to plug-and-chug.
 
 --
 
-**1. Pre-cleaned datasets posted on secondary repositories**
-   - E.g. Harvard Dataverse, Kaggle, GitHub.
+**1. Datasets cleaned by other people & posted on secondary repositories**
+   - E.g., Harvard Dataverse, Kaggle, GitHub.
+   - Analyzed to death, and you might disagree with the cleaning choices.
 
-**2. Open data libraries (e.g., Data.gov)**
+**2. Open data libraries**
    - E.g., [Data.gov](https://data.gov/) or [World Bank Open Data](https://data.worldbank.org/).
 
 **3. Websites of primary data providers**
    - Government agencies; some private companies and NGOs; scientific researchers.
+   - Ask yourself: If anyone collected this data, who would it be? Then look them up.
 
 ---
 
@@ -89,7 +91,7 @@ There is a whole spectrum, from DIY to plug-and-chug.
 
 **5. Compile data yourself**
    - Assemble systematic information from many disparate sources.
-   - E.g. historical archives, websites, PDF reports.
+   - E.g., historical archives, websites, PDF reports.
 
 **6. Collect your own primary data**
    - Run surveys or experiments.
@@ -112,7 +114,22 @@ For economics research:
 A few useful starting points:
 - ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
 - ["Data Sets for Quantitative Research"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+- ["Primer: Where to find data"](https://sebastiantellotrillo.com/resources/primer-where-to-find-data) (Sebastian Tello-Trillo).
 - [Google Dataset Search](https://datasetsearch.research.google.com/).
+
+---
+
+# Microdata vs. aggregate data
+
+**Microdata:** Individual observations (people, households, firms).
+- E.g., each person's responses to the American Community Survey.
+
+**Aggregate data:** Summary statistics most often produced by government agencies.
+- E.g., economywide unemployment numbers.
+
+**Tools in this course are best suited to microdata.** And new insights are much easier to find in microdata than aggregate data.
+- Microdata preserves all the original relationships since it is the "raw" data. You can investigate new patterns that others haven't yet.
+- Aggregate data has already been summarized in particular ways and pored over endlessly.
 
 
 ---
@@ -201,7 +218,7 @@ Amazing!
 --
 
 ```{r}
-selector = "#mw-content-text > div.mw-parser-output > table:nth-child(8) > tbody"
+selector = "#mw-content-text > div.mw-parser-output > table:nth-child(9) > tbody"
 records2 = page |> 
   html_elements(selector) |>
   html_table()
@@ -368,7 +385,7 @@ response
 ```
 Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_KEY]
 &file_type=json&series_id=MEDLISPRI14580]
-  Date: 2022-09-27 00:39
+  Date: 2023-09-27 00:39
   Status: 200
   Content-Type: application/json; charset=UTF-8
   Size: 7.61 kB
@@ -379,7 +396,7 @@ Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_
 # Using the FRED API
 
 The response is a complex list object. Extract the JSON content, and convert it to an R object:
-```{r, results = F}
+```{r, results = F, message=F}
 library(jsonlite)
 json = response |>
   httr::content("text") |>
@@ -437,7 +454,7 @@ Sometimes, you can find an open but "hidden" API that a webpage is using to rend
 * For example, Airbnb uses or has used a hidden API to display search results on its web interface.
 * Grant McDermott has an [example](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html#Application_3:_World_rugby_rankings) of how to find and use hidden APIs.
 
-**Using hidden APIs may present legal risks, so I don't recommend it.**
+**Using hidden APIs may present legal risks, so I can't recommend it.**
 * In April 2022 (*HiQ Labs v. LinkedIn*), the Ninth Circuit Court of Appeals held that webscraping is legal in the U.S. so long as the data is publicly available.
 * Do hidden APIs constitute publicly available information? It's not totally clear.
 

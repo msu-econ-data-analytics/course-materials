@@ -497,10 +497,7 @@ Here's an example of a good (safe) way to join `flights` and `planes`:
 ```{r eval=FALSE}
 
 # Confirm that tailnum is the primary key (unique ID) of planes
-dups_planes = planes |> 
-  count(tailnum) |> 
-  filter(n > 1)
-stopifnot(nrow(dups_planes) == 0)
+stopifnot(nrow(planes) == nrow(planes |> distinct(tailnum)))
 
 # Join, keeping the join keys from both datasets
 flights_planes = flights |>

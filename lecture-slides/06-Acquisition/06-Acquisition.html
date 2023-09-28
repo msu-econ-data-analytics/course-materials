@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 6: Data Acquisition</title>
+    <title>Topic 6: Data Acquisition</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -14,10 +14,10 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 6: Data Acquisition
+# Topic 6: Data Acquisition
 ]
 .author[
-### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -71,14 +71,16 @@ There is a whole spectrum, from DIY to plug-and-chug.
 
 --
 
-**1. Pre-cleaned datasets posted on secondary repositories**
-   - E.g. Harvard Dataverse, Kaggle, GitHub.
+**1. Datasets cleaned by other people &amp; posted on secondary repositories**
+   - E.g., Harvard Dataverse, Kaggle, GitHub.
+   - Analyzed to death, and you might disagree with the cleaning choices.
 
-**2. Open data libraries (e.g., Data.gov)**
+**2. Open data libraries**
    - E.g., [Data.gov](https://data.gov/) or [World Bank Open Data](https://data.worldbank.org/).
 
 **3. Websites of primary data providers**
    - Government agencies; some private companies and NGOs; scientific researchers.
+   - Ask yourself: If anyone collected this data, who would it be? Then look them up.
 
 ---
 
@@ -93,7 +95,7 @@ There is a whole spectrum, from DIY to plug-and-chug.
 
 **5. Compile data yourself**
    - Assemble systematic information from many disparate sources.
-   - E.g. historical archives, websites, PDF reports.
+   - E.g., historical archives, websites, PDF reports.
 
 **6. Collect your own primary data**
    - Run surveys or experiments.
@@ -116,7 +118,22 @@ For economics research:
 A few useful starting points:
 - ["How to Find Data: Tips for Finding Data"](https://davidson.libguides.com/data/tips) (Davidson College Library).
 - ["Data Sets for Quantitative Research"](https://libraryguides.missouri.edu/datasets/public-use) (University of Missouri Libraries).
+- ["Primer: Where to find data"](https://sebastiantellotrillo.com/resources/primer-where-to-find-data) (Sebastian Tello-Trillo).
 - [Google Dataset Search](https://datasetsearch.research.google.com/).
+
+---
+
+# Microdata vs. aggregate data
+
+**Microdata:** Individual observations (people, households, firms).
+- E.g., each person's responses to the American Community Survey.
+
+**Aggregate data:** Summary statistics most often produced by government agencies.
+- E.g., economywide unemployment numbers.
+
+**Tools in this course are best suited to microdata.** And new insights are much easier to find in microdata than aggregate data.
+- Microdata preserves all the original relationships since it is the "raw" data. You can investigate new patterns that others haven't yet.
+- Aggregate data has already been summarized in particular ways and pored over endlessly.
 
 
 ---
@@ -159,7 +176,32 @@ Let's scrape this table with `rvest`.
 
 ```r
 library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+```
+
+```r
 library(rvest)
+```
+
+```
+## 
+## Attaching package: 'rvest'
+## 
+## The following object is masked from 'package:readr':
+## 
+##     guess_encoding
 ```
 
 First, read the whole page into R:
@@ -172,9 +214,9 @@ page
 
 ```
 ## {html_document}
-## &lt;html class="client-nojs" lang="en" dir="ltr"&gt;
+## &lt;html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-page-header-disabled vector-feature-sticky-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-zebra-design-disabled vector-feature-custom-font-size-clientpref-disabled vector-feature-client-preferences-disabled" lang="en" dir="ltr"&gt;
 ## [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
-## [2] &lt;body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject  ...
+## [2] &lt;body class="skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr ...
 ```
 
 ---
@@ -191,7 +233,7 @@ tables
 ```
 
 ```
-## {xml_nodeset (11)}
+## {xml_nodeset (13)}
 ##  [1] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;td bgcolor="#D6ECF3"&gt;ratified\n&lt;/ ...
 ##  [2] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;th&gt;Time\n&lt;/th&gt;\n&lt;th&gt;Wind\n&lt;/th&gt; ...
 ##  [3] &lt;table class="wikitable"&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;th&gt;Time\n&lt;/th&gt;\n&lt;th&gt;Wind\n&lt;/th&gt; ...
@@ -203,6 +245,8 @@ tables
 ##  [9] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
 ## [10] &lt;table class="nowraplinks mw-collapsible mw-collapsed navbox-inner" styl ...
 ## [11] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+## [12] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
+## [13] &lt;table class="nowraplinks navbox-subgroup" style="border-spacing:0"&gt;&lt;tbo ...
 ```
 
 ```r
@@ -210,7 +254,7 @@ length(tables)
 ```
 
 ```
-## [1] 11
+## [1] 13
 ```
 
 ---
@@ -226,20 +270,19 @@ records
 
 ```
 ## # A tibble: 55 × 7
-##    Time       Wind  Auto  Athlete             Nationality    Location      Date 
-##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;
-##  1 13.6       ""    ""    Marie Mejzlíková II Czechoslovakia Prague, Czec… Augu…
-##  2 12.8       ""    ""    Mary Lines          United Kingdom Paris, France Augu…
-##  3 12.7(110y) ""    ""    Emmi Haux           Germany        Frankfurt, G… May …
-##  4 12.8       ""    ""    Marie Mejzlíková    Czechoslovakia Prague, Czec… May …
-##  5 12.4       ""    ""    Leni Schmidt        Germany        Leipzig, Ger… Augu…
-##  6 12.2(110y) ""    ""    Leni Junker         Germany        Wiesbaden, G… Sept…
-##  7 12.4       ""    ""    Gundel Wittmann     Germany        Braunschweig… Augu…
-##  8 12.2       ""    ""    Leni Junker         Germany        Hanover, Ger… Augu…
-##  9 12.1(110y) ""    ""    Gertrud Gladitsch   Germany        Stuttgart, G… July…
-## 10 12.2       ""    ""    Kinue Hitomi        Japan          Osaka, Japan  May …
-## # … with 45 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+##    Time       Wind  Auto  Athlete           Nationality    Location        Date 
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;             &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;
+##  1 13.6       ""    ""    Marie Mejzlíková  Czechoslovakia Prague, Czecho… Augu…
+##  2 12.8       ""    ""    Mary Lines        United Kingdom Paris, France   Augu…
+##  3 12.7(110y) ""    ""    Emmi Haux         Germany        Frankfurt, Ger… May …
+##  4 12.8       ""    ""    Marie Mejzlíková  Czechoslovakia Prague, Czecho… May …
+##  5 12.4       ""    ""    Leni Schmidt      Germany        Leipzig, Germa… Augu…
+##  6 12.2(110y) ""    ""    Leni Junker       Germany        Wiesbaden, Ger… Sept…
+##  7 12.4       ""    ""    Gundel Wittmann   Germany        Braunschweig, … Augu…
+##  8 12.2       ""    ""    Leni Junker       Germany        Hanover, Germa… Augu…
+##  9 12.1(110y) ""    ""    Gertrud Gladitsch Germany        Stuttgart, Ger… July…
+## 10 12.2       ""    ""    Kinue Hitomi      Japan          Osaka, Japan    May …
+## # ℹ 45 more rows
 ```
 
 Amazing!
@@ -257,7 +300,7 @@ Amazing!
 
 
 ```r
-selector = "#mw-content-text &gt; div.mw-parser-output &gt; table:nth-child(8) &gt; tbody"
+selector = "#mw-content-text &gt; div.mw-parser-output &gt; table:nth-child(9) &gt; tbody"
 records2 = page |&gt; 
   html_elements(selector) |&gt;
   html_table()
@@ -267,20 +310,19 @@ records2
 ```
 ## [[1]]
 ## # A tibble: 55 × 7
-##    Time       Wind  Auto  Athlete             Nationality    Location      Date 
-##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;
-##  1 13.6       ""    ""    Marie Mejzlíková II Czechoslovakia Prague, Czec… Augu…
-##  2 12.8       ""    ""    Mary Lines          United Kingdom Paris, France Augu…
-##  3 12.7(110y) ""    ""    Emmi Haux           Germany        Frankfurt, G… May …
-##  4 12.8       ""    ""    Marie Mejzlíková    Czechoslovakia Prague, Czec… May …
-##  5 12.4       ""    ""    Leni Schmidt        Germany        Leipzig, Ger… Augu…
-##  6 12.2(110y) ""    ""    Leni Junker         Germany        Wiesbaden, G… Sept…
-##  7 12.4       ""    ""    Gundel Wittmann     Germany        Braunschweig… Augu…
-##  8 12.2       ""    ""    Leni Junker         Germany        Hanover, Ger… Augu…
-##  9 12.1(110y) ""    ""    Gertrud Gladitsch   Germany        Stuttgart, G… July…
-## 10 12.2       ""    ""    Kinue Hitomi        Japan          Osaka, Japan  May …
-## # … with 45 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+##    Time       Wind  Auto  Athlete           Nationality    Location        Date 
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;             &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;
+##  1 13.6       ""    ""    Marie Mejzlíková  Czechoslovakia Prague, Czecho… Augu…
+##  2 12.8       ""    ""    Mary Lines        United Kingdom Paris, France   Augu…
+##  3 12.7(110y) ""    ""    Emmi Haux         Germany        Frankfurt, Ger… May …
+##  4 12.8       ""    ""    Marie Mejzlíková  Czechoslovakia Prague, Czecho… May …
+##  5 12.4       ""    ""    Leni Schmidt      Germany        Leipzig, Germa… Augu…
+##  6 12.2(110y) ""    ""    Leni Junker       Germany        Wiesbaden, Ger… Sept…
+##  7 12.4       ""    ""    Gundel Wittmann   Germany        Braunschweig, … Augu…
+##  8 12.2       ""    ""    Leni Junker       Germany        Hanover, Germa… Augu…
+##  9 12.1(110y) ""    ""    Gertrud Gladitsch Germany        Stuttgart, Ger… July…
+## 10 12.2       ""    ""    Kinue Hitomi      Japan          Osaka, Japan    May …
+## # ℹ 45 more rows
 ```
 
 ---
@@ -447,7 +489,7 @@ response
 ```
 Response [https://api.stlouisfed.org/fred/series/observations?api_key=[YOUR_API_KEY]
 &amp;file_type=json&amp;series_id=MEDLISPRI14580]
-  Date: 2022-09-27 00:39
+  Date: 2023-09-27 00:39
   Status: 200
   Content-Type: application/json; charset=UTF-8
   Size: 7.61 kB
@@ -474,21 +516,20 @@ bzn_house_prices
 ```
 
 ```
-## # A tibble: 74 × 4
+## # A tibble: 86 × 4
 ##    realtime_start realtime_end date       value   
 ##    &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;   
-##  1 2022-09-26     2022-09-26   2016-07-01 479000.0
-##  2 2022-09-26     2022-09-26   2016-08-01 462450.0
-##  3 2022-09-26     2022-09-26   2016-09-01 449950.0
-##  4 2022-09-26     2022-09-26   2016-10-01 469900.0
-##  5 2022-09-26     2022-09-26   2016-11-01 475000.0
-##  6 2022-09-26     2022-09-26   2016-12-01 495000.0
-##  7 2022-09-26     2022-09-26   2017-01-01 479000.0
-##  8 2022-09-26     2022-09-26   2017-02-01 499000.0
-##  9 2022-09-26     2022-09-26   2017-03-01 499900.0
-## 10 2022-09-26     2022-09-26   2017-04-01 525000.0
-## # … with 64 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+##  1 2023-09-27     2023-09-27   2016-07-01 524950.0
+##  2 2023-09-27     2023-09-27   2016-08-01 525000.0
+##  3 2023-09-27     2023-09-27   2016-09-01 519450.0
+##  4 2023-09-27     2023-09-27   2016-10-01 529000.0
+##  5 2023-09-27     2023-09-27   2016-11-01 527000.0
+##  6 2023-09-27     2023-09-27   2016-12-01 552450.0
+##  7 2023-09-27     2023-09-27   2017-01-01 583500.0
+##  8 2023-09-27     2023-09-27   2017-02-01 592000.0
+##  9 2023-09-27     2023-09-27   2017-03-01 558125.0
+## 10 2023-09-27     2023-09-27   2017-04-01 599000.0
+## # ℹ 76 more rows
 ```
 
 ---
@@ -508,21 +549,20 @@ bzn_house_prices
 ```
 
 ```
-## # A tibble: 74 × 2
+## # A tibble: 86 × 2
 ##    date       median_price
 ##    &lt;date&gt;            &lt;dbl&gt;
-##  1 2016-07-01       479000
-##  2 2016-08-01       462450
-##  3 2016-09-01       449950
-##  4 2016-10-01       469900
-##  5 2016-11-01       475000
-##  6 2016-12-01       495000
-##  7 2017-01-01       479000
-##  8 2017-02-01       499000
-##  9 2017-03-01       499900
-## 10 2017-04-01       525000
-## # … with 64 more rows
-## # ℹ Use `print(n = ...)` to see more rows
+##  1 2016-07-01       524950
+##  2 2016-08-01       525000
+##  3 2016-09-01       519450
+##  4 2016-10-01       529000
+##  5 2016-11-01       527000
+##  6 2016-12-01       552450
+##  7 2017-01-01       583500
+##  8 2017-02-01       592000
+##  9 2017-03-01       558125
+## 10 2017-04-01       599000
+## # ℹ 76 more rows
 ```
 
 ---
@@ -558,7 +598,7 @@ Sometimes, you can find an open but "hidden" API that a webpage is using to rend
 * For example, Airbnb uses or has used a hidden API to display search results on its web interface.
 * Grant McDermott has an [example](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html#Application_3:_World_rugby_rankings) of how to find and use hidden APIs.
 
-**Using hidden APIs may present legal risks, so I don't recommend it.**
+**Using hidden APIs may present legal risks, so I can't recommend it.**
 * In April 2022 (*HiQ Labs v. LinkedIn*), the Ninth Circuit Court of Appeals held that webscraping is legal in the U.S. so long as the data is publicly available.
 * Do hidden APIs constitute publicly available information? It's not totally clear.
 
