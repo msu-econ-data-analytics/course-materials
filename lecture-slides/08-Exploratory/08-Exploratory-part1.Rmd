@@ -1,5 +1,6 @@
 ---
-title: "Topic 8: Exploratory Analysis, Part 1"
+title: "Topic 8: Exploratory Analysis"
+subtitle: "Part 1: Understand individual variables"
 author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 output:
   xaringan::moon_reader:
@@ -14,7 +15,7 @@ output:
 ---
 name: toc
 
-```{css, echo=FALSE}
+```{css, echo = FALSE}
 # CSS for including pauses in printed PDF output (see bottom of lecture)
 @media print {
   .has-continuation {
@@ -40,7 +41,7 @@ name: toc
 }
 ```
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 options(htmltools.dir.version = FALSE)
 library(knitr)
 library(tidyverse)
@@ -55,31 +56,57 @@ knitr::opts_chunk$set(
 
 # Table of contents
 
-1. [Getting to know your data](#first)
+1. [Get to know your data](#first)
 
-1. [Describing categorical variables](#categories)
+1. [Describe your categorical variables](#categories)
 
-1. [Describing continuous distributions](#distributions)
+1. [Describe your continuous distributions](#distributions)
 
-1. [Handling extreme values](#extreme)
+1. [Handle your extreme values](#extreme)
 
-1. [Choosing variable transformations](#transform)
+1. [Choose whether to transform variables](#transform)
 
-1. [Handling missing data](#missing)
+1. [Handle your missing data](#missing)
+
+
+---
+
+# Why?
+
+**Before you analyze your data, you need to understand your data.**
+- Never rush into regressions or other fancy analysis.
+- You will often get wrong or misleading results!
+
+--
+
+**What's the point of the steps we'll cover today?**
+- Verify the data you have is the data you expected.
+- Detect errors in data cleaning.
+- Learn surprising new features of the context you're studying.
+- Make more appropriate decisions in downstream analysis.
+- Better interpret your results (what's driving them?).
+
+--
+
+**Do I really have to do these steps for every variable in my data?**
+- Only for the ones that you want to give you the right answers.
+- Especially crucial for your **outcome** and **treatment** variables.
+- Still important for other (e.g., control) variables.
+- Maybe less critical for *some* types of prediction (ML) techniques.
 
 
 ---
 class: inverse, middle
 name: first
 
-# Getting to know your data
+# Get to know your data
 
 ---
 
 # Setup
 
 Load the tidyverse if necessary:
-```{r eval=FALSE}
+```{r eval = FALSE}
 library(tidyverse)
 ```
 
@@ -116,14 +143,14 @@ summary(vienna)
 
 # Better summaries with skimr
 
-```{r, eval=F}
+```{r, eval = F}
 install.packages("skimr")
 library(skimr)
 skim(vienna)
 ```
 .scroll-output-75[
   .small[
-```{r echo=FALSE}
+```{r echo = FALSE}
 library(skimr)
 skim(vienna)
 ```
@@ -134,26 +161,27 @@ skim(vienna)
 
 # Better summaries with skimr
 
-```{r, eval=F}
-vienna %>% 
-  mutate(stars = factor(stars)) %>%
+```{r, eval = F}
+vienna |> 
+  mutate(stars = factor(stars)) |>
   skim()
 ```
 .scroll-output-75[
   .small[
-```{r echo=FALSE}
-vienna %>% 
-  mutate(stars = factor(stars)) %>%
+```{r echo = FALSE}
+vienna |> 
+  mutate(stars = factor(stars)) |>
   skim()
 ```
   ]
 ]
 
+
 ---
 class: inverse, middle
 name: categories
 
-# Describing categorical variables
+# Describe your categorical variables
 
 ---
 
@@ -162,7 +190,7 @@ name: categories
 Base R:
 
 ```{r}
-table(vienna$stars, useNA="ifany")
+table(vienna$stars, useNA = "ifany")
 ```
 
 </br>
@@ -176,7 +204,7 @@ Literally just the basics. Not terribly informative, well-formatted, or tidy.
 Using the tidyverse (we've done this before):
 
 ```{r}
-vienna %>% count(stars)
+vienna |> count(stars)
 ```
 
 </br>
@@ -189,7 +217,7 @@ Advantage: output is a tibble; can be piped elsewhere.
 
 Using `summarytools::freq`:
 
-```{r, eval=F}
+```{r, eval = F}
 install.packages("summarytools")
 ```
 ```{r}
@@ -203,12 +231,12 @@ freq(vienna$stars)
 
 Using `summarytools::freq`:
 
-```{r, eval=F}
+```{r, eval = F}
 install.packages("summarytools")
 ```
 ```{r}
 library(summarytools)
-freq(vienna$stars, order="freq")
+freq(vienna$stars, order = "freq")
 ```
 
 ---
@@ -233,14 +261,14 @@ Could we make a similar table with `dplyr` and `tidyr`?
 
 Yes, but it's fairly complicated and not nicely formatted...
 
-```{r message=FALSE}
-vienna %>%
-  group_by(city_actual, scarce_room) %>%
-  summarize(n=n()) %>%
-  mutate(percent = n/sum(n)) %>%
-  pivot_wider(names_from=scarce_room, values_from=n:percent) %>%
-  mutate(across(n_0:percent_1, replace_na, 0)) %>%
-  rowwise %>%
+```{r message = FALSE}
+vienna |>
+  group_by(city_actual, scarce_room) |>
+  summarize(n = n()) |>
+  mutate(percent = n/sum(n)) |>
+  pivot_wider(names_from = scarce_room, values_from = n:percent) |>
+  mutate(across(n_0:percent_1, replace_na, 0)) |>
+  rowwise() |>
   mutate(row_sum = sum(c_across(contains("n"))))
 
 ```
@@ -251,8 +279,8 @@ vienna %>%
 
 We're going to use `ggplot2` to make graphs. Don't worry too much about the syntax yet; we'll talk about it more in the unit on visualization (coming soon!).
 
-```{r, out.width="80%", fig.height=4}
-ggplot(vienna, aes(y=neighbourhood)) + 
+```{r, out.width = "80%", fig.height = 4}
+ggplot(vienna, aes(y = neighbourhood)) + 
   geom_bar()
 ```
 
@@ -261,7 +289,7 @@ ggplot(vienna, aes(y=neighbourhood)) +
 class: inverse, middle
 name: distributions
 
-# Describing distributions
+# Describe your distributions
 
 ---
 
@@ -269,7 +297,7 @@ name: distributions
 
 With default settings:
 
-```{r message=FALSE, warning=FALSE, out.width="80%", fig.height=4}
+```{r message = FALSE, warning = FALSE, out.width = "80%", fig.height = 4}
 ggplot(vienna, aes(price)) + 
   geom_histogram()
 ```
@@ -280,9 +308,9 @@ ggplot(vienna, aes(price)) +
 
 Make bins line up with nice round numbers:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(price)) + 
-  geom_histogram(boundary=0, binwidth=25)
+  geom_histogram(boundary = 0, binwidth = 25)
 ```
 
 ---
@@ -291,9 +319,9 @@ ggplot(vienna, aes(price)) +
 
 Too much detail? Use a larger bin width:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(price)) + 
-  geom_histogram(boundary=0, binwidth=100)
+  geom_histogram(boundary = 0, binwidth = 100)
 ```
 
 ---
@@ -302,9 +330,9 @@ ggplot(vienna, aes(price)) +
 
 Want more detail? Use a smaller bin width:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(price)) + 
-  geom_histogram(boundary=0, binwidth=1)
+  geom_histogram(boundary = 0, binwidth = 1)
 ```
 
 ---
@@ -313,7 +341,7 @@ ggplot(vienna, aes(price)) +
 
 A smoothed version of a histogram.
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating)) + 
   geom_density()
 ```
@@ -324,9 +352,9 @@ ggplot(vienna, aes(rating)) +
 
 The **bandwidth** controls the degree of smoothing. Smaller:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating)) + 
-  geom_density(adjust=.25)
+  geom_density(adjust = .25)
 ```
 
 ---
@@ -335,9 +363,9 @@ ggplot(vienna, aes(rating)) +
 
 The **bandwidth** controls the degree of smoothing. Larger:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating)) + 
-  geom_density(adjust=2)
+  geom_density(adjust = 2)
 ```
 
 ---
@@ -346,11 +374,11 @@ ggplot(vienna, aes(rating)) +
 
 Show multiple groups:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
-vienna %>%
-  mutate(stars_rounded = factor(round(stars))) %>%
-  ggplot(aes(rating, color=stars_rounded)) + 
-    geom_density(adjust=2)
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
+vienna |>
+  mutate(stars_rounded = factor(round(stars))) |>
+  ggplot(aes(rating, color = stars_rounded)) + 
+    geom_density(adjust = 2)
 ```
 
 ---
@@ -359,11 +387,11 @@ vienna %>%
 
 Show multiple groups:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
-vienna %>%
-  mutate(stars_rounded = factor(round(stars))) %>%
-  ggplot(aes(rating, fill=stars_rounded)) + 
-    geom_density(adjust=2, alpha=0.4)
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
+vienna |>
+  mutate(stars_rounded = factor(round(stars))) |>
+  ggplot(aes(rating, fill = stars_rounded)) + 
+    geom_density(adjust = 2, alpha = 0.4)
 ```
 
 ---
@@ -381,7 +409,7 @@ Histogram:
 
 Density plot:
 - Want a more general idea of the distribution
-- Want to compare distributions
+- Want to compare tendencies of distributions
 
 ---
 
@@ -389,7 +417,7 @@ Density plot:
 
 How does the smoothing work?
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/kernel-density-animation.gif")
 ```
 .small[Image by [David Robinson](http://varianceexplained.org/files/bandwidth.html) not included under the CC license.]
@@ -398,30 +426,30 @@ include_graphics("img/kernel-density-animation.gif")
 
 # Bias-variance tradeoff
 
-Bandwidth choice illustrates a **bias-variance tradeoff**. Heuristically:
+Bandwidth choice illustrates a **bias-variance tradeoff**.
 
 Smaller bandwidth:
 - Less bias (more literal representation of your raw data).
 - But higher variance (how meaningful are those wiggles?).
 
-```{r echo=FALSE, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r echo = FALSE, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating)) + 
-  geom_density(adjust=.25)
+  geom_density(adjust = .25)
 ```
 
 ---
 
 # Bias-variance tradeoff
 
-Bandwidth choice illustrates a **bias-variance tradeoff**. Heuristically:
+Bandwidth choice illustrates a **bias-variance tradeoff**.
 
 Larger bandwidth:
 - Lower variance (smoother lines).
 - But more bias (less directly showing your raw data).
 
-```{r echo=FALSE, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r echo = FALSE, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating)) + 
-  geom_density(adjust=2)
+  geom_density(adjust = 2)
 ```
 
 ---
@@ -430,7 +458,7 @@ ggplot(vienna, aes(rating)) +
 
 Bias is not always bad! Often we want to accept some bias (inaccuracy) in exchange for less variance (more precision).
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/bias-variance.png")
 ```
 .small[Image by [Scott Fortmann-Roe](http://scott.fortmann-roe.com/docs/BiasVariance.html) not included under the CC license.]
@@ -439,7 +467,7 @@ include_graphics("img/bias-variance.png")
 class: inverse, middle
 name: extreme
 
-# Handling extreme values
+# Handle your extreme values
 
 ---
 
@@ -449,9 +477,9 @@ There are a couple of really high prices in the `price` variable.
 
 Our histogram would look a lot nicer if we could get rid of them...
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(price)) + 
-  geom_histogram(boundary=0, binwidth=25)
+  geom_histogram(boundary = 0, binwidth = 25)
 ggplot(vienna, aes(distance)) + 
   geom_histogram()
 ```
@@ -464,16 +492,16 @@ ggplot(vienna, aes(distance)) +
 
 --
 
-> 🗣I don’t know who needs to hear this but we ✨don’t✨ get rid of outliers *because* they’re extreme...<br><br>we get rid of them when their extreme-ness indicates they’re not a part of the data generating process we want to study (like a typo that says your newborn is 1000 lbs) </p>&mdash; Chelsea Parlett-Pelleriti (@ChelseaParlett) <a href="https://twitter.com/ChelseaParlett/status/1356285012375556109?ref_src=twsrc%5Etfw">February 1, 2021</a>
+> 🗣I don’t know who needs to hear this but we ✨don’t✨ get rid of outliers *because* they’re extreme...<br><br>we get rid of them when their extreme-ness indicates they’re not a part of the data generating process we want to study (like a typo that says your newborn is 1000 lbs) </p>&mdash; Chelsea Parlett-Pelleriti (@ChelseaParlett) <a href = "https://twitter.com/ChelseaParlett/status/1356285012375556109?ref_src = twsrc%5Etfw">February 1, 2021</a>
 
 ---
 
 # Extreme values
 
 Values that are much larger or smaller than the rest of your distribution, or that fail logical checks, should be investigated until you are able to classify them into one of these categories:
-1. They are erroneous (and should be excluded).
-2. They are part of a different data generating process (and should be excluded).
-3. They are correct and produced by the same process as less extreme values (and should be retained).
+1. They are **erroneous** (and can be corrected, or else excluded).
+2. They are part of a **different** data generating process (and should be excluded).
+3. They are **correct** and produced by the same process as less extreme values (and should be retained).
 
 Making sound judgments about extreme values requires **domain knowledge**.
 - If you don't know yourself, it's time to ask someone else! Go back to the documentation of your raw data, or contact the person who collected or gave you the data.
@@ -484,7 +512,7 @@ Making sound judgments about extreme values requires **domain knowledge**.
 # Extreme values
 
 Even when extreme values are correct and truly belong to your distribution, they can exert inordinate influence on your analysis. Your results may reflect the extreme values more than the **central tendency** of your data.
-- But this alone is not a reason to remove extreme values.
+- But this alone is ***not a reason*** to remove extreme values.
 - Instead, it's a sign that you should consider applying a **transformation** to your variable.
 
 
@@ -492,14 +520,14 @@ Even when extreme values are correct and truly belong to your distribution, they
 class: inverse, middle
 name: transform
 
-# Choosing variable transformations
+# Choose whether to transform variables
 
 ---
 
 # Transformations
 
 Take a look at the `rating_count` variable.
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 ggplot(vienna, aes(rating_count)) +
   geom_histogram()
 ```
@@ -510,7 +538,7 @@ ggplot(vienna, aes(rating_count)) +
 
 We can get a different view of this distribution by applying a (natural) logarithmic transformation:
 
-```{r, out.width="80%", fig.height=4, message=FALSE, warning=FALSE}
+```{r, out.width = "80%", fig.height = 4, message = FALSE, warning = FALSE}
 vienna = mutate(vienna, ln_rating_count = log(rating_count))
 ggplot(vienna, aes(ln_rating_count)) + 
   geom_histogram()
@@ -536,7 +564,7 @@ It depends on what you think are more important: **level** or **proportional dif
 
 In other words, is this variable created by an **additive** or **multiplicative** process?
 
-```{r echo=FALSE, fig.height=4, message=FALSE, warning=FALSE, out.width="80%"}
+```{r echo = FALSE, fig.height = 4, message = FALSE, warning = FALSE, out.width = "80%"}
 ggplot(vienna, aes(rating_count)) +
   geom_histogram() +
   scale_x_log10()
@@ -554,8 +582,8 @@ The natural log is by far the most common transformation in economics. Why?
 
 - It allows us to directly estimate elasticities, which we like because they're unitless and convenient in many theoretical models.
 
-But other transformations can be used:
-- Inverse hyperbolic sine, Box-Cox, square root, exponential.
+Other transformations can be used, but may be harder to interpret:
+- Box-Cox, square root, exponential.
 - Normalization on the (0, 1) interval: max/min, sigmoidal, hyperbolic tangent.
 
 ---
@@ -582,7 +610,7 @@ In prediction, often required for inputs to many machine learning algorithms.
 class: inverse, middle
 name: missing
 
-# Handling missing data
+# Handle your missing data
 
 ---
 
@@ -600,7 +628,9 @@ Try to figure out why the values are missing. Then choose one of these options:
 - No problem at all under a "Missing Completely at Random" assumption. (Plausible?)
 - Usually the only option if your outcome variable is missing.
 
-**Impute** the values (using "multiple imputation" or Bayesian methods).
+--
+
+**Impute** the values (with means/medians, group means, or "multiple imputation" methods).
 - Fill in the missing value, predicting it based on the values of other variables.
 - Still relies on a "Missing at Random" assumption.
 - Common in prediction problems.
@@ -618,8 +648,10 @@ Try to figure out why the values are missing. Then choose one of these options:
   - Inverse distance weighting; kriging (can be done using GIS tools)
   - Example: Fill in groundwater levels at every farm, but only have measurements at certain places.
 
+--
+
 **Create a flag** (binary variable) to indicate observations with missing values.
-- Then replace the `NA`'s in the original variable with a consistent value, such as `0` or `-999`. This works so long as you always include both variables in the analysis.
+- Then replace the `NA`'s in the original variable with a consistent value, such as `0` or the sample mean. This works so long as you always include both variables in the analysis.
 - Allows you to keep the observation and not lose the rest of its information.
 - Easy. Works well for both prediction and causal inference.
 
@@ -628,10 +660,10 @@ Try to figure out why the values are missing. Then choose one of these options:
 
 # Summary of Part 1
 
-### Describing variables
+### Understand each of your variables
 * Get a initial **summary** of your dataset with `skimr::skim`.
 * Explore categorical variables with **frequency tables** and **crosstabs.**
-* For numerical variables, look at the **histograms** before you do anything else!
+* For numerical variables, look at the **histograms** before you do anything else.
 * The bandwidth of **kernel density** plots features a bias/variance tradeoff.
 
 ### Data handling decisions

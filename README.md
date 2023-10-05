@@ -69,14 +69,14 @@ Fall 2023
 
 **Topic 8: Exploratory Analysis**
 
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/09-Exploratory-part1.html)
+* [**Part 1: Understanding individual variables**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part1.html)
   * Summaries, frequency tables and crosstabs in R
   * Characterizing distributions
   * Handling extreme values
   * Handling variable transformations
   * Handling missing data
 
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/09-Exploratory-part2.html)
+* [**Part 2: Understanding variable relationships**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part2.html)
   * Characterizing relationships
   * Binscatter
   * The Conditional Expectation Function

@@ -1,21 +1,33 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Topic 8: Exploratory Analysis</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Topic 8: Exploratory Analysis
+]
+.subtitle[
+## Part 2: See how variables relate to each other
+]
+.author[
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+]
+
 ---
-title: "Topic 8: Exploratory Analysis"
-subtitle: "Part 2: See how variables relate to each other"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
-output:
-  xaringan::moon_reader:
-    css: [default, metropolis, metropolis-fonts]
-    lib_dir: libs
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      highlightSpans: true
-      countIncrementalSlides: false
-      fig_caption: true
----
+
 name: toc
 
-```{css, echo = FALSE}
+&lt;style type="text/css"&gt;
 # CSS for including pauses in printed PDF output (see bottom of lecture)
 @media print {
   .has-continuation {
@@ -39,20 +51,9 @@ name: toc
   height: 75%;
   overflow-y: scroll;
 }
-```
+&lt;/style&gt;
 
-```{r setup, include = FALSE}
-options(htmltools.dir.version = FALSE)
-library(knitr)
-library(tidyverse)
-knitr::opts_chunk$set(
-	fig.align = "center",
-	cache = TRUE,
-	dpi = 300,
-  warning = F,
-  message = F
-)
-```
+
 
 # Table of contents
 
@@ -77,11 +78,12 @@ name: challenge
 
 Load this data:
 
-```{r}
+
+```r
 puzzle = read_csv("https://bit.ly/3B4BraF")
 ```
 
-</br>
+&lt;/br&gt;
 
 **Using your exploratory analysis skills, find the most important thing about this dataset.**
 
@@ -103,16 +105,7 @@ name: xy
 
 All 4 of these datasets have the same means, standard deviations, correlation coefficient, linear regression line, and regression R-squared.
 
-```{r echo = FALSE, fig.height = 4.5, message = FALSE, warning = FALSE, out.width = "70%"}
-anscombe_tidy = anscombe |>
-  pivot_longer(everything(),
-   names_to = c(".value", "set"),
-   names_pattern = "(.)(.)"
- )
-ggplot(anscombe_tidy, aes(x, y)) + 
-  geom_point(size = 3) + 
-  facet_wrap( ~ set)
-```
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 **Always plot your data!** Don't rely on summary statistics alone.
 
@@ -122,12 +115,15 @@ ggplot(anscombe_tidy, aes(x, y)) +
 
 Long before you run a regression, you should be looking at the scatterplots.
 
-```{r, fig.height = 4.1, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 vienna = read_csv("https://osf.io/y6jvb/download")
 
 ggplot(vienna, aes(x = rating_count, y = price)) + 
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-4-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -135,36 +131,43 @@ ggplot(vienna, aes(x = rating_count, y = price)) +
 
 Transformations are often extremely important to learning what's really going on.
 
-```{r, fig.height = 4.2, message = FALSE, warning = FALSE, out.width = "80%"}
-vienna = vienna |> mutate(ln_price = log(price),
+
+```r
+vienna = vienna |&gt; mutate(ln_price = log(price),
                            ln_rating_count = log(rating_count))
 ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) + 
   geom_point()
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Scatterplots
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 library(gapminder)
-gap07 = gapminder |>
-  filter(year == 2007) |>
+gap07 = gapminder |&gt;
+  filter(year == 2007) |&gt;
   mutate(gdp = pop * gdpPercap)
 ggplot(gap07, aes(x = pop, y = gdp)) +
   geom_point()
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Scatterplots
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-gap07 = gap07 |>
+
+```r
+gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
@@ -172,20 +175,25 @@ ggplot(gap07, aes(x = pop, y = ln_gdp)) +
   geom_point()
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Scatterplots
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-gap07 = gap07 |>
+
+```r
+gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
 ggplot(gap07, aes(x = ln_pop, y = ln_gdp)) +
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -195,13 +203,16 @@ When you have a lot of data, scatterplots get too crowded to be useful!
 
 Download this data scraped from Airbnb for listings in London on the night of 4 March 2017.
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 london = read_csv("https://osf.io/ey5p7/download")
-london2 = london |>
+london2 = london |&gt;
   mutate(ln_price = log(price))
 ggplot(london2, aes(x = longitude, y = ln_price)) +
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -217,21 +228,25 @@ Binscatter divides your X variable into "bins" and plots the mean of Y within ea
 
 First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-london2 = london2 |>
+
+```r
+london2 = london2 |&gt;
   mutate(longitude_bins = factor(ntile(longitude, 50)))
 ggplot(london2, aes(x = longitude, y = ln_price, color = longitude_bins)) +
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Binscatter
 
 Then, calculate the means of both X and Y within each bin.
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-london3 = london2 |>
-  group_by(longitude_bins) |>
+
+```r
+london3 = london2 |&gt;
+  group_by(longitude_bins) |&gt;
   mutate(ln_price_binned = mean(ln_price, na.rm = TRUE),
          longitude_binned = mean(longitude, na.rm = TRUE))
 ggplot(london3) +
@@ -239,19 +254,24 @@ ggplot(london3) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Binscatter
 
 Let's show just the binned points:
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-london_binned = london2 |>
-  group_by(longitude_bins) |>
+
+```r
+london_binned = london2 |&gt;
+  group_by(longitude_bins) |&gt;
   summarize(across(c("ln_price", "longitude"), mean, na.rm = TRUE))
 ggplot(london_binned, aes(x = longitude, y = ln_price)) +
   geom_point(size = 3)
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -260,26 +280,33 @@ ggplot(london_binned, aes(x = longitude, y = ln_price)) +
 Easier: Use `binsreg` ([Cattaneo, Crump, Farrell, and Feng 2021](https://arxiv.org/abs/1902.09608))
 - Correctly handles many of the finer statistical details.
 
-```{r, eval = FALSE}
+
+```r
 install.packages("binsreg")
 ```
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 library(binsreg)
 binsreg(london2$ln_price, london2$longitude)
 ```
 
----
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
-# Local regression
-
-A useful alternative to binscatter is **local regression.**
-
-Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
-
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-ggplot(london3, aes(x = longitude, y = ln_price)) +
-
-  geom_smooth()
+```
+## Call: binsreg
+## 
+## Binscatter Plot
+## Bin/Degree selection method (binsmethod)  =  IMSE direct plug-in (select # of bins)
+## Placement (binspos)                       =  Quantile-spaced
+## Derivative (deriv)                        =  0
+## 
+## Group (by)                         =  Full Sample
+## Sample size (n)                    =  53817
+## # of distinct values (Ndist)       =  53817
+## # of clusters (Nclust)             =  NA
+## dots, degree (p)                   =  0
+## dots, smoothness (s)               =  0
+## # of bins (nbins)                  =  69
 ```
 
 ---
@@ -290,11 +317,31 @@ A useful alternative to binscatter is **local regression.**
 
 Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
 
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+
+  geom_smooth()
+```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Local regression
+
+A useful alternative to binscatter is **local regression.**
+
+Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
+
+
+```r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -304,12 +351,15 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 
 Clearly this is more useful in some situations than others.
 
-```{r, fig.height = 3.7, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth(method = "lm", formula = y ~ x)
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Linear regression (OLS)
@@ -318,12 +368,15 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 
 Clearly this is more useful in some situations than others.
 
-```{r, fig.height = 3.6, message = FALSE, warning = FALSE, out.width = "80%"}
+
+```r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
-  geom_smooth(data = filter(london3, longitude < -0.17), method = 'lm', formula = y~x) +
-  geom_smooth(data = filter(london3, longitude > -0.17), method = 'lm', formula = y~x) +
+  geom_smooth(data = filter(london3, longitude &lt; -0.17), method = 'lm', formula = y~x) +
+  geom_smooth(data = filter(london3, longitude &gt; -0.17), method = 'lm', formula = y~x) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -348,15 +401,15 @@ Images and code in this section are from ["Why Regression?"](https://github.com/
 
 # The Conditional Expectation Function (CEF)
 
-The CEF tells us the **expected value** (population mean) of an outcome variable $Y_i$ at each value of $X_i$.
+The CEF tells us the **expected value** (population mean) of an outcome variable `\(Y_i\)` at each value of `\(X_i\)`.
 $$ \mathbb{E}[Y_i|X_i] $$
 
 Examples:
-- $\mathbb{E}[\text{Price}_i|\text{Longitude}_i]$
-- $\mathbb{E}[\text{Income}_i|\text{Education}_i]$
-- $\mathbb{E}[\text{Birth weight}_i|\text{Air pollution}_i]$
+- `\(\mathbb{E}[\text{Price}_i|\text{Longitude}_i]\)`
+- `\(\mathbb{E}[\text{Income}_i|\text{Education}_i]\)`
+- `\(\mathbb{E}[\text{Birth weight}_i|\text{Air pollution}_i]\)`
 
-</br>
+&lt;/br&gt;
 
 Binscatter and local regression give **nonparametric estimates** of the CEF.
 - Nonparametric: functional form is not pre-specified but rather driven by the data.
@@ -365,114 +418,25 @@ Binscatter and local regression give **nonparametric estimates** of the CEF.
 ---
 class: clear, middle, center
 
-The conditional distributions of $\text{Y}_{i}$ for $\text{X}_{i} = x$ in 8, ..., 22.
+The conditional distributions of `\(\text{Y}_{i}\)` for `\(\text{X}_{i} = x\)` in 8, ..., 22.
 
-```{R, data_cef, echo = F, cache = T}
-library(ggridges)
-library(ggthemes)
-library(viridis)
-# Set seed
-set.seed(12345)
-# Sample size
-n <- 1e4
-# Generate extra disturbances
-u <- sample(-2:2, size = 22, replace = T) * 1e3
-# Generate data
-cef_df <- tibble(
-  x = sample(x = seq(8, 22, 1), size = n, replace = T),
-  y = 15000 + 3000 * x  + 1e3 * (x %% 3) + 500 * (x %% 2) + rnorm(n, sd = 1e4) + u[x]
-) |> mutate(x = round(x)) |>
-filter(y > 0)
-# Means
-means_df <- cef_df |> group_by(x) |> summarize(y = mean(y))
-# The CEF in ggplot
-gg_cef <- ggplot(data = cef_df, aes(x = y, y = x |> as.factor())) +
-  geom_density_ridges_gradient(
-    aes(fill = ..x..),
-    rel_min_height = 0.003,
-    color = "white",
-    scale = 2.5,
-    size = 0.3
-  ) +
-  scale_x_continuous(
-    "Annual income",
-    labels = scales::dollar
-  ) +
-  ylab("Years of education") +
-  scale_fill_viridis(option = "magma") +
-  theme_pander(base_family = "Fira Sans", base_size = 18) +
-  theme(
-    legend.position = "none"
-  ) +
-  coord_flip()
-```
 
-```{r, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-gg_cef
-```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: clear, middle, center
 
-The CEF, $\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]$, connects these conditional distributions' means.
+The CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`, connects these conditional distributions' means.
 
-```{R, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-gg_cef +
-  geom_path(
-    data = means_df,
-    aes(x = y, y = x |> as.factor(), group = 1),
-    color = "white",
-    alpha = 0.85
-  ) +
-  geom_point(
-    data = means_df,
-    aes(x = y, y = x |> as.factor()),
-    color = "white",
-    shape = 16,
-    size = 3.5
-  )
-```
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: clear, middle, center
 
-Focusing in on the CEF, $\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]$...
+Focusing in on the CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`...
 
-```{R, fig_cef_only, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-gg_cef_focus = ggplot(data = cef_df, aes(x = y, y = x |> as.factor())) +
-  geom_density_ridges(
-    rel_min_height = 0.003,
-    color = "grey85",
-    fill = NA,
-    scale = 2.5,
-    size = 0.3
-  ) +
-  scale_x_continuous(
-    "Annual income",
-    labels = scales::dollar
-  ) +
-  ylab("Years of education") +
-  scale_fill_viridis(option = "magma") +
-  theme_pander(base_family = "Fira Sans", base_size = 18) +
-  theme(
-    legend.position = "none"
-  ) +
-  geom_path(
-    data = means_df,
-    aes(x = y, y = x |> as.factor(), group = 1),
-    color = "grey20",
-    alpha = 0.85
-  ) +
-  geom_point(
-    data = means_df,
-    aes(x = y, y = x |> as.factor()),
-    color = "grey20",
-    shape = 16,
-    size = 3.5
-  ) +
-  coord_flip()
-gg_cef_focus
-```
+&lt;img src="08-Exploratory-part2_files/figure-html/fig_cef_only-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -480,15 +444,15 @@ gg_cef_focus
 
 A well-chosen CEF is (almost) everything you need for empirical work.
 
-- For **prediction:** the CEF is the best predictor of $Y_i$ given $X_i$.
+- For **prediction:** the CEF is the best predictor of `\(Y_i\)` given `\(X_i\)`.
   - In the sense of minimizing mean squared error (bias squared plus variance).
 
-- For **causal inference:** when the variation in $X$ is as-good-as-random, then the CEF shows how $X$ causally affects $Y$.
-  - Specifically, the slope of the CEF is the **average causal response** of $Y$ to a 1-unit change in $X$, for each value of $X$.
+- For **causal inference:** when the variation in `\(X\)` is as-good-as-random, then the CEF shows how `\(X\)` causally affects `\(Y\)`.
+  - Specifically, the slope of the CEF is the **average causal response** of `\(Y\)` to a 1-unit change in `\(X\)`, for each value of `\(X\)`.
 
 --
 
-</br>
+&lt;/br&gt;
 
 So... **why are we always running regressions??**
 
@@ -514,24 +478,7 @@ class: clear, center, middle
 
 Adding the population regression function
 
-```{R, fig_reg_cef2, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-# Estimate the relationship
-cef_lm <- lm(y ~ x, data = cef_df)
-# Find the regression points
-lm_df <- tibble(
-  x = 8:22,
-  y = predict(object = cef_lm, newdata = data.frame(x = 8:22))
-)
-# Figure
-gg_cef_focus +
-  geom_path(
-    data = lm_df,
-    aes(x = y, y = x |> as.factor(), group = 1),
-    alpha = 0.5,
-    color = "orange",
-    size = 2
-  )
-```
+&lt;img src="08-Exploratory-part2_files/figure-html/fig_reg_cef2-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -548,7 +495,7 @@ So what's the point of running regressions?
 1. **Quantification:** To measure the average slope of the CEF.
 2. **Statistical inference:** To compute standard errors.
 
-</br>
+&lt;/br&gt;
 
 --
 
@@ -570,9 +517,7 @@ name: adjusting
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width = "67%", echo = F}
-include_graphics("img/Simpsons_paradox_-_animation.gif")
-```
+&lt;img src="img/Simpsons_paradox_-_animation.gif" width="67%" style="display: block; margin: auto;" /&gt;
 
 Which trend is the "right" one?
 
@@ -584,9 +529,7 @@ Which trend is the "right" one?
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width = "67%", echo = F}
-include_graphics("img/the-simpsons-paradox.jfif")
-```
+&lt;img src="img/the-simpsons-paradox.jfif" width="67%" style="display: block; margin: auto;" /&gt;
 .small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
@@ -595,9 +538,7 @@ include_graphics("img/the-simpsons-paradox.jfif")
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width = "73%", echo = F}
-include_graphics("img/the-simpsons-pair-o-docs.jfif")
-```
+&lt;img src="img/the-simpsons-pair-o-docs.jfif" width="73%" style="display: block; margin: auto;" /&gt;
 .small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
 
 ---
@@ -606,10 +547,11 @@ include_graphics("img/the-simpsons-pair-o-docs.jfif")
 
 Let's go back to the `gapminder` data and plot life expectancy by GDP:
 
-```{r, fig.height = 3, out.width = "80%"}
+
+```r
 library(gapminder)
-gap07 = gapminder |>
-  filter(year == 2007) |>
+gap07 = gapminder |&gt;
+  filter(year == 2007) |&gt;
   mutate(gdp = pop * gdpPercap,
          ln_gdp = log(gdp),
          ln_pop = log(pop))
@@ -617,6 +559,8 @@ ggplot(gap07, aes(y = lifeExp, x = ln_gdp)) +
   geom_point()
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Adjusting for a binary variable
@@ -625,13 +569,16 @@ Suppose you think there might be something different about Africa.
 
 Create a binary variable and color the dots by it:
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
+
+```r
+gap07 = gap07 |&gt;
   mutate(africa = if_else(continent == "Africa", 1, 0))
 ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Adjusting for a binary variable
@@ -640,12 +587,15 @@ Suppose you think there might be something different about Africa.
 
 Create a binary variable and color the dots by it:
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
+
+```r
+gap07 = gap07 |&gt;
   mutate(africa = factor(if_else(continent == "Africa", 1, 0)))
 ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -657,61 +607,73 @@ We can **adjust** for the Africa indicator, in order to remove its influence on 
 
 # Adjusting for a binary variable
 
-First, find the mean differences in the $X$ variable that are explained by `Africa`.
+First, find the mean differences in the `\(X\)` variable that are explained by `Africa`.
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
-  group_by(africa) |>
+
+```r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(ln_gdp_by_africa = mean(ln_gdp))
 ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point() + 
   geom_vline(aes(xintercept = ln_gdp_by_africa, color = africa))
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Adjusting for a binary variable
 
-Remove the differences explained by `Africa`, by subtracting these group means from $X$.
+Remove the differences explained by `Africa`, by subtracting these group means from `\(X\)`.
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
-  group_by(africa) |>
+
+```r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
 ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
   geom_vline(aes(xintercept = 0, color = africa))
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Adjusting for a binary variable
 
-Second, find the mean differences in the $Y$ variable that are explained by `Africa`.
+Second, find the mean differences in the `\(Y\)` variable that are explained by `Africa`.
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
-  group_by(africa) |>
+
+```r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(lifeExp_by_africa = mean(lifeExp))
 ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
   geom_hline(aes(yintercept = lifeExp_by_africa, color = africa))
 ```
 
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Adjusting for a binary variable
 
-Remove the differences explained by `Africa`, by subtracting these group means from $Y$.
+Remove the differences explained by `Africa`, by subtracting these group means from `\(Y\)`.
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
-  group_by(africa) |>
+
+```r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
 ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
   geom_hline(aes(yintercept = 0, color = africa))
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -719,14 +681,17 @@ ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)
 
 For a more easily interpretable graph, add the "grand" (overall sample) means back in:
 
-```{r, fig.height = 3.5, out.width = "80%"}
-gap07 = gap07 |>
-  ungroup() |>
+
+```r
+gap07 = gap07 |&gt;
+  ungroup() |&gt;
   mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
          lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
 ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point()
 ```
+
+&lt;img src="08-Exploratory-part2_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -741,9 +706,7 @@ Note: You do have to adjust both your X and Y variables. Adjusting only Y is not
 
 Did we gain anything useful by adjusting for whether a country is in Africa?
 
-```{r, echo = F, out.width = "70%"}
-include_graphics("img/you-were-so-preoccupied-with-whether-or-not-you-could-you-didnt-stop-to-think-if-you-should.jpg")
-```
+&lt;img src="img/you-were-so-preoccupied-with-whether-or-not-you-could-you-didnt-stop-to-think-if-you-should.jpg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -764,9 +727,7 @@ This is exactly what **fixed effects** regression does.
 
 # Within-unit variation
 
-```{r, echo = F}
-include_graphics("img/Animation of Fixed Effects.gif")
-```
+&lt;img src="img/Animation of Fixed Effects.gif" style="display: block; margin: auto;" /&gt;
 .small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
 
 
@@ -786,9 +747,7 @@ Parts of this section are adapted from [“Introduction to Data Science”](http
 - Problem: Hard to tell the difference.
 - This is a general problem in prediction.
 
-```{r, out.width = "50%", echo = F}
-include_graphics("img/signal-plus-noise-example-1.png")
-```
+&lt;img src="img/signal-plus-noise-example-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -796,42 +755,40 @@ include_graphics("img/signal-plus-noise-example-1.png")
 
 How to best estimate a CEF? We can think of this as a problem of predicting
 
-$$Y_i = f(x_i) + \epsilon_i$$
+`$$Y_i = f(x_i) + \epsilon_i$$`
 
 where
 
-$$f(x) = \mathbb{E}[Y|X = x_i].$$
+`$$f(x) = \mathbb{E}[Y|X = x_i].$$`
 
 One option that holds intuitive appeal is **bin smoothing.** This is like binscatter, but with overlapping bins.
 
-Take moving averages of $Y$ across your observations $i$ at each point $x_0$ in the support of $x$:
+Take moving averages of `\(Y\)` across your observations `\(i\)` at each point `\(x_0\)` in the support of `\(x\)`:
 
 $$ \hat{f}(x_0) = \frac{ \sum_i { Y_i \space 1 \\big\\{ |x_i - x_0| \leq h \\big\\} } } { \sum_i {1 \\big\\{ |x_i - x_0| \leq h \\big\\}} } $$
 
-where $h$ is the bandwidth. E.g., for a weekly moving average, $h = 3.5$.
+where `\(h\)` is the bandwidth. E.g., for a weekly moving average, `\(h = 3.5\)`.
 
 ---
 
 # Bin smoothing / moving averages
 
-Do this at enough values of $x_0$ that it appears continuous:
+Do this at enough values of `\(x_0\)` that it appears continuous:
 
-```{r, echo = F}
-include_graphics("img/binsmoother-animation.gif")
-```
+&lt;img src="img/binsmoother-animation.gif" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Kernels
 
-We can reduce the variance of this estimate by choosing different weights $w_0$ in the moving average:
+We can reduce the variance of this estimate by choosing different weights `\(w_0\)` in the moving average:
 
 $$ \hat{f}(x_0) = \sum_i { Y_i \space w_0(x_i) }  $$
 
-In the moving average example, the weights were either $0$ or $1/N_0$, the number of observations that fall within the window.
+In the moving average example, the weights were either `\(0\)` or `\(1/N_0\)`, the number of observations that fall within the window.
 - Turn on and off discretely as data points enter and exit the window.
 
-</br>
+&lt;/br&gt;
 
 Instead, we can choose weights that vary more smoothly.
 
@@ -846,11 +803,9 @@ Uniform kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_uniform.svg")
-```
+&lt;img src="img/Kernel_uniform.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -860,10 +815,8 @@ Triangular kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_triangle.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+&lt;img src="img/Kernel_triangle.svg" width="60%" style="display: block; margin: auto;" /&gt;
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -873,10 +826,8 @@ Epanechnikov kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_epanechnikov.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+&lt;img src="img/Kernel_epanechnikov.svg" width="60%" style="display: block; margin: auto;" /&gt;
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -886,10 +837,8 @@ Gaussian (normal) kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
 
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_exponential.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+&lt;img src="img/Kernel_exponential.svg" width="60%" style="display: block; margin: auto;" /&gt;
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -900,9 +849,7 @@ Instead of treating the mean as constant within each window...
 
 Regression is estimated via weighted least squares, using the kernel weights.
 
-```{r, out.width = "50%", echo = F}
-include_graphics("img/loess-animation.gif")
-```
+&lt;img src="img/loess-animation.gif" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -913,13 +860,11 @@ Instead of treating the mean as constant within each window...
 
 As usual, larger bandwidths lead to more smoothing.
 
-```{r, out.width = "50%", echo = F}
-include_graphics("img/loess-multi-span-animation.gif")
-```
+&lt;img src="img/loess-multi-span-animation.gif" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Local regression >> bin smoothing
+# Local regression &gt;&gt; bin smoothing
 
 Local regression is preferred over bin smoothing / moving averages.
 
@@ -930,8 +875,8 @@ Moving averages can be badly biased at the edges of the data.
 # Beware of default arguments
 
 Be careful with `geom_smooth`. The default options may not be what you intend.
-- With $<1000$ observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
-- With $> = 1000$ observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
+- With `\(&lt;1000\)` observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
+- With `\(&gt; = 1000\)` observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
 
 To get *local linear* regression in `ggplot`, specify:
 
@@ -1024,3 +969,141 @@ Practical advice:
 ### Adjusting for other variables
 * Patterns within groups can look completely different when the groups are combined.
 * To use only **within-group variation**, subtract group means from both X and Y variables.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false,
+"fig_caption": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

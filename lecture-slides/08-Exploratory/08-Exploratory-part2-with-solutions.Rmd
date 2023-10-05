@@ -1,5 +1,6 @@
 ---
-title: "Topic 8: Exploratory Analysis, Part 2"
+title: "Topic 8: Exploratory Analysis"
+subtitle: "Part 2: See how variables relate to each other"
 author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 output:
   xaringan::moon_reader:
@@ -112,7 +113,7 @@ name: xy
 All 4 of these datasets have the same means, standard deviations, correlation coefficient, linear regression line, and regression R-squared.
 
 ```{r echo=FALSE, fig.height=4.5, message=FALSE, warning=FALSE, out.width="70%"}
-anscombe_tidy = anscombe %>%
+anscombe_tidy = anscombe |>
   pivot_longer(everything(),
    names_to = c(".value", "set"),
    names_pattern = "(.)(.)"
@@ -144,7 +145,7 @@ ggplot(vienna, aes(x=rating_count, y=price)) +
 Transformations are often extremely important to learning what's really going on.
 
 ```{r, fig.height=4.2, message=FALSE, warning=FALSE, out.width="80%"}
-vienna = vienna %>% mutate(ln_price = log(price),
+vienna = vienna |> mutate(ln_price = log(price),
                            ln_rating_count = log(rating_count))
 ggplot(vienna, aes(x=ln_rating_count, y=ln_price)) + 
   geom_point()
@@ -158,8 +159,8 @@ Another example of how helpful transformations can be.
 
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
 library(gapminder)
-gap07 = gapminder %>%
-  filter(year==2007) %>%
+gap07 = gapminder |>
+  filter(year==2007) |>
   mutate(gdp = pop * gdpPercap)
 ggplot(gap07, aes(x=pop, y=gdp)) +
   geom_point()
@@ -172,7 +173,7 @@ ggplot(gap07, aes(x=pop, y=gdp)) +
 Another example of how helpful transformations can be.
 
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-gap07 = gap07 %>%
+gap07 = gap07 |>
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
@@ -187,7 +188,7 @@ ggplot(gap07, aes(x=pop, y=ln_gdp)) +
 Another example of how helpful transformations can be.
 
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-gap07 = gap07 %>%
+gap07 = gap07 |>
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
@@ -205,7 +206,7 @@ Download this data scraped from Airbnb for listings in London on the night of 4 
 
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
 london = read_csv("https://osf.io/ey5p7/download")
-london2 = london %>%
+london2 = london |>
   mutate(ln_price = log(price))
 ggplot(london2, aes(x=longitude, y=ln_price)) +
   geom_point()
@@ -226,7 +227,7 @@ Binscatter divides your X variable into "bins" and plots the mean of Y within ea
 First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-london2 = london2 %>%
+london2 = london2 |>
   mutate(longitude_bins = factor(ntile(longitude, 50)))
 ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
   geom_point()
@@ -238,8 +239,8 @@ ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
 
 Then, calculate the means of both X and Y within each bin.
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-london3 = london2 %>%
-  group_by(longitude_bins) %>%
+london3 = london2 |>
+  group_by(longitude_bins) |>
   mutate(ln_price_binned = mean(ln_price, na.rm=TRUE),
          longitude_binned = mean(longitude, na.rm=TRUE))
 ggplot(london3) +
@@ -254,8 +255,8 @@ ggplot(london3) +
 Let's show just the binned points:
 
 ```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-london_binned = london2 %>%
-  group_by(longitude_bins) %>%
+london_binned = london2 |>
+  group_by(longitude_bins) |>
   summarize(across(c("ln_price", "longitude"), mean, na.rm=TRUE))
 ggplot(london_binned, aes(x=longitude, y=ln_price)) +
   geom_point(size=3)
@@ -327,7 +328,7 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 Clearly this is more useful in some situations than others.
 
 ```{r, fig.height=3.6, message=FALSE, warning=FALSE, out.width="80%"}
-london3 %>% filter(longitude > -0.16) %>%
+london3 |> filter(longitude > -0.16) |>
   ggplot(aes(x=longitude, y=ln_price)) +
     geom_smooth(method='lm', formula=y~x) +
     geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2)
@@ -379,12 +380,12 @@ u <- sample(-2:2, size = 22, replace = T) * 1e3
 cef_df <- tibble(
   x = sample(x = seq(8, 22, 1), size = n, replace = T),
   y = 15000 + 3000 * x  + 1e3 * (x %% 3) + 500 * (x %% 2) + rnorm(n, sd = 1e4) + u[x]
-) %>% mutate(x = round(x)) %>%
+) |> mutate(x = round(x)) |>
 filter(y > 0)
 # Means
-means_df <- cef_df %>% group_by(x) %>% summarize(y = mean(y))
+means_df <- cef_df |> group_by(x) |> summarize(y = mean(y))
 # The CEF in ggplot
-gg_cef <- ggplot(data = cef_df, aes(x = y, y = x %>% as.factor())) +
+gg_cef <- ggplot(data = cef_df, aes(x = y, y = x |> as.factor())) +
   geom_density_ridges_gradient(
     aes(fill = ..x..),
     rel_min_height = 0.003,
@@ -418,13 +419,13 @@ The CEF, $\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]$, connects thes
 gg_cef +
   geom_path(
     data = means_df,
-    aes(x = y, y = x %>% as.factor(), group = 1),
+    aes(x = y, y = x |> as.factor(), group = 1),
     color = "white",
     alpha = 0.85
   ) +
   geom_point(
     data = means_df,
-    aes(x = y, y = x %>% as.factor()),
+    aes(x = y, y = x |> as.factor()),
     color = "white",
     shape = 16,
     size = 3.5
@@ -437,7 +438,7 @@ class: clear, middle, center
 Focusing in on the CEF, $\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]$...
 
 ```{R, fig_cef_only, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-gg_cef_focus = ggplot(data = cef_df, aes(x = y, y = x %>% as.factor())) +
+gg_cef_focus = ggplot(data = cef_df, aes(x = y, y = x |> as.factor())) +
   geom_density_ridges(
     rel_min_height = 0.003,
     color = "grey85",
@@ -457,13 +458,13 @@ gg_cef_focus = ggplot(data = cef_df, aes(x = y, y = x %>% as.factor())) +
   ) +
   geom_path(
     data = means_df,
-    aes(x = y, y = x %>% as.factor(), group = 1),
+    aes(x = y, y = x |> as.factor(), group = 1),
     color = "grey20",
     alpha = 0.85
   ) +
   geom_point(
     data = means_df,
-    aes(x = y, y = x %>% as.factor()),
+    aes(x = y, y = x |> as.factor()),
     color = "grey20",
     shape = 16,
     size = 3.5
@@ -524,7 +525,7 @@ lm_df <- tibble(
 gg_cef_focus +
   geom_path(
     data = lm_df,
-    aes(x = y, y = x %>% as.factor(), group = 1),
+    aes(x = y, y = x |> as.factor(), group = 1),
     alpha = 0.5,
     color="orange",
     size = 2
@@ -597,8 +598,8 @@ Let's go back to the `gapminder` data and plot life expectancy by GDP:
 
 ```{r, fig.height=3, out.width="80%"}
 library(gapminder)
-gap07 = gapminder %>%
-  filter(year==2007) %>%
+gap07 = gapminder |>
+  filter(year==2007) |>
   mutate(gdp = pop * gdpPercap,
          ln_gdp = log(gdp),
          ln_pop = log(pop))
@@ -615,7 +616,7 @@ Suppose you think there might be something different about Africa.
 Create a binary variable and color the dots by it:
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
+gap07 = gap07 |>
   mutate(africa = if_else(continent=="Africa", 1, 0))
 ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
   geom_point()
@@ -630,7 +631,7 @@ Suppose you think there might be something different about Africa.
 Create a binary variable and color the dots by it:
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
+gap07 = gap07 |>
   mutate(africa = factor(if_else(continent=="Africa", 1, 0)))
 ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
   geom_point()
@@ -649,8 +650,8 @@ We can **adjust** for the Africa indicator, in order to remove its influence on 
 First, find the mean differences in the $X$ variable that are explained by `Africa`.
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
-  group_by(africa) %>%
+gap07 = gap07 |>
+  group_by(africa) |>
   mutate(ln_gdp_by_africa = mean(ln_gdp))
 ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
   geom_point() + 
@@ -664,8 +665,8 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
 Remove the differences explained by `Africa`, by subtracting these group means from $X$.
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
-  group_by(africa) %>%
+gap07 = gap07 |>
+  group_by(africa) |>
   mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
 ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
   geom_point() + 
@@ -679,8 +680,8 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
 Second, find the mean differences in the $Y$ variable that are explained by `Africa`.
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
-  group_by(africa) %>%
+gap07 = gap07 |>
+  group_by(africa) |>
   mutate(lifeExp_by_africa = mean(lifeExp))
 ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
   geom_point() + 
@@ -694,8 +695,8 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
 Remove the differences explained by `Africa`, by subtracting these group means from $Y$.
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
-  group_by(africa) %>%
+gap07 = gap07 |>
+  group_by(africa) |>
   mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
 ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
   geom_point() + 
@@ -709,8 +710,8 @@ ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
 For a more easily interpretable graph, add the "grand" (overall sample) means back in:
 
 ```{r, fig.height=3.5, out.width="80%"}
-gap07 = gap07 %>%
-  ungroup() %>%
+gap07 = gap07 |>
+  ungroup() |>
   mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
          lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
 ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
