@@ -15,7 +15,7 @@ output:
 ---
 name: toc
 
-```{css, echo=FALSE}
+```{css, echo = FALSE}
 # CSS for including pauses in printed PDF output (see bottom of lecture)
 @media print {
   .has-continuation {
@@ -41,7 +41,7 @@ name: toc
 }
 ```
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 options(htmltools.dir.version = FALSE)
 library(knitr)
 library(tidyverse)
@@ -112,15 +112,15 @@ name: xy
 
 All 4 of these datasets have the same means, standard deviations, correlation coefficient, linear regression line, and regression R-squared.
 
-```{r echo=FALSE, fig.height=4.5, message=FALSE, warning=FALSE, out.width="70%"}
+```{r echo = FALSE, fig.height = 4.5, message = FALSE, warning = FALSE, out.width = "70%"}
 anscombe_tidy = anscombe |>
   pivot_longer(everything(),
    names_to = c(".value", "set"),
    names_pattern = "(.)(.)"
  )
 ggplot(anscombe_tidy, aes(x, y)) + 
-  geom_point(size=3) + 
-  facet_wrap(~set)
+  geom_point(size = 3) + 
+  facet_wrap( ~ set)
 ```
 
 **Always plot your data!** Don't rely on summary statistics alone.
@@ -131,10 +131,10 @@ ggplot(anscombe_tidy, aes(x, y)) +
 
 Long before you run a regression, you should be looking at the scatterplots.
 
-```{r, fig.height=4.1, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 4.1, message = FALSE, warning = FALSE, out.width = "80%"}
 vienna = read_csv("https://osf.io/y6jvb/download")
 
-ggplot(vienna, aes(x=rating_count, y=price)) + 
+ggplot(vienna, aes(x = rating_count, y = price)) + 
   geom_point()
 ```
 
@@ -144,10 +144,10 @@ ggplot(vienna, aes(x=rating_count, y=price)) +
 
 Transformations are often extremely important to learning what's really going on.
 
-```{r, fig.height=4.2, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 4.2, message = FALSE, warning = FALSE, out.width = "80%"}
 vienna = vienna |> mutate(ln_price = log(price),
                            ln_rating_count = log(rating_count))
-ggplot(vienna, aes(x=ln_rating_count, y=ln_price)) + 
+ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) + 
   geom_point()
 ```
 
@@ -157,12 +157,12 @@ ggplot(vienna, aes(x=ln_rating_count, y=ln_price)) +
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 library(gapminder)
 gap07 = gapminder |>
-  filter(year==2007) |>
+  filter(year == 2007) |>
   mutate(gdp = pop * gdpPercap)
-ggplot(gap07, aes(x=pop, y=gdp)) +
+ggplot(gap07, aes(x = pop, y = gdp)) +
   geom_point()
 ```
 
@@ -172,12 +172,12 @@ ggplot(gap07, aes(x=pop, y=gdp)) +
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 gap07 = gap07 |>
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
-ggplot(gap07, aes(x=pop, y=ln_gdp)) +
+ggplot(gap07, aes(x = pop, y = ln_gdp)) +
   geom_point()
 ```
 
@@ -187,12 +187,12 @@ ggplot(gap07, aes(x=pop, y=ln_gdp)) +
 
 Another example of how helpful transformations can be.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 gap07 = gap07 |>
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
-ggplot(gap07, aes(x=ln_pop, y=ln_gdp)) +
+ggplot(gap07, aes(x = ln_pop, y = ln_gdp)) +
   geom_point()
 ```
 
@@ -204,11 +204,11 @@ When you have a lot of data, scatterplots get too crowded to be useful!
 
 Download this data scraped from Airbnb for listings in London on the night of 4 March 2017.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 london = read_csv("https://osf.io/ey5p7/download")
 london2 = london |>
   mutate(ln_price = log(price))
-ggplot(london2, aes(x=longitude, y=ln_price)) +
+ggplot(london2, aes(x = longitude, y = ln_price)) +
   geom_point()
 ```
 
@@ -226,10 +226,10 @@ Binscatter divides your X variable into "bins" and plots the mean of Y within ea
 
 First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 london2 = london2 |>
   mutate(longitude_bins = factor(ntile(longitude, 50)))
-ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
+ggplot(london2, aes(x = longitude, y = ln_price, color = longitude_bins)) +
   geom_point()
 ```
 
@@ -238,14 +238,14 @@ ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
 # Binscatter
 
 Then, calculate the means of both X and Y within each bin.
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 london3 = london2 |>
   group_by(longitude_bins) |>
-  mutate(ln_price_binned = mean(ln_price, na.rm=TRUE),
-         longitude_binned = mean(longitude, na.rm=TRUE))
+  mutate(ln_price_binned = mean(ln_price, na.rm = TRUE),
+         longitude_binned = mean(longitude, na.rm = TRUE))
 ggplot(london3) +
-  geom_point(aes(x=longitude, y=ln_price, color=longitude_bins)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2)
+  geom_point(aes(x = longitude, y = ln_price, color = longitude_bins)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
 
 ---
@@ -254,12 +254,12 @@ ggplot(london3) +
 
 Let's show just the binned points:
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 london_binned = london2 |>
   group_by(longitude_bins) |>
-  summarize(across(c("ln_price", "longitude"), mean, na.rm=TRUE))
-ggplot(london_binned, aes(x=longitude, y=ln_price)) +
-  geom_point(size=3)
+  summarize(across(c("ln_price", "longitude"), mean, na.rm = TRUE))
+ggplot(london_binned, aes(x = longitude, y = ln_price)) +
+  geom_point(size = 3)
 ```
 
 ---
@@ -269,10 +269,10 @@ ggplot(london_binned, aes(x=longitude, y=ln_price)) +
 Easier: Use `binsreg` ([Cattaneo, Crump, Farrell, and Feng 2021](https://arxiv.org/abs/1902.09608))
 - Correctly handles many of the finer statistical details.
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 install.packages("binsreg")
 ```
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
 library(binsreg)
 binsreg(london2$ln_price, london2$longitude)
 ```
@@ -285,8 +285,8 @@ A useful alternative to binscatter is **local regression.**
 
 Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-ggplot(london3, aes(x=longitude, y=ln_price)) +
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+ggplot(london3, aes(x = longitude, y = ln_price)) +
 
   geom_smooth()
 ```
@@ -299,9 +299,9 @@ A useful alternative to binscatter is **local regression.**
 
 Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
 
-```{r, fig.height=3.5, message=FALSE, warning=FALSE, out.width="80%"}
-ggplot(london3, aes(x=longitude, y=ln_price)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2) +
+```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth()
 ```
 
@@ -313,10 +313,10 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 
 Clearly this is more useful in some situations than others.
 
-```{r, fig.height=3.7, message=FALSE, warning=FALSE, out.width="80%"}
-ggplot(london3, aes(x=longitude, y=ln_price)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2) +
-  geom_smooth(method="lm", formula=y~x)
+```{r, fig.height = 3.7, message = FALSE, warning = FALSE, out.width = "80%"}
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x)
 ```
 
 ---
@@ -327,12 +327,22 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 
 Clearly this is more useful in some situations than others.
 
-```{r, fig.height=3.6, message=FALSE, warning=FALSE, out.width="80%"}
-london3 |> filter(longitude > -0.16) |>
-  ggplot(aes(x=longitude, y=ln_price)) +
-    geom_smooth(method='lm', formula=y~x) +
-    geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2)
+```{r, fig.height = 3.6, message = FALSE, warning = FALSE, out.width = "80%"}
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_smooth(data = filter(london3, longitude < -0.17), method = 'lm', formula = y~x) +
+  geom_smooth(data = filter(london3, longitude > -0.17), method = 'lm', formula = y~x) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
+
+---
+
+# Linear regression (OLS)
+
+You can also add the **line of best fit**, aka the **least-squares regression line.**
+
+Clearly this is more useful in some situations than others.
+
+**So if you just ran a regression without plotting your data, you would get a woefully misleading answer!**
 
 
 ---
@@ -364,7 +374,7 @@ Binscatter and local regression give **nonparametric estimates** of the CEF.
 ---
 class: clear, middle, center
 
-The conditional distributions of $\text{Y}_{i}$ for $\text{X}_{i}=x$ in 8, ..., 22.
+The conditional distributions of $\text{Y}_{i}$ for $\text{X}_{i} = x$ in 8, ..., 22.
 
 ```{R, data_cef, echo = F, cache = T}
 library(ggridges)
@@ -527,7 +537,7 @@ gg_cef_focus +
     data = lm_df,
     aes(x = y, y = x |> as.factor(), group = 1),
     alpha = 0.5,
-    color="orange",
+    color = "orange",
     size = 2
   )
 ```
@@ -536,11 +546,20 @@ gg_cef_focus +
 
 # Why Use Regression?
 
+My view:
+
+**By the time you actually run a regression, the results should never be a surprise.**
+- Because you have already learned what the underlying CEF looks like.
+
+--
+
+So what's the point of running regressions?
+1. **Quantification:** To measure the average slope of the CEF.
+2. **Statistical inference:** To compute standard errors.
+
 </br>
 
-**My view:** Most times you run a regression, it should only be to confirm, quantify, and calculate standard errors for the information you have *already* learned about the underlying CEF.
-
-</br>
+--
 
 What if linear regression is not a good approximation to the CEF?
 - You can always add nonlinear *terms* to a regression to improve the approximation.
@@ -560,7 +579,7 @@ name: adjusting
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width="67%", echo=F}
+```{r, out.width = "67%", echo = F}
 include_graphics("img/Simpsons_paradox_-_animation.gif")
 ```
 
@@ -574,7 +593,7 @@ Which trend is the "right" one?
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width="67%", echo=F}
+```{r, out.width = "67%", echo = F}
 include_graphics("img/the-simpsons-paradox.jfif")
 ```
 .small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
@@ -585,7 +604,7 @@ include_graphics("img/the-simpsons-paradox.jfif")
 
 A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
 
-```{r, out.width="73%", echo=F}
+```{r, out.width = "73%", echo = F}
 include_graphics("img/the-simpsons-pair-o-docs.jfif")
 ```
 .small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
@@ -596,14 +615,14 @@ include_graphics("img/the-simpsons-pair-o-docs.jfif")
 
 Let's go back to the `gapminder` data and plot life expectancy by GDP:
 
-```{r, fig.height=3, out.width="80%"}
+```{r, fig.height = 3, out.width = "80%"}
 library(gapminder)
 gap07 = gapminder |>
-  filter(year==2007) |>
+  filter(year == 2007) |>
   mutate(gdp = pop * gdpPercap,
          ln_gdp = log(gdp),
          ln_pop = log(pop))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp)) +
   geom_point()
 ```
 
@@ -615,10 +634,10 @@ Suppose you think there might be something different about Africa.
 
 Create a binary variable and color the dots by it:
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
-  mutate(africa = if_else(continent=="Africa", 1, 0))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+  mutate(africa = if_else(continent == "Africa", 1, 0))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
 
@@ -630,10 +649,10 @@ Suppose you think there might be something different about Africa.
 
 Create a binary variable and color the dots by it:
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
-  mutate(africa = factor(if_else(continent=="Africa", 1, 0)))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+  mutate(africa = factor(if_else(continent == "Africa", 1, 0)))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
 
@@ -649,13 +668,13 @@ We can **adjust** for the Africa indicator, in order to remove its influence on 
 
 First, find the mean differences in the $X$ variable that are explained by `Africa`.
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
   group_by(africa) |>
   mutate(ln_gdp_by_africa = mean(ln_gdp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point() + 
-  geom_vline(aes(xintercept=ln_gdp_by_africa, color=africa))
+  geom_vline(aes(xintercept = ln_gdp_by_africa, color = africa))
 ```
 
 ---
@@ -664,13 +683,13 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
 
 Remove the differences explained by `Africa`, by subtracting these group means from $X$.
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
   group_by(africa) |>
   mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_vline(aes(xintercept=0, color=africa))
+  geom_vline(aes(xintercept = 0, color = africa))
 ```
 
 ---
@@ -679,13 +698,13 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
 
 Second, find the mean differences in the $Y$ variable that are explained by `Africa`.
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
   group_by(africa) |>
   mutate(lifeExp_by_africa = mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_hline(aes(yintercept=lifeExp_by_africa, color=africa))
+  geom_hline(aes(yintercept = lifeExp_by_africa, color = africa))
 ```
 
 ---
@@ -694,13 +713,13 @@ ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
 
 Remove the differences explained by `Africa`, by subtracting these group means from $Y$.
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
   group_by(africa) |>
   mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_hline(aes(yintercept=0, color=africa))
+  geom_hline(aes(yintercept = 0, color = africa))
 ```
 
 ---
@@ -709,12 +728,12 @@ ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
 
 For a more easily interpretable graph, add the "grand" (overall sample) means back in:
 
-```{r, fig.height=3.5, out.width="80%"}
+```{r, fig.height = 3.5, out.width = "80%"}
 gap07 = gap07 |>
   ungroup() |>
   mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
          lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point()
 ```
 
@@ -731,7 +750,7 @@ Note: You do have to adjust both your X and Y variables. Adjusting only Y is not
 
 Did we gain anything useful by adjusting for whether a country is in Africa?
 
-```{r, echo=F, out.width="70%"}
+```{r, echo = F, out.width = "70%"}
 include_graphics("img/you-were-so-preoccupied-with-whether-or-not-you-could-you-didnt-stop-to-think-if-you-should.jpg")
 ```
 
@@ -754,7 +773,7 @@ This is exactly what **fixed effects** regression does.
 
 # Within-unit variation
 
-```{r, echo=F}
+```{r, echo = F}
 include_graphics("img/Animation of Fixed Effects.gif")
 ```
 .small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
@@ -776,7 +795,7 @@ Parts of this section are adapted from [“Introduction to Data Science”](http
 - Problem: Hard to tell the difference.
 - This is a general problem in prediction.
 
-```{r, out.width="50%", echo=F}
+```{r, out.width = "50%", echo = F}
 include_graphics("img/signal-plus-noise-example-1.png")
 ```
 
@@ -790,7 +809,7 @@ $$Y_i = f(x_i) + \epsilon_i$$
 
 where
 
-$$f(x) = \mathbb{E}[Y|X=x_i].$$
+$$f(x) = \mathbb{E}[Y|X = x_i].$$
 
 One option that holds intuitive appeal is **bin smoothing.** This is like binscatter, but with overlapping bins.
 
@@ -798,7 +817,7 @@ Take moving averages of $Y$ across your observations $i$ at each point $x_0$ in 
 
 $$ \hat{f}(x_0) = \frac{ \sum_i { Y_i \space 1 \\big\\{ |x_i - x_0| \leq h \\big\\} } } { \sum_i {1 \\big\\{ |x_i - x_0| \leq h \\big\\}} } $$
 
-where $h$ is the bandwidth. E.g., for a weekly moving average, $h=3.5$.
+where $h$ is the bandwidth. E.g., for a weekly moving average, $h = 3.5$.
 
 ---
 
@@ -806,7 +825,7 @@ where $h$ is the bandwidth. E.g., for a weekly moving average, $h=3.5$.
 
 Do this at enough values of $x_0$ that it appears continuous:
 
-```{r, echo=F}
+```{r, echo = F}
 include_graphics("img/binsmoother-animation.gif")
 ```
 
@@ -836,11 +855,11 @@ Uniform kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/Kernel_uniform.svg")
 ```
 
-.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -850,10 +869,10 @@ Triangular kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/Kernel_triangle.svg")
 ```
-.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -863,10 +882,10 @@ Epanechnikov kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/Kernel_epanechnikov.svg")
 ```
-.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -876,10 +895,10 @@ Gaussian (normal) kernel:
 
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
 
-```{r, out.width="60%", echo=F}
+```{r, out.width = "60%", echo = F}
 include_graphics("img/Kernel_exponential.svg")
 ```
-.small[Image from <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -890,7 +909,7 @@ Instead of treating the mean as constant within each window...
 
 Regression is estimated via weighted least squares, using the kernel weights.
 
-```{r, out.width="50%", echo=F}
+```{r, out.width = "50%", echo = F}
 include_graphics("img/loess-animation.gif")
 ```
 
@@ -903,7 +922,7 @@ Instead of treating the mean as constant within each window...
 
 As usual, larger bandwidths lead to more smoothing.
 
-```{r, out.width="50%", echo=F}
+```{r, out.width = "50%", echo = F}
 include_graphics("img/loess-multi-span-animation.gif")
 ```
 
@@ -921,11 +940,11 @@ Moving averages can be badly biased at the edges of the data.
 
 Be careful with `geom_smooth`. The default options may not be what you intend.
 - With $<1000$ observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
-- With $>=1000$ observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
+- With $> = 1000$ observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
 
 To get *local linear* regression in `ggplot`, specify:
 
-`geom_smooth(method="loess", method.args=list(degree=1))`.
+`geom_smooth(method = "loess", method.args = list(degree = 1))`.
 
 
 ---
@@ -934,7 +953,7 @@ To get *local linear* regression in `ggplot`, specify:
 
 `loess` does not allow you to choose the bandwidth or kernel.
 - Instead, you can set the share of *all* data used at each point (the "span").
-- Default: `span=0.75`.
+- Default: `span = 0.75`.
 - Default kernel: tricube.
 
 Alternatives:

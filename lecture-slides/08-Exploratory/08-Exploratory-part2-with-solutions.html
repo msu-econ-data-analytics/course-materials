@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 9: Exploratory Analysis, Part 2</title>
+    <title>Topic 8: Exploratory Analysis</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -14,10 +14,13 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 9: Exploratory Analysis, Part 2
+# Topic 8: Exploratory Analysis
+]
+.subtitle[
+## Part 2: See how variables relate to each other
 ]
 .author[
-### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
 ]
 
 ---
@@ -94,7 +97,7 @@ ggplot(puzzle, aes(x, y)) +
   geom_point(size=4)
 ```
 --
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-4-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-4-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -109,7 +112,7 @@ name: xy
 
 All 4 of these datasets have the same means, standard deviations, correlation coefficient, linear regression line, and regression R-squared.
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 **Always plot your data!** Don't rely on summary statistics alone.
 
@@ -123,11 +126,11 @@ Long before you run a regression, you should be looking at the scatterplots.
 ```r
 vienna = read_csv("https://osf.io/y6jvb/download")
 
-ggplot(vienna, aes(x=rating_count, y=price)) + 
+ggplot(vienna, aes(x = rating_count, y = price)) + 
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -137,13 +140,13 @@ Transformations are often extremely important to learning what's really going on
 
 
 ```r
-vienna = vienna %&gt;% mutate(ln_price = log(price),
+vienna = vienna |&gt; mutate(ln_price = log(price),
                            ln_rating_count = log(rating_count))
-ggplot(vienna, aes(x=ln_rating_count, y=ln_price)) + 
+ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) + 
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -154,14 +157,14 @@ Another example of how helpful transformations can be.
 
 ```r
 library(gapminder)
-gap07 = gapminder %&gt;%
-  filter(year==2007) %&gt;%
+gap07 = gapminder |&gt;
+  filter(year == 2007) |&gt;
   mutate(gdp = pop * gdpPercap)
-ggplot(gap07, aes(x=pop, y=gdp)) +
+ggplot(gap07, aes(x = pop, y = gdp)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -171,15 +174,15 @@ Another example of how helpful transformations can be.
 
 
 ```r
-gap07 = gap07 %&gt;%
+gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
-ggplot(gap07, aes(x=pop, y=ln_gdp)) +
+ggplot(gap07, aes(x = pop, y = ln_gdp)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -189,15 +192,15 @@ Another example of how helpful transformations can be.
 
 
 ```r
-gap07 = gap07 %&gt;%
+gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
 
-ggplot(gap07, aes(x=ln_pop, y=ln_gdp)) +
+ggplot(gap07, aes(x = ln_pop, y = ln_gdp)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -210,13 +213,13 @@ Download this data scraped from Airbnb for listings in London on the night of 4 
 
 ```r
 london = read_csv("https://osf.io/ey5p7/download")
-london2 = london %&gt;%
+london2 = london |&gt;
   mutate(ln_price = log(price))
-ggplot(london2, aes(x=longitude, y=ln_price)) +
+ggplot(london2, aes(x = longitude, y = ln_price)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -234,13 +237,13 @@ First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
 
 ```r
-london2 = london2 %&gt;%
+london2 = london2 |&gt;
   mutate(longitude_bins = factor(ntile(longitude, 50)))
-ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
+ggplot(london2, aes(x = longitude, y = ln_price, color = longitude_bins)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -249,16 +252,16 @@ ggplot(london2, aes(x=longitude, y=ln_price, color=longitude_bins)) +
 Then, calculate the means of both X and Y within each bin.
 
 ```r
-london3 = london2 %&gt;%
-  group_by(longitude_bins) %&gt;%
-  mutate(ln_price_binned = mean(ln_price, na.rm=TRUE),
-         longitude_binned = mean(longitude, na.rm=TRUE))
+london3 = london2 |&gt;
+  group_by(longitude_bins) |&gt;
+  mutate(ln_price_binned = mean(ln_price, na.rm = TRUE),
+         longitude_binned = mean(longitude, na.rm = TRUE))
 ggplot(london3) +
-  geom_point(aes(x=longitude, y=ln_price, color=longitude_bins)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2)
+  geom_point(aes(x = longitude, y = ln_price, color = longitude_bins)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -268,14 +271,14 @@ Let's show just the binned points:
 
 
 ```r
-london_binned = london2 %&gt;%
-  group_by(longitude_bins) %&gt;%
-  summarize(across(c("ln_price", "longitude"), mean, na.rm=TRUE))
-ggplot(london_binned, aes(x=longitude, y=ln_price)) +
-  geom_point(size=3)
+london_binned = london2 |&gt;
+  group_by(longitude_bins) |&gt;
+  summarize(across(c("ln_price", "longitude"), mean, na.rm = TRUE))
+ggplot(london_binned, aes(x = longitude, y = ln_price)) +
+  geom_point(size = 3)
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -294,23 +297,23 @@ library(binsreg)
 binsreg(london2$ln_price, london2$longitude)
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ```
 ## Call: binsreg
 ## 
 ## Binscatter Plot
-## Bin selection method (binsmethod)  =  IMSE direct plug-in
-## Placement (binspos)                =  Quantile-spaced
-## Derivative (deriv)                 =  0
+## Bin/Degree selection method (binsmethod)  =  IMSE direct plug-in (select # of bins)
+## Placement (binspos)                       =  Quantile-spaced
+## Derivative (deriv)                        =  0
 ## 
 ## Group (by)                         =  Full Sample
 ## Sample size (n)                    =  53817
 ## # of distinct values (Ndist)       =  53817
 ## # of clusters (Nclust)             =  NA
 ## dots, degree (p)                   =  0
-## dots, smooth (s)                   =  0
-## # of bins (nbins)                  =  87
+## dots, smoothness (s)               =  0
+## # of bins (nbins)                  =  71
 ```
 
 ---
@@ -323,12 +326,12 @@ Local regression gives a smooth line that closely resembles the binscatter plot.
 
 
 ```r
-ggplot(london3, aes(x=longitude, y=ln_price)) +
+ggplot(london3, aes(x = longitude, y = ln_price)) +
 
   geom_smooth()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -340,12 +343,12 @@ Local regression gives a smooth line that closely resembles the binscatter plot.
 
 
 ```r
-ggplot(london3, aes(x=longitude, y=ln_price)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2) +
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -357,12 +360,12 @@ Clearly this is more useful in some situations than others.
 
 
 ```r
-ggplot(london3, aes(x=longitude, y=ln_price)) +
-  geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2) +
-  geom_smooth(method="lm", formula=y~x)
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x)
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -374,13 +377,23 @@ Clearly this is more useful in some situations than others.
 
 
 ```r
-london3 %&gt;% filter(longitude &gt; -0.16) %&gt;%
-  ggplot(aes(x=longitude, y=ln_price)) +
-    geom_smooth(method='lm', formula=y~x) +
-    geom_point(aes(x=longitude_binned, y=ln_price_binned), size=2)
+ggplot(london3, aes(x = longitude, y = ln_price)) +
+  geom_smooth(data = filter(london3, longitude &lt; -0.17), method = 'lm', formula = y~x) +
+  geom_smooth(data = filter(london3, longitude &gt; -0.17), method = 'lm', formula = y~x) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Linear regression (OLS)
+
+You can also add the **line of best fit**, aka the **least-squares regression line.**
+
+Clearly this is more useful in some situations than others.
+
+**So if you just ran a regression without plotting your data, you would get a woefully misleading answer!**
 
 
 ---
@@ -412,25 +425,25 @@ Binscatter and local regression give **nonparametric estimates** of the CEF.
 ---
 class: clear, middle, center
 
-The conditional distributions of `\(\text{Y}_{i}\)` for `\(\text{X}_{i}=x\)` in 8, ..., 22.
+The conditional distributions of `\(\text{Y}_{i}\)` for `\(\text{X}_{i} = x\)` in 8, ..., 22.
 
 
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: clear, middle, center
 
 The CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`, connects these conditional distributions' means.
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: clear, middle, center
 
 Focusing in on the CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`...
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/fig_cef_only-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/fig_cef_only-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -472,17 +485,26 @@ class: clear, center, middle
 
 Adding the population regression function
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/fig_reg_cef2-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/fig_reg_cef2-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Why Use Regression?
 
+My view:
+
+**By the time you actually run a regression, the results should never be a surprise.**
+- Because you have already learned what the underlying CEF looks like.
+
+--
+
+So what's the point of running regressions?
+1. **Quantification:** To measure the average slope of the CEF.
+2. **Statistical inference:** To compute standard errors.
+
 &lt;/br&gt;
 
-**My view:** Most times you run a regression, it should only be to confirm, quantify, and calculate standard errors for the information you have *already* learned about the underlying CEF.
-
-&lt;/br&gt;
+--
 
 What if linear regression is not a good approximation to the CEF?
 - You can always add nonlinear *terms* to a regression to improve the approximation.
@@ -535,16 +557,16 @@ Let's go back to the `gapminder` data and plot life expectancy by GDP:
 
 ```r
 library(gapminder)
-gap07 = gapminder %&gt;%
-  filter(year==2007) %&gt;%
+gap07 = gapminder |&gt;
+  filter(year == 2007) |&gt;
   mutate(gdp = pop * gdpPercap,
          ln_gdp = log(gdp),
          ln_pop = log(pop))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -556,13 +578,13 @@ Create a binary variable and color the dots by it:
 
 
 ```r
-gap07 = gap07 %&gt;%
-  mutate(africa = if_else(continent=="Africa", 1, 0))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+gap07 = gap07 |&gt;
+  mutate(africa = if_else(continent == "Africa", 1, 0))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -574,13 +596,13 @@ Create a binary variable and color the dots by it:
 
 
 ```r
-gap07 = gap07 %&gt;%
-  mutate(africa = factor(if_else(continent=="Africa", 1, 0)))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+gap07 = gap07 |&gt;
+  mutate(africa = factor(if_else(continent == "Africa", 1, 0)))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -596,15 +618,15 @@ First, find the mean differences in the `\(X\)` variable that are explained by `
 
 
 ```r
-gap07 = gap07 %&gt;%
-  group_by(africa) %&gt;%
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(ln_gdp_by_africa = mean(ln_gdp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
   geom_point() + 
-  geom_vline(aes(xintercept=ln_gdp_by_africa, color=africa))
+  geom_vline(aes(xintercept = ln_gdp_by_africa, color = africa))
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -614,15 +636,15 @@ Remove the differences explained by `Africa`, by subtracting these group means f
 
 
 ```r
-gap07 = gap07 %&gt;%
-  group_by(africa) %&gt;%
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_vline(aes(xintercept=0, color=africa))
+  geom_vline(aes(xintercept = 0, color = africa))
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -632,15 +654,15 @@ Second, find the mean differences in the `\(Y\)` variable that are explained by 
 
 
 ```r
-gap07 = gap07 %&gt;%
-  group_by(africa) %&gt;%
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(lifeExp_by_africa = mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_hline(aes(yintercept=lifeExp_by_africa, color=africa))
+  geom_hline(aes(yintercept = lifeExp_by_africa, color = africa))
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -650,15 +672,15 @@ Remove the differences explained by `Africa`, by subtracting these group means f
 
 
 ```r
-gap07 = gap07 %&gt;%
-  group_by(africa) %&gt;%
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
   mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point() + 
-  geom_hline(aes(yintercept=0, color=africa))
+  geom_hline(aes(yintercept = 0, color = africa))
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -668,15 +690,15 @@ For a more easily interpretable graph, add the "grand" (overall sample) means ba
 
 
 ```r
-gap07 = gap07 %&gt;%
-  ungroup() %&gt;%
+gap07 = gap07 |&gt;
+  ungroup() |&gt;
   mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
          lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
-ggplot(gap07, aes(y=lifeExp_adj_africa, x=ln_gdp_adj_africa, color=africa)) +
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
   geom_point()
 ```
 
-&lt;img src="09-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -744,7 +766,7 @@ How to best estimate a CEF? We can think of this as a problem of predicting
 
 where
 
-`$$f(x) = \mathbb{E}[Y|X=x_i].$$`
+`$$f(x) = \mathbb{E}[Y|X = x_i].$$`
 
 One option that holds intuitive appeal is **bin smoothing.** This is like binscatter, but with overlapping bins.
 
@@ -752,7 +774,7 @@ Take moving averages of `\(Y\)` across your observations `\(i\)` at each point `
 
 $$ \hat{f}(x_0) = \frac{ \sum_i { Y_i \space 1 \\big\\{ |x_i - x_0| \leq h \\big\\} } } { \sum_i {1 \\big\\{ |x_i - x_0| \leq h \\big\\}} } $$
 
-where `\(h\)` is the bandwidth. E.g., for a weekly moving average, `\(h=3.5\)`.
+where `\(h\)` is the bandwidth. E.g., for a weekly moving average, `\(h = 3.5\)`.
 
 ---
 
@@ -790,7 +812,7 @@ $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \
 
 &lt;img src="img/Kernel_uniform.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
-.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -801,7 +823,7 @@ Triangular kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
 
 &lt;img src="img/Kernel_triangle.svg" width="60%" style="display: block; margin: auto;" /&gt;
-.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -812,7 +834,7 @@ Epanechnikov kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
 
 &lt;img src="img/Kernel_epanechnikov.svg" width="60%" style="display: block; margin: auto;" /&gt;
-.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -823,7 +845,7 @@ Gaussian (normal) kernel:
 $$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
 
 &lt;img src="img/Kernel_exponential.svg" width="60%" style="display: block; margin: auto;" /&gt;
-.small[Image from &lt;a href="https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+.small[Image from &lt;a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)"&gt;Wikipedia&lt;/a&gt; and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
 
 ---
 
@@ -861,11 +883,11 @@ Moving averages can be badly biased at the edges of the data.
 
 Be careful with `geom_smooth`. The default options may not be what you intend.
 - With `\(&lt;1000\)` observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
-- With `\(&gt;=1000\)` observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
+- With `\(&gt; = 1000\)` observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
 
 To get *local linear* regression in `ggplot`, specify:
 
-`geom_smooth(method="loess", method.args=list(degree=1))`.
+`geom_smooth(method = "loess", method.args = list(degree = 1))`.
 
 
 ---
@@ -874,7 +896,7 @@ To get *local linear* regression in `ggplot`, specify:
 
 `loess` does not allow you to choose the bandwidth or kernel.
 - Instead, you can set the share of *all* data used at each point (the "span").
-- Default: `span=0.75`.
+- Default: `span = 0.75`.
 - Default kernel: tricube.
 
 Alternatives:
