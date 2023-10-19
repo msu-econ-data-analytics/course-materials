@@ -146,7 +146,7 @@ Transformations are often extremely important to learning what's really going on
 
 ```{r, fig.height = 4.2, message = FALSE, warning = FALSE, out.width = "80%"}
 vienna = vienna |> mutate(ln_price = log(price),
-                           ln_rating_count = log(rating_count))
+                          ln_rating_count = log(rating_count))
 ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) + 
   geom_point()
 ```

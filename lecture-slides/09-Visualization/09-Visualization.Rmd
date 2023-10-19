@@ -478,60 +478,8 @@ Using `ggridges`: (*Why not box / box-and-whisker plots?*)
 library(ggridges)
 gapminder |> mutate(GDP_percapita = gdp/population) |>
   filter(year == 1970 & !is.na(GDP_percapita)) |>
-  ggplot(aes(GDP_percapita, continent)) + 
+  ggplot(aes(GDP_percapita, y = continent, fill = continent)) + 
     geom_density_ridges() +
-    scale_x_log10()
-```
-]
-
----
-
-# Stacked density plots
-
-Counts every country the same within each continent; every continent has the same area:
-
-.small[
-```{r}
-gapminder |> mutate(GDP_percapita = gdp/population) |>
-  filter(year %in% c(1960, 2010) & !is.na(GDP_percapita)) |>
-  ggplot(aes(GDP_percapita, fill = continent)) +
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
-    scale_x_log10()
-```
-]
-
----
-
-# Stacked density plots
-
-Scale each continent by its number of countries using the  **computed variable** `..count..`:
-
-.small[
-```{r}
-gapminder |> mutate(GDP_percapita = gdp/population) |>
-  filter(year %in% c(1960, 2010) & !is.na(GDP_percapita)) |>
-  ggplot(aes(GDP_percapita, y=..count.., fill = continent)) +
-    scale_x_continuous(trans = "log10") + 
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
-    scale_x_log10()
-```
-]
-
----
-
-# Stacked density plots
-
-And weight countries within each continent by its population:
-
-.small[
-```{r}
-gapminder |> mutate(GDP_percapita = gdp/population) |>
-  filter(year %in% c(1960, 2010) & !is.na(GDP_percapita)) |>
-  ggplot(aes(GDP_percapita, y=..count.., weight=population, fill = continent)) +
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
     scale_x_log10()
 ```
 ]
@@ -804,6 +752,10 @@ Humans' ability to perceive differences in magnitude descends in this order:
 - Shade
 - Color
 
+Try to use cues higher on this list to convey your main point.
+
+</br>
+
 Source: [Modern Data Science with R, chapter 2](https://mdsr-book.github.io/mdsr2e/ch-vizI.html).
 
 ---
@@ -820,7 +772,7 @@ include_graphics("img/two-barplots-1.png")
 
 # Choose visual cues deliberately
 
-If you use a pie chart, at least label the segments and values.
+If you must use a pie chart, at least label the segments and values.
 
 ```{r, out.width="100%", echo=F}
 include_graphics("img/case4-a.PNG")

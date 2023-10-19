@@ -213,7 +213,7 @@ name: rubin
 - `\(Y^0_i =\)` outcome for person `\(i\)` if `\(T_i = 0\)` (don't take Advil).
 
 The **treatment effect** for person `\(i\)` is:
-`$$\text{Effect} = Y^1_i - Y^0_i.$$`
+`$$\text{Effect}_i = Y^1_i - Y^0_i.$$`
 
 --
 
@@ -237,11 +237,11 @@ Instead, we'll look at many people and try to estimate the **average treatment e
 `$$\begin{aligned}
 ATE 
 &amp;= \mathbb{E}[Y^1_i - Y^0_i] \\
-&amp;= \overline{Y^1_i} - \overline{Y^0_i}.
+&amp;= \overline{Y^1} - \overline{Y^0}.
 \end{aligned}$$`
 
-* `\(\overline{Y^1_i}\)`: average outcome if everyone had `\(T=1\)`.
-* `\(\overline{Y^0_i}\)`: average outcome if everyone had `\(T=0\)`.
+* `\(\overline{Y^1}\)`: average outcome if everyone had `\(T=1\)`.
+* `\(\overline{Y^0}\)`: average outcome if everyone had `\(T=0\)`.
 
 --
 
@@ -334,9 +334,9 @@ Note:
    - Selection on gains
 
 --
-3. To eliminate selection bias and estimate the treatment effect, we need an **identification strategy.** Examples:
+3. To eliminate selection bias and estimate the treatment effect, we need a **research design** a.k.a. **identification strategy.** Examples:
    - Experimentally vary `\(T\)`.
-   - Control for enough other variables (eliminate "bad" variation in `\(T\)`.).
+   - Control for enough other variables (eliminate "bad" variation in `\(T\)`).
    - Find an instrumental variable (isolate "good" variation in `\(T\)`).
 
 

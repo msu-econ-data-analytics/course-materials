@@ -852,15 +852,29 @@ Now we can see finer differences among values in the left (bottom) of the distri
 
 **Which should we prefer,** the raw variable or the log-transformed variable?
 
+--
+
+&lt;/br&gt;
+
+For right-skewed data, log-transformed variables...
+
+1. Are **less sensitive to extremely large values.**
+2. Better reflect the **central tendency** (the mean is closer to the median and mode).
+
+These are nice properties, but not always the best reason to transform (or not). Another issue is even more fundamental:
+- What type of **variation** you think is most important.
+
 ---
 
 # Transformations
 
-It depends on what you think are more important: **level** or **proportional differences**.
+What variation do you care about more: **level** or **proportional differences?**
 - Each tick on the raw histogram increases # of ratings by the same number.
 - Each tick on the transformed histogram multiplies # of ratings by the same factor.
 
 In other words, is this variable created by an **additive** or **multiplicative** process?
+
+We are going to use this **variation** to learn about how this variable relates to other variables -- so we want to match the variation we're working with to the variation we care about.
 
 &lt;img src="08-Exploratory-part1_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 

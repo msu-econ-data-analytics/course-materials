@@ -563,73 +563,12 @@ Using `ggridges`: (*Why not box / box-and-whisker plots?*)
 library(ggridges)
 gapminder |&gt; mutate(GDP_percapita = gdp/population) |&gt;
   filter(year == 1970 &amp; !is.na(GDP_percapita)) |&gt;
-  ggplot(aes(GDP_percapita, continent)) + 
+  ggplot(aes(GDP_percapita, y = continent, fill = continent)) + 
     geom_density_ridges() +
     scale_x_log10()
 ```
 
 &lt;img src="09-Visualization_files/figure-html/ridge-plot-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Stacked density plots
-
-Counts every country the same within each continent; every continent has the same area:
-
-.small[
-
-```r
-gapminder |&gt; mutate(GDP_percapita = gdp/population) |&gt;
-  filter(year %in% c(1960, 2010) &amp; !is.na(GDP_percapita)) |&gt;
-  ggplot(aes(GDP_percapita, fill = continent)) +
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
-    scale_x_log10()
-```
-
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Stacked density plots
-
-Scale each continent by its number of countries using the  **computed variable** `..count..`:
-
-.small[
-
-```r
-gapminder |&gt; mutate(GDP_percapita = gdp/population) |&gt;
-  filter(year %in% c(1960, 2010) &amp; !is.na(GDP_percapita)) |&gt;
-  ggplot(aes(GDP_percapita, y=..count.., fill = continent)) +
-    scale_x_continuous(trans = "log10") + 
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
-    scale_x_log10()
-```
-
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Stacked density plots
-
-And weight countries within each continent by its population:
-
-.small[
-
-```r
-gapminder |&gt; mutate(GDP_percapita = gdp/population) |&gt;
-  filter(year %in% c(1960, 2010) &amp; !is.na(GDP_percapita)) |&gt;
-  ggplot(aes(GDP_percapita, y=..count.., weight=population, fill = continent)) +
-    geom_density(alpha=0.3, position = "stack") + 
-    facet_grid(year ~ .) +
-    scale_x_log10()
-```
-
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -677,7 +616,7 @@ library(RColorBrewer)
 display.brewer.all(type="seq")
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-18-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-15-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -691,7 +630,7 @@ Choose a **diverging** color scheme when your values are ordered in two directio
 display.brewer.all(type="div")
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -705,7 +644,7 @@ Choose a **qualitative** color scheme when your values have no ordering.
 display.brewer.all(type="qual")
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -783,7 +722,7 @@ filter(gapminder, year == 1962) |&gt;
     theme_gray()
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -799,7 +738,7 @@ filter(gapminder, year == 1962) |&gt;
     theme_bw()
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -815,7 +754,7 @@ filter(gapminder, year == 1962) |&gt;
     theme_minimal()
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -831,7 +770,7 @@ filter(gapminder, year == 1962) |&gt;
     theme_classic()
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -847,7 +786,7 @@ filter(gapminder, year == 1962) |&gt;
     theme_void()
 ```
 
-&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="09-Visualization_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -879,6 +818,10 @@ Humans' ability to perceive differences in magnitude descends in this order:
 - Shade
 - Color
 
+Try to use cues higher on this list to convey your main point.
+
+&lt;/br&gt;
+
 Source: [Modern Data Science with R, chapter 2](https://mdsr-book.github.io/mdsr2e/ch-vizI.html).
 
 ---
@@ -893,7 +836,7 @@ Humans are bad at quantifying angles, areas, and shades of color.
 
 # Choose visual cues deliberately
 
-If you use a pie chart, at least label the segments and values.
+If you must use a pie chart, at least label the segments and values.
 
 &lt;img src="img/case4-a.PNG" width="100%" style="display: block; margin: auto;" /&gt;
 
