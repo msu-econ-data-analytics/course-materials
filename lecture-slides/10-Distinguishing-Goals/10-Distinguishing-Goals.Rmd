@@ -52,6 +52,8 @@ options(htmltools.dir.version = FALSE)
 library(knitr)
 knitr::opts_chunk$set(
 	fig.align = "center",
+	out.width="80%",
+	fig.height=4.5,
 	cache = TRUE,
 	dpi = 300
 )
@@ -68,9 +70,26 @@ knitr::opts_chunk$set(
 
 ---
 
+# Interpreting relationships in data
+
+When we say there's a relationship between two variables... how do we interpret that?
+- What precisely do we mean?
+- What do we want to do with this information?
+
+```{r, echo = F, message = F}
+library(ggplot2)
+df = data.frame(x = runif(100, 0, 10))
+df$y = 5 + df$x * 0.5 + rnorm(100, 0, 1)
+ggplot(df, aes(x, y)) + geom_point() + geom_smooth()
+```
+
+
+
+---
+
 # Distinguishing goals of data analysis
 
-When we analyze data, what is our ultimate goal?
+When we analyze data, we always have one of three ultimate goals:
 
 1. .hi-turquoise[**Description:**] Simply characterize observed patterns in the data.
 2. .hi[**Causation:**] Learn about causal relationships: If we change X, how will Y change?
@@ -158,6 +177,12 @@ include_graphics("img/black-box-physics2.png")
 
 The true DGP is more complicated, but it is still limited to a certain number of factors.
 * We can understand the vast majority of the "duration of free fall" DGP.
+
+--
+
+In physics, there is no need for any distinction between causation and prediction.
+* If your model is *correct,* they're the same thing!
+
 
 ---
 
@@ -325,7 +350,17 @@ The difference in means is a result of 2 processes:
 - **Treatment:** The true causal effect of the treatment variable. (Taking Advil reduces pain.)
 - **Selection:** Differences in the types of people who are treated. (People who take Advil are in more pain.)
 
-The central challenge of causal inference is to disentangle treatment from selection.
+--
+
+The central challenge of causal inference is to disentangle treatment from selection. How?
+- Since this formula is about *potential* outcomes, we can never prove it.
+- We always need to bring in (well-grounded) assumptions.
+
+--
+
+**The idea:** find a situation where we can argue that selection bias is negligible.
+- This is called a **research design** or **identification strategy.**
+
 
 ---
 
@@ -344,10 +379,10 @@ Note:
    - Selection on gains
 
 --
-3. To eliminate selection bias and estimate the treatment effect, we need a **research design** a.k.a. **identification strategy.** Examples:
+3. What is a **research design** that can allow us to eliminate selection bias and estimate the treatment effect? Examples:
    - Experimentally vary $T$.
-   - Control for enough other variables (eliminate "bad" variation in $T$).
-   - Find an instrumental variable (isolate "good" variation in $T$).
+   - Eliminate "bad" variation in $T$ (e.g., by controlling for enough other variables).
+   - Isolate "good" variation in $T$ (e.g., by finding and using an instrumental variable).
 
 
 ---
@@ -374,7 +409,7 @@ All 3 goals are trying to model the DGP, but with different emphases and interpr
 
 <br>
 
-Three key differences among the goals:
+**Three key differences** among the goals:
 1. Focus: outcome vs. coefficients.
 2. Whether selection bias matters.
 3. Interpretation.
@@ -389,7 +424,6 @@ $$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_
 .hi-turquoise[**Description:**] Want to estimate a few coefficients: $\beta_0, \beta_1, \beta_2$.
 - Focus on showing relationships among a few variables: $\color{#6A5ACD}{\hat{Y_{i}}}, x_{0i}, x_{1i}, x_{2i}.$
 - Give up goal of *correctly* modeling the true DGP. Just show patterns as they are.
-- Give up goal of understanding all inputs to $\color{#6A5ACD}{Y_{i}}$.
 
 .hi-purple[**Prediction:**] Want to estimate $\color{#6A5ACD}{\hat{Y_{i}}}$.
 - Focus on predicting $\color{#6A5ACD}{\hat{Y_{i}}}$ given observed data $x_{0i}, x_{1i}, x_{2i}, ....$
@@ -397,7 +431,7 @@ $$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_
 - Give up goal of *correctly* modeling the true DGP.
 
 .hi[**Causal inference:**] Want to estimate one coefficient $\color{#e64173}{\hat{\beta_0}}$, the effect of a treatment variable $x_{0i}$.
-- Give up goal of understanding effects of any other factors $x_{1i}, x_{2i}, ....$
+- Give up goal of understanding causal effects of any other factors $x_{1i}, x_{2i}, ....$
 - Give up goal of explaining the overall level of $\color{#6A5ACD}{Y_{i}}$.
   - Only how much it changes in response to a change in $x_{0i}$.
 
@@ -425,28 +459,33 @@ $$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_
 $$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$
 
 .hi-turquoise[**Description:**] $\beta_0$ represents an **association** between $x_{0i}$ and $\color{#6A5ACD}{Y_i}$.
-- It says how the average value of $\color{#6A5ACD}{Y_i}$ changes as we look at different values of $x_{0i}$.
+- It says how the average value of $\color{#6A5ACD}{Y_i}$ changes as we look at different values of $x_{0}$.
 - Only a statement about the data, not about the reasons behind the pattern.
 
 .hi-purple[**Prediction:**] Model does **not** need to be interpretable.
 - Coefficients $\beta$ are informative only of predictive power, not causal effects.
-- $\color{#e64173}{\beta_0}$ might reflect the treatment effect of $X_0$, *or* the effects of omitted variables for which $X_0$ happens to be a good proxy.
+- $\color{#e64173}{\beta_0}$ might reflect the treatment effect of $x_{0}$, *or* the effects of omitted variables for which $x_0$ happens to be a good proxy.
 - Generally, the model can be treated as a black box.
 
-.hi[**Causal inference:**] $\color{#e64173}{\beta_0}$ is a **causal effect** of $X_{0i}$.
+.hi[**Causal inference:**] $\color{#e64173}{\beta_0}$ is a **causal effect** of $x_{0}$.
 - Under stated assumptions (of the identification strategy).
 - Other coefficients generally lack interpretability.
 
-<!-- 1. **Descriptive:** Document or quantify observed relationships between $x$'s and $Y$. -->
-<!--    - Regardless of whether those relationships arise from treatment or selection. -->
 
-<!-- 2. **Causal.** Estimate how one specific $x_0$ affects $Y$. -->
-<!--    - Find ways to eliminate selection bias and isolate the treatment effect. -->
-<!--    - Requires additional assumptions about where the variation comes from. -->
 
-<!-- 3. **Predictive.** Find the most likely value of $Y$ given available data. -->
-<!--    - If $x_1$ and $Y$ are correlated, we don't know whether it's causal or selection bias. -->
-<!--    - But either way, $x_1$ helps us better predict the value of $Y$. -->
+---
+# Prediction vs. causal inference
+
+When would .hi[causal inference] be useful (to a policymaker, business executive, individual)? When would .hi-purple[prediction] be useful?
+
+1. **Birth weight $(Y)$ ~ air pollution $(x)$**
+
+1. **Income $(Y)$ ~ educational attainment $(x)$**
+
+1. **Probability of default on a loan $(Y)$**
+
+1. **Poverty $(Y)$ ~ public infrastructure $(x)$**
+
 
 ---
 # Prediction vs. causal inference
@@ -506,11 +545,11 @@ Key differences among the 3 goals:
 What **methods** should we use for each goal?
 
 1. .hi-turquoise[**Descriptive analysis:**] **Exploratory analysis and regression.**
-   - Covering soon!
+   - Already covered / covering next class!
    
 2. .hi[**Causal inference:**] **Econometrics.**
    - See your other classes.
 
 3. .hi-purple[**Prediction:**] **Statistical learning / machine learning.**
-   - Introduction in a few weeks!
+   - Introduction next week!
 
