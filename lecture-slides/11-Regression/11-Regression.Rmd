@@ -55,15 +55,15 @@ knitr::opts_chunk$set(
 
 1. [Basic regression in R](#basics)
 
-1. [Review: Interpreting coefficients](#interpret)
-
 1. [Indicator and interaction terms](#indicators)
 
 1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 
-1. [Preview: Model validation](#validation)
+1. [Using regression models for prediction](#prediction)
+
+1. [Appendix: Interpreting coefficients](#interpret)
 
 
 ---
@@ -90,7 +90,7 @@ head(starwars)
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 Base R's command for running regression models is `lm()` ("linear models").
 
@@ -106,7 +106,7 @@ Using the variables (columns) `y` and `x` from the object `df`.
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 Let's run a simple bivariate regression of mass on height using our dataset of Star Wars characters.
 
@@ -119,7 +119,7 @@ Most valuable information is buried within this object's internal list structure
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 To summarise the key pieces of information, we can use the generic summary() function. This will look pretty similar to the default regression output from Stata.
 
@@ -129,7 +129,7 @@ summary(ols1)
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 To just show the coefficients:
 
@@ -177,120 +177,6 @@ ols2 = lm(mass ~ height, no_jabba)
 summary(ols2) |> tidy()
 ```
 
-
----
-class: inverse, middle
-name: interpret
-
-# Review: Interpreting coefficients
-
-
----
-
-# Interpreting regression coefficients
-
-$$y_i = \alpha + \beta x_{i} + u_i$$
-
-- $\beta$: The "effect" of $x$ on $y$.
-  - How much $y$ changes in response to a one-unit change in $x$.
-  - The average derivative: $dy/dx$.
-  - Not necessarily causal! Only if you can assume away selection bias.
-
-* $\alpha$: The y-intercept.
-  - The average value of $y$ when $x = 0$.
-
-```{r}
-lm(mass ~ height, no_jabba) |> tidy()
-```
-
-Put into a complete sentence with units:
-
---
-- "For every **1 cm** increase in height, average mass increases by **0.6 kg.**"
-
----
-
-# Interpreting log-transformed variables
-
-$$\log(y_i) = \alpha + \beta x_{i} + u_i$$
-
-```{r}
-lm(log(mass) ~ height, no_jabba) |> tidy()
-```
-
-Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
-- Here: "A **1 cm** change in height is associated with a **0.01 log unit** change in mass."
-
---
-
-But log units have a convenient **proportional change** or **percentage change** interpretation:
-- "A **1-cm** change in height is associated with a **0.01 times** change in mass."
-- "A **1-cm** change in height is associated with a **1-percent** change in mass."
-
----
-
-# Interpreting log-transformed variables
-
-**Why?** Here's the algebra:
-
-Original values $x_0$ and $y_0$. Percentage change in $y$ is $\% \Delta y = \Delta y / y_0$.
-
-Model:
-$$\ln(y_0) = \alpha + \beta x_0$$
-$$\ln(y_0 + \Delta y) = \alpha + \beta (x_0 + 1)$$
-
-Solve for $\% \Delta y$:
-$$\ln(y_0 + \Delta y) = \ln(y_0) + \beta$$
-$$\ln(\frac{y_0 + \Delta y}{y_0}) = \beta$$
-$$\ln(1 + \% \Delta y) = \beta$$
-
-Using the approximation $\ln(a+1) \approx a$ for small $a$:
-$$\beta \approx \% \Delta y.$$
-
----
-
-# Interpreting log-transformed variables
-
-$$y_i = \alpha + \beta \log(x_{i}) + u_i$$
-
-```{r}
-lm(mass ~ log(height), no_jabba) |> tidy()
-```
-
-Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
-
---
-- Here: "A **1 log unit** change in height is associated with an **82-kg** change in mass."
-
---
-- "A **100%** change in height is associated with a **82-kg** change in mass."
-- "A **10%** change in height is associated with an **8.2-kg** change in mass."
-
-
----
-
-# Interpreting log-transformed variables
-
-$$\log(y_i) = \alpha + \beta \log(x_{i}) + u_i$$
-
-```{r}
-lm(log(mass) ~ log(height), no_jabba) |> tidy()
-```
-
-Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
-
---
-- Here: "A **1 log unit** change in height is associated with a **1.6 log unit** change in mass."
-
---
-- "A **100%** change in height is associated with a **1.6 times** change in mass."
-- "A **100%** change in height is associated with a **160 percent** change in mass."
-
---
-- "A **10%** change in height is associated with a **16 percent** change in mass."
-- "A **1%** change in height is associated with a **1.6 percent** change in mass."
-
-
 ---
 class: inverse, middle
 name: indicators
@@ -322,16 +208,14 @@ How do we interpret the `masculine` coefficient?
 
 --
 - The variable is coded as $0$ for `feminine` and $1$ for `masculine`.
-- So the intercept gives the average mass of `feminine` characters: $\alpha = 56$ kg.
-
---
+- So intercept gives the average mass of `feminine` characters: $\alpha = 56$ kg.
 - Relative to that, the average effect of being `masculine` on mass is $30.6$ kg.
 - So the average mass of `masculine` characters is $56 + 31 = 87$ kg.
 
 
 ---
 
-# Indicator variables
+# Regressions just estimate means
 
 If we don't want to have to add up terms we can estimate the mean for each group separately! (Just omit the intercept.)
 
@@ -343,28 +227,13 @@ group_by(humans, gender) |> summarize(mean(mass, na.rm=T))
 
 ---
 
-# Indicator variables
+# Factor variables as group indicators
 
 We actually didn't need to specifically create new binary variables. R will automatically interpret any factor (or string!) variables as indicators:
 
 ```{r ols_dv2}
 lm(mass ~ gender, data = humans) |> tidy()
 ```
-
----
-
-# Interaction terms
-
-To find the effect of height separately for each gender, we can estimate this regression:
-$$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times Height_i + u_i$$
-
-Interpretation:
-- $\beta_0$ is the $y$-intercept of height for feminine characters.
-- $\beta_1$ is the change to the $y$-intercept for masculine characters ( $Masc_i=1$ ).
-- $\beta_2$ is the effect of height for feminine characters.
-- $\beta_3$ is the *additional* effect of height for masculine characters.
-- $\beta_2 + \beta_3$ is the effect of height for masculine characters.
-
 
 ---
 
@@ -394,22 +263,18 @@ $$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times H
 lm(mass ~ gender * height, data = humans) |> tidy()
 ```
 
-**Interpret each height coefficient in a sentence.**
+How do we interpret the two height coefficients?
 
 --
-- "For each 1-cm increase in height, mass increases for feminine characters by $0.73$ kg."
-
---
-- "For each 1-cm increase in height, mass increases by $0.16$ kg *more* (or *faster*) for masculine characters than it does for feminine characters."
-
---
-- "For each 1-cm increase in height, mass increases for masculine characters by $0.73 + 0.16 = 0.90$ kg."
+- For each 1-cm increase in height, mass increases for feminine characters by $0.73$ kg.
+- For each 1-cm increase in height, mass increases by $0.16$ kg *more* (or *faster*) for masculine characters than it does for feminine characters.
+- Or: For each 1-cm increase in height, mass increases for masculine characters by $0.73 + 0.16 = 0.90$ kg.
 
 ---
 
 # Transformations
 
-R will do any other transformations you want inline, without having to `mutate()`.
+Conveniently, you can make transformations inline, without having to `mutate()`.
 
 - Arithmetic transformations: `x^2`, `I(x/3)`, `I((x - mean(x))/sd(x))`
 
@@ -433,6 +298,16 @@ Mass_{i} &=& \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_
 
 
 <!--  !!!  Don't look at the next slide until you try coding it yourself  !!!   -->
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -627,7 +502,7 @@ name: nonlinear
 
 # Some preliminaries
 
-Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 10% random sample:
+Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 5% random sample:
 ```{r}
 set.seed(123)
 london = read_csv("https://osf.io/ey5p7/download")
@@ -665,7 +540,7 @@ The plot showed us that a linear specification of longitude is a bad fit.
 * It still tells us an average derivative.
 * But that's not an average that's very useful.
 
-Instead, let's choose a **nonlinear specification** that get us closer to the true CEF.
+Instead, let's choose a **nonlinear specification** that gets us closer to the true CEF.
 
 --
 1. Bin regression (step functions).
@@ -675,7 +550,7 @@ Instead, let's choose a **nonlinear specification** that get us closer to the tr
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 Just like a binscatter. Use a regression to estimate means by quantile:
 ```{r}
@@ -687,22 +562,18 @@ tidy(binned)
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
-To visualize the estimated regression model, **generate fitted values** using `predict`:
+To visualize the estimated regression model, generate **fitted values** using `predict`:
 ```{r, fig.height=3.7, out.width="80%"}
 binned_predict = predict(binned, data = london_sample, interval = "confidence")
 binned_fitted = cbind(london_sample, binned_predict)
 head(binned_predict)
 ```
 
-Note this calculates a **confidence** interval, not a **prediction** interval.
-- Confidence interval: Uncertainty about the true conditional mean.
-- Prediction interval: Uncertainty about individual observations.
-
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 ```{r, fig.height=4.6, out.width="80%"}
 ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
@@ -713,10 +584,10 @@ ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 **Pros:**
-- Extremely flexible: Get us very close to the true CEF.
+- Extremely flexible: Gets us close to the true CEF without having to specify a functional form.
 
 **Cons:**
 
@@ -730,7 +601,7 @@ ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Another approach is **polynomial regression.**
 
@@ -745,7 +616,7 @@ These terms are hard to interpret until we visualize the model.
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 The quadratic model:
 ```{r, fig.height=5.5, out.width="80%", echo = F}
@@ -759,7 +630,7 @@ ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Cubic:
 ```{r, fig.height=5.5, out.width="80%", echo = F}
@@ -774,7 +645,7 @@ ggplot(poly3_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Quartic:
 ```{r, fig.height=5.5, out.width="80%", echo = F}
@@ -789,7 +660,7 @@ ggplot(poly4_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 **Pro:**
 - Flexible -- easily capture many types of smooth nonlinear relationships.
@@ -806,11 +677,11 @@ ggplot(poly4_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Piecewise functions (splines)
+# 3. Piecewise functions (splines)
 
-Piecewise linear (1 knot at $-0.15$):
+Piecewise linear (1 knot at $-0.17$):
 ```{r, fig.height=5.5, out.width="80%", echo = F}
-pw_linear = feols(ln_price ~ longitude + i(longitude > -0.15, longitude + 0.15, FALSE), data = london_sample)
+pw_linear = feols(ln_price ~ longitude + i(longitude > -0.17, longitude + 0.17, FALSE), data = london_sample)
 pw_linear_predict = predict(pw_linear, data = london_sample, interval = "confidence")
 pw_linear_fitted = cbind(london_sample, pw_linear_predict)
 ggplot(pw_linear_fitted, aes(x = longitude)) + theme_light() +
@@ -821,7 +692,7 @@ ggplot(pw_linear_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Piecewise functions (splines)
+# 3. Piecewise functions (splines)
 
 Piecewise cubic (7 knots):
 ```{r, fig.height=5.5, out.width="80%", echo = F}
@@ -837,53 +708,74 @@ ggplot(pw_cubic_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 class: inverse, middle
-name: validation
+name: prediction
 
-# Preview: Model validation
-
----
-
-# Model validation
-
-Let's re-estimate the regression of mass on height on a **training** dataset that consists only of the 30 *shortest* characters.
-
-```{r predict}
-ols1_train = lm(mass ~ height, data = starwars |> filter(rank(height) <= 30))
-```
-
-Now we can use the model with `predict()` to predict mass for all characters (except Jabba)
-
-```{r predict2}
-starwars2 = filter(starwars, !str_detect(name, "Jabba"))
-predict(ols1_train, newdata = starwars2, interval = "prediction") |>
-  head(5)
-```
+# Using regression models for prediction
 
 ---
 
-# Model validation
+# Using regression models for prediction
 
-Or more conveniently, add the predictions to your original dataframe with `augment`:
+Once we estimate a regression model, what might we want to do with it?
 
-```{r augment1}
-starwars2 = augment(ols1_train, newdata = starwars2, interval = "prediction")
-starwars2 |> relocate(contains(".")) |> head()
+1. Learn about the **relationship** between variables *(descriptive analysis, causal inference)*.
+
+2. Use it to **predict** the outcome variable in new data *(predictive analysis)*.
+
+Both of these activities can involve calculating *predicted values* from the model... but we need to be careful.
+
+
+---
+
+# Point 1: Counterfactuals != prediction
+
+**Common point of confusion:** "Isn't the point of estimating a causal effect so that we can use it to *predict* what will happen?"
+- The effect of legalizing cannabis on police arrests.
+- The effect of climate change on economic growth.
+
+Yes! But:
+
+In causal inference, we are only making a prediction **holding everything else constant.**
+- We are never claiming to predict what the future looks like (the overall level of the outcome).
+
+We only want to make a *counterfactual projection:*
+- How different the outcome will be **relative to what it would be without the treatment.** 
+
+In predictive analysis, we *do* want to predict the value of the outcome.
+
+
+---
+
+# Point 2: Confidence/prediction intervals
+
+**Confidence intervals** characterize uncertainty about the **relationships.**
+- If we gathered more data, where would the "true" line of best fit lie?
+
+```{r, fig.height=4.8, out.width="80%", echo = F}
+poly2_predict = predict(poly2, data = london_sample, interval = "confidence")
+poly2_fitted = cbind(london_sample, poly2_predict)
+ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
+  geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = "coral", alpha = 0.8) +
+  geom_line(aes(y = fit), size = 1, color = "orangered4") +
+  geom_point(aes(y = ln_price), alpha = 0.1)
 ```
 
 ---
 
-# Model validation
+# Point 2: Confidence/prediction intervals
 
-Now we can plot the predictions to see how well our model (estimated on training data) performs for the rest of the data:
+**Prediction intervals** characterize uncertainty about **individual observations.**
+- If we use this model to predict the outcome for new data points, how close would those predictions be to the truth?
 
-```{r predict_plot, echo=FALSE, fig.height=4}
-starwars2 |>
-  ggplot(aes(x=height, y=mass, col=rank(height)<=30, fill=rank(height)<=30)) +
-  geom_point(alpha = 0.7) +
-  geom_line(aes(y = .fitted)) +
-  geom_ribbon(aes(ymin = .lower, ymax = .upper), alpha = 0.3, col = NA) +
-  scale_color_discrete(name = "Training sample?", aesthetics = c("colour", "fill"))
+```{r, fig.height=4.5, out.width="80%", echo = F}
+poly2_predict = predict(poly2, data = london_sample, interval = "prediction")
+poly2_fitted = cbind(london_sample, poly2_predict)
+ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
+  geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = "coral", alpha = 0.8) +
+  geom_line(aes(y = fit), size = 1, color = "orangered4") +
+  geom_point(aes(y = ln_price), alpha = 0.1)
 ```
+
 
 ---
 
@@ -891,13 +783,126 @@ starwars2 |>
 
 1. [Basic regression in R](#basics)
 
-1. [Review: Interpreting coefficients](#interpret)
-
 1. [Indicator and interaction terms](#indicators)
 
 1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 
-1. [Preview: Model validation](#validation)
+1. [Using regression models for prediction](#prediction)
+
+1. [Appendix: Interpreting coefficients](#interpret)
+
+
+---
+class: inverse, middle
+name: interpret
+
+# Appendix: Interpreting coefficients
+
+
+---
+
+# Interpreting regression coefficients
+
+$$y_i = \alpha + \beta x_{i} + u_i$$
+
+- $\beta$: The "effect" of $x$ on $y$.
+  - How much $y$ changes in response to a one-unit change in $x$.
+  - The average derivative: $dy/dx$.
+  - Not necessarily causal! Only if you can assume away selection bias.
+
+* $\alpha$: The y-intercept.
+  - The average value of $y$ when $x = 0$.
+
+```{r}
+lm(mass ~ height, no_jabba) |> tidy()
+```
+
+Put into a complete sentence with units:
+
+--
+- "For every **1 cm** increase in height, average mass increases by **0.6 kg.**"
+
+---
+
+# Interpreting log-transformed variables
+
+$$\log(y_i) = \alpha + \beta x_{i} + u_i$$
+
+```{r}
+lm(log(mass) ~ height, no_jabba) |> tidy()
+```
+
+Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
+- Here: "A **1 cm** change in height is associated with a **0.01 log unit** change in mass."
+
+--
+
+But log units have a convenient **proportional change** or **percentage change** interpretation:
+- "A **1-cm** change in height is associated with a **0.01 times** change in mass."
+- "A **1-cm** change in height is associated with a **1-percent** change in mass."
+
+---
+
+# Interpreting log-transformed variables
+
+**Why?** Here's the algebra:
+
+Original values $x_0$ and $y_0$. Percentage change in $y$ is $\% \Delta y = \Delta y / y_0$.
+
+Model:
+$$\ln(y_0) = \alpha + \beta x_0$$
+$$\ln(y_0 + \Delta y) = \alpha + \beta (x_0 + 1)$$
+
+Solve for $\% \Delta y$:
+$$\ln(y_0 + \Delta y) = \ln(y_0) + \beta$$
+$$\ln(\frac{y_0 + \Delta y}{y_0}) = \beta$$
+$$\ln(1 + \% \Delta y) = \beta$$
+
+Using the approximation $\ln(a+1) \approx a$ for small $a$:
+$$\beta \approx \% \Delta y.$$
+
+---
+
+# Interpreting log-transformed variables
+
+$$y_i = \alpha + \beta \log(x_{i}) + u_i$$
+
+```{r}
+lm(mass ~ log(height), no_jabba) |> tidy()
+```
+
+Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
+
+--
+- Here: "A **1 log unit** change in height is associated with an **82-kg** change in mass."
+
+--
+- "A **100%** change in height is associated with a **82-kg** change in mass."
+- "A **10%** change in height is associated with an **8.2-kg** change in mass."
+
+
+---
+
+# Interpreting log-transformed variables
+
+$$\log(y_i) = \alpha + \beta \log(x_{i}) + u_i$$
+
+```{r}
+lm(log(mass) ~ log(height), no_jabba) |> tidy()
+```
+
+Still true: **"A one-unit change in $x$ is associated with a $\beta$-unit change in $y$."**
+
+--
+- Here: "A **1 log unit** change in height is associated with a **1.6 log unit** change in mass."
+
+--
+- "A **100%** change in height is associated with a **1.6 times** change in mass."
+- "A **100%** change in height is associated with a **160 percent** change in mass."
+
+--
+- "A **10%** change in height is associated with a **16 percent** change in mass."
+- "A **1%** change in height is associated with a **1.6 percent** change in mass."
 

@@ -97,13 +97,13 @@ Fall 2023
 * Potential outcomes, counterfactuals, and causal inference
 * Descriptive, Predictive, or Causal Analysis?
 
-[**Topic 11: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/12-Regression.html)
+[**Topic 11: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/11-Regression.html)
 
 * Basic regression in R
-* Review: Interpreting coefficients
 * Indicator and interaction terms
 * Econometrics packages in R
 * Modeling nonlinear relationships
+* Using regression models for prediction
 
 [**Topic 12: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/13-Learning.html)
 

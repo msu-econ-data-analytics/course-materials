@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 12: Regression Modeling</title>
+    <title>Topic 11: Regression Modeling</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -14,10 +14,10 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 12: Regression Modeling
+# Topic 11: Regression Modeling
 ]
 .author[
-### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -55,15 +55,15 @@ class: center, middle, inverse, title-slide
 
 1. [Basic regression in R](#basics)
 
-1. [Review: Interpreting coefficients](#interpret)
-
 1. [Indicator and interaction terms](#indicators)
 
 1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 
-1. [Preview: Model validation](#validation)
+1. [Using regression models for prediction](#prediction)
+
+1. [Appendix: Interpreting coefficients](#interpret)
 
 
 ---
@@ -92,23 +92,21 @@ head(starwars)
 
 ```
 ## # A tibble: 6 × 14
-##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
-##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
-## 1 Luke Skywal…    172    77 blond   fair    blue       19   male  mascu… Tatooi…
-## 2 C-3PO           167    75 &lt;NA&gt;    gold    yellow    112   none  mascu… Tatooi…
-## 3 R2-D2            96    32 &lt;NA&gt;    white,… red        33   none  mascu… Naboo  
-## 4 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
-## 5 Leia Organa     150    49 brown   light   brown      19   fema… femin… Aldera…
-## 6 Owen Lars       178   120 brown,… light   blue       52   male  mascu… Tatooi…
-## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
-## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld
-## # ℹ Use `colnames()` to see all variable names
+##   name      height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Luke Sky…    172    77 blond      fair       blue            19   male  mascu…
+## 2 C-3PO        167    75 &lt;NA&gt;       gold       yellow         112   none  mascu…
+## 3 R2-D2         96    32 &lt;NA&gt;       white, bl… red             33   none  mascu…
+## 4 Darth Va…    202   136 none       white      yellow          41.9 male  mascu…
+## 5 Leia Org…    150    49 brown      light      brown           19   fema… femin…
+## 6 Owen Lars    178   120 brown, gr… light      blue            52   male  mascu…
+## # ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
 ```
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 Base R's command for running regression models is `lm()` ("linear models").
 
@@ -124,7 +122,7 @@ Using the variables (columns) `y` and `x` from the object `df`.
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 Let's run a simple bivariate regression of mass on height using our dataset of Star Wars characters.
 
@@ -148,7 +146,7 @@ Most valuable information is buried within this object's internal list structure
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 To summarise the key pieces of information, we can use the generic summary() function. This will look pretty similar to the default regression output from Stata.
 
@@ -179,7 +177,7 @@ summary(ols1)
 
 ---
 
-# Basic regression
+# Basic regression in R
 
 To just show the coefficients:
 
@@ -232,7 +230,7 @@ ggplot(starwars, aes(x=height, y=mass)) +
   geom_point()
 ```
 
-&lt;img src="12-Regression_files/figure-html/jabba-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/jabba-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -254,156 +252,6 @@ summary(ols2) |&gt; tidy()
 ## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
 ## 2 height         0.621    0.0707      8.79 4.02e-12
 ```
-
-
----
-class: inverse, middle
-name: interpret
-
-# Review: Interpreting coefficients
-
-
----
-
-# Interpreting regression coefficients
-
-`$$y_i = \alpha + \beta x_{i} + u_i$$`
-
-- `\(\beta\)`: The "effect" of `\(x\)` on `\(y\)`.
-  - How much `\(y\)` changes in response to a one-unit change in `\(x\)`.
-  - The average derivative: `\(dy/dx\)`.
-  - Not necessarily causal! Only if you can assume away selection bias.
-
-* `\(\alpha\)`: The y-intercept.
-  - The average value of `\(y\)` when `\(x = 0\)`.
-
-
-```r
-lm(mass ~ height, no_jabba) |&gt; tidy()
-```
-
-```
-## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
-## 2 height         0.621    0.0707      8.79 4.02e-12
-```
-
-Put into a complete sentence with units:
-
---
-- "For every **1 cm** increase in height, average mass increases by **0.6 kg.**"
-
----
-
-# Interpreting log-transformed variables
-
-`$$\log(y_i) = \alpha + \beta x_{i} + u_i$$`
-
-
-```r
-lm(log(mass) ~ height, no_jabba) |&gt; tidy()
-```
-
-```
-## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   2.28    0.159         14.4 2.00e-20
-## 2 height        0.0112  0.000895      12.5 6.77e-18
-```
-
-Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
-- Here: "A **1 cm** change in height is associated with a **0.01 log unit** change in mass."
-
---
-
-But log units have a convenient **proportional change** or **percentage change** interpretation:
-- "A **1-cm** change in height is associated with a **0.01 times** change in mass."
-- "A **1-cm** change in height is associated with a **1-percent** change in mass."
-
----
-
-# Interpreting log-transformed variables
-
-**Why?** Here's the algebra:
-
-Original values `\(x_0\)` and `\(y_0\)`. Percentage change in `\(y\)` is `\(\% \Delta y = \Delta y / y_0\)`.
-
-Model:
-`$$\ln(y_0) = \alpha + \beta x_0$$`
-`$$\ln(y_0 + \Delta y) = \alpha + \beta (x_0 + 1)$$`
-
-Solve for `\(\% \Delta y\)`:
-`$$\ln(y_0 + \Delta y) = \ln(y_0) + \beta$$`
-`$$\ln(\frac{y_0 + \Delta y}{y_0}) = \beta$$`
-`$$\ln(1 + \% \Delta y) = \beta$$`
-
-Using the approximation `\(\ln(a+1) \approx a\)` for small `\(a\)`:
-`$$\beta \approx \% \Delta y.$$`
-
----
-
-# Interpreting log-transformed variables
-
-`$$y_i = \alpha + \beta \log(x_{i}) + u_i$$`
-
-
-```r
-lm(mass ~ log(height), no_jabba) |&gt; tidy()
-```
-
-```
-## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   -347.       52.4     -6.61 1.51e- 8
-## 2 log(height)     82.3      10.2      8.06 6.05e-11
-```
-
-Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
-
---
-- Here: "A **1 log unit** change in height is associated with an **82-kg** change in mass."
-
---
-- "A **100%** change in height is associated with a **82-kg** change in mass."
-- "A **10%** change in height is associated with an **8.2-kg** change in mass."
-
-
----
-
-# Interpreting log-transformed variables
-
-`$$\log(y_i) = \alpha + \beta \log(x_{i}) + u_i$$`
-
-
-```r
-lm(log(mass) ~ log(height), no_jabba) |&gt; tidy()
-```
-
-```
-## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    -3.76     0.614     -6.12 9.61e- 8
-## 2 log(height)     1.56     0.120     13.0  1.34e-18
-```
-
-Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
-
---
-- Here: "A **1 log unit** change in height is associated with a **1.6 log unit** change in mass."
-
---
-- "A **100%** change in height is associated with a **1.6 times** change in mass."
-- "A **100%** change in height is associated with a **160 percent** change in mass."
-
---
-- "A **10%** change in height is associated with a **16 percent** change in mass."
-- "A **1%** change in height is associated with a **1.6 percent** change in mass."
-
 
 ---
 class: inverse, middle
@@ -459,16 +307,14 @@ How do we interpret the `masculine` coefficient?
 
 --
 - The variable is coded as `\(0\)` for `feminine` and `\(1\)` for `masculine`.
-- So the intercept gives the average mass of `feminine` characters: `\(\alpha = 56\)` kg.
-
---
+- So intercept gives the average mass of `feminine` characters: `\(\alpha = 56\)` kg.
 - Relative to that, the average effect of being `masculine` on mass is `\(30.6\)` kg.
 - So the average mass of `masculine` characters is `\(56 + 31 = 87\)` kg.
 
 
 ---
 
-# Indicator variables
+# Regressions just estimate means
 
 If we don't want to have to add up terms we can estimate the mean for each group separately! (Just omit the intercept.)
 
@@ -500,7 +346,7 @@ group_by(humans, gender) |&gt; summarize(mean(mass, na.rm=T))
 
 ---
 
-# Indicator variables
+# Factor variables as group indicators
 
 We actually didn't need to specifically create new binary variables. R will automatically interpret any factor (or string!) variables as indicators:
 
@@ -516,21 +362,6 @@ lm(mass ~ gender, data = humans) |&gt; tidy()
 ## 1 (Intercept)         56.3      9.54      5.91 0.00000892
 ## 2 gendermasculine     30.6     10.3       2.98 0.00735
 ```
-
----
-
-# Interaction terms
-
-To find the effect of height separately for each gender, we can estimate this regression:
-`$$Mass_i = \beta_0 + \beta_1 Masc_i + \beta_2 Height_i + \beta_3 Masc_i \times Height_i + u_i$$`
-
-Interpretation:
-- `\(\beta_0\)` is the `\(y\)`-intercept of height for feminine characters.
-- `\(\beta_1\)` is the change to the `\(y\)`-intercept for masculine characters ( `\(Masc_i=1\)` ).
-- `\(\beta_2\)` is the effect of height for feminine characters.
-- `\(\beta_3\)` is the *additional* effect of height for masculine characters.
-- `\(\beta_2 + \beta_3\)` is the effect of height for masculine characters.
-
 
 ---
 
@@ -573,22 +404,18 @@ lm(mass ~ gender * height, data = humans) |&gt; tidy()
 ## 4 gendermasculine:height    0.163      1.35    0.121    0.905
 ```
 
-**Interpret each height coefficient in a sentence.**
+How do we interpret the two height coefficients?
 
 --
-- "For each 1-cm increase in height, mass increases for feminine characters by `\(0.73\)` kg."
-
---
-- "For each 1-cm increase in height, mass increases by `\(0.16\)` kg *more* (or *faster*) for masculine characters than it does for feminine characters."
-
---
-- "For each 1-cm increase in height, mass increases for masculine characters by `\(0.73 + 0.16 = 0.90\)` kg."
+- For each 1-cm increase in height, mass increases for feminine characters by `\(0.73\)` kg.
+- For each 1-cm increase in height, mass increases by `\(0.16\)` kg *more* (or *faster*) for masculine characters than it does for feminine characters.
+- Or: For each 1-cm increase in height, mass increases for masculine characters by `\(0.73 + 0.16 = 0.90\)` kg.
 
 ---
 
 # Transformations
 
-R will do any other transformations you want inline, without having to `mutate()`.
+Conveniently, you can make transformations inline, without having to `mutate()`.
 
 - Arithmetic transformations: `x^2`, `I(x/3)`, `I((x - mean(x))/sd(x))`
 
@@ -612,6 +439,16 @@ Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \
 
 
 &lt;!--  !!!  Don't look at the next slide until you try coding it yourself  !!!   --&gt;
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -810,7 +647,7 @@ etable(ols_fe, ols_fe)
 ```
 
 ```
-##                             ols_fe             ols_fe
+##                             ols_fe           ols_fe.1
 ## Dependent Var.:               mass               mass
 ##                                                      
 ## height          0.9749*** (0.0443) 0.9749*** (0.0443)
@@ -860,7 +697,7 @@ name: nonlinear
 
 # Some preliminaries
 
-Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 10% random sample:
+Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 5% random sample:
 
 ```r
 set.seed(123)
@@ -885,22 +722,22 @@ First, we need to check the CEF with a quick binscatter:
 binsreg(y = london_sample$ln_price, x = london_sample$longitude)
 ```
 
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ```
 ## Call: binsreg
 ## 
 ## Binscatter Plot
-## Bin selection method (binsmethod)  =  IMSE direct plug-in
-## Placement (binspos)                =  Quantile-spaced
-## Derivative (deriv)                 =  0
+## Bin/Degree selection method (binsmethod)  =  IMSE direct plug-in (select # of bins)
+## Placement (binspos)                       =  Quantile-spaced
+## Derivative (deriv)                        =  0
 ## 
 ## Group (by)                         =  Full Sample
 ## Sample size (n)                    =  2690
 ## # of distinct values (Ndist)       =  2690
 ## # of clusters (Nclust)             =  NA
 ## dots, degree (p)                   =  0
-## dots, smooth (s)                   =  0
+## dots, smoothness (s)               =  0
 ## # of bins (nbins)                  =  21
 ```
 
@@ -928,7 +765,7 @@ The plot showed us that a linear specification of longitude is a bad fit.
 * It still tells us an average derivative.
 * But that's not an average that's very useful.
 
-Instead, let's choose a **nonlinear specification** that get us closer to the true CEF.
+Instead, let's choose a **nonlinear specification** that gets us closer to the true CEF.
 
 --
 1. Bin regression (step functions).
@@ -938,7 +775,7 @@ Instead, let's choose a **nonlinear specification** that get us closer to the tr
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 Just like a binscatter. Use a regression to estimate means by quantile:
 
@@ -967,9 +804,9 @@ tidy(binned)
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
-To visualize the estimated regression model, **generate fitted values** using `predict`:
+To visualize the estimated regression model, generate **fitted values** using `predict`:
 
 ```r
 binned_predict = predict(binned, data = london_sample, interval = "confidence")
@@ -987,13 +824,9 @@ head(binned_predict)
 ## 6 4.144617 0.04077622 4.064661 4.224573
 ```
 
-Note this calculates a **confidence** interval, not a **prediction** interval.
-- Confidence interval: Uncertainty about the true conditional mean.
-- Prediction interval: Uncertainty about individual observations.
-
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 
 ```r
@@ -1003,14 +836,14 @@ ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
   geom_line(aes(y = fit), size = 1, color = "orangered4")
 ```
 
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Bin regression (step functions)
+# 1. Bin regression (step functions)
 
 **Pros:**
-- Extremely flexible: Get us very close to the true CEF.
+- Extremely flexible: Gets us close to the true CEF without having to specify a functional form.
 
 **Cons:**
 
@@ -1024,7 +857,7 @@ ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Another approach is **polynomial regression.**
 
@@ -1049,28 +882,28 @@ These terms are hard to interpret until we visualize the model.
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 The quadratic model:
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Cubic:
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 Quartic:
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-22-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Polynomial regression
+# 2. Polynomial regression
 
 **Pro:**
 - Flexible -- easily capture many types of smooth nonlinear relationships.
@@ -1087,90 +920,75 @@ Quartic:
 
 ---
 
-# Piecewise functions (splines)
+# 3. Piecewise functions (splines)
 
-Piecewise linear (1 knot at `\(-0.15\)`):
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-23-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+Piecewise linear (1 knot at `\(-0.17\)`):
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Piecewise functions (splines)
+# 3. Piecewise functions (splines)
 
 Piecewise cubic (7 knots):
-&lt;img src="12-Regression_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 class: inverse, middle
-name: validation
+name: prediction
 
-# Preview: Model validation
-
----
-
-# Model validation
-
-Let's re-estimate the regression of mass on height on a **training** dataset that consists only of the 30 *shortest* characters.
-
-
-```r
-ols1_train = lm(mass ~ height, data = starwars |&gt; filter(rank(height) &lt;= 30))
-```
-
-Now we can use the model with `predict()` to predict mass for all characters (except Jabba)
-
-
-```r
-starwars2 = filter(starwars, !str_detect(name, "Jabba"))
-predict(ols1_train, newdata = starwars2, interval = "prediction") |&gt;
-  head(5)
-```
-
-```
-##        fit       lwr       upr
-## 1 68.00019 46.307267  89.69311
-## 2 65.55178 43.966301  87.13725
-## 3 30.78434  8.791601  52.77708
-## 4 82.69065 60.001764 105.37954
-## 5 57.22718 35.874679  78.57968
-```
+# Using regression models for prediction
 
 ---
 
-# Model validation
+# Using regression models for prediction
 
-Or more conveniently, add the predictions to your original dataframe with `augment`:
+Once we estimate a regression model, what might we want to do with it?
 
+1. Learn about the **relationship** between variables *(descriptive analysis, causal inference)*.
 
-```r
-starwars2 = augment(ols1_train, newdata = starwars2, interval = "prediction")
-starwars2 |&gt; relocate(contains(".")) |&gt; head()
-```
+2. Use it to **predict** the outcome variable in new data *(predictive analysis)*.
 
-```
-## # A tibble: 6 × 18
-##   .fitted .lower .upper .resid name         height  mass hair_…¹ skin_…² eye_c…³
-##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
-## 1    68.0  46.3    89.7   9.00 Luke Skywal…    172    77 blond   fair    blue   
-## 2    65.6  44.0    87.1   9.45 C-3PO           167    75 &lt;NA&gt;    gold    yellow 
-## 3    30.8   8.79   52.8   1.22 R2-D2            96    32 &lt;NA&gt;    white,… red    
-## 4    82.7  60.0   105.   53.3  Darth Vader     202   136 none    white   yellow 
-## 5    57.2  35.9    78.6  -8.23 Leia Organa     150    49 brown   light   brown  
-## 6    70.9  49.1    92.8  49.1  Owen Lars       178   120 brown,… light   blue   
-## # … with 8 more variables: birth_year &lt;dbl&gt;, sex &lt;chr&gt;, gender &lt;chr&gt;,
-## #   homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
-## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
-## #   ³​eye_color
-## # ℹ Use `colnames()` to see all variable names
-```
+Both of these activities can involve calculating *predicted values* from the model... but we need to be careful.
+
 
 ---
 
-# Model validation
+# Point 1: Counterfactuals != prediction
 
-Now we can plot the predictions to see how well our model (estimated on training data) performs for the rest of the data:
+**Common point of confusion:** "Isn't the point of estimating a causal effect so that we can use it to *predict* what will happen?"
+- The effect of legalizing cannabis on police arrests.
+- The effect of climate change on economic growth.
 
-&lt;img src="12-Regression_files/figure-html/predict_plot-1.png" style="display: block; margin: auto;" /&gt;
+Yes! But:
+
+In causal inference, we are only making a prediction **holding everything else constant.**
+- We are never claiming to predict what the future looks like (the overall level of the outcome).
+
+We only want to make a *counterfactual projection:*
+- How different the outcome will be **relative to what it would be without the treatment.** 
+
+In predictive analysis, we *do* want to predict the value of the outcome.
+
+
+---
+
+# Point 2: Confidence/prediction intervals
+
+**Confidence intervals** characterize uncertainty about the **relationships.**
+- If we gathered more data, where would the "true" line of best fit lie?
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Point 2: Confidence/prediction intervals
+
+**Prediction intervals** characterize uncertainty about **individual observations.**
+- If we use this model to predict the outcome for new data points, how close would those predictions be to the truth?
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-22-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
@@ -1178,15 +996,164 @@ Now we can plot the predictions to see how well our model (estimated on training
 
 1. [Basic regression in R](#basics)
 
-1. [Review: Interpreting coefficients](#interpret)
-
 1. [Indicator and interaction terms](#indicators)
 
 1. [Econometrics packages in R](#functions)
 
 1. [Modeling nonlinear relationships](#nonlinear)
 
-1. [Preview: Model validation](#validation)
+1. [Using regression models for prediction](#prediction)
+
+1. [Appendix: Interpreting coefficients](#interpret)
+
+
+---
+class: inverse, middle
+name: interpret
+
+# Appendix: Interpreting coefficients
+
+
+---
+
+# Interpreting regression coefficients
+
+`$$y_i = \alpha + \beta x_{i} + u_i$$`
+
+- `\(\beta\)`: The "effect" of `\(x\)` on `\(y\)`.
+  - How much `\(y\)` changes in response to a one-unit change in `\(x\)`.
+  - The average derivative: `\(dy/dx\)`.
+  - Not necessarily causal! Only if you can assume away selection bias.
+
+* `\(\alpha\)`: The y-intercept.
+  - The average value of `\(y\)` when `\(x = 0\)`.
+
+
+```r
+lm(mass ~ height, no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
+## 2 height         0.621    0.0707      8.79 4.02e-12
+```
+
+Put into a complete sentence with units:
+
+--
+- "For every **1 cm** increase in height, average mass increases by **0.6 kg.**"
+
+---
+
+# Interpreting log-transformed variables
+
+`$$\log(y_i) = \alpha + \beta x_{i} + u_i$$`
+
+
+```r
+lm(log(mass) ~ height, no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   2.28    0.159         14.4 2.00e-20
+## 2 height        0.0112  0.000895      12.5 6.77e-18
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+- Here: "A **1 cm** change in height is associated with a **0.01 log unit** change in mass."
+
+--
+
+But log units have a convenient **proportional change** or **percentage change** interpretation:
+- "A **1-cm** change in height is associated with a **0.01 times** change in mass."
+- "A **1-cm** change in height is associated with a **1-percent** change in mass."
+
+---
+
+# Interpreting log-transformed variables
+
+**Why?** Here's the algebra:
+
+Original values `\(x_0\)` and `\(y_0\)`. Percentage change in `\(y\)` is `\(\% \Delta y = \Delta y / y_0\)`.
+
+Model:
+`$$\ln(y_0) = \alpha + \beta x_0$$`
+`$$\ln(y_0 + \Delta y) = \alpha + \beta (x_0 + 1)$$`
+
+Solve for `\(\% \Delta y\)`:
+`$$\ln(y_0 + \Delta y) = \ln(y_0) + \beta$$`
+`$$\ln(\frac{y_0 + \Delta y}{y_0}) = \beta$$`
+`$$\ln(1 + \% \Delta y) = \beta$$`
+
+Using the approximation `\(\ln(a+1) \approx a\)` for small `\(a\)`:
+`$$\beta \approx \% \Delta y.$$`
+
+---
+
+# Interpreting log-transformed variables
+
+`$$y_i = \alpha + \beta \log(x_{i}) + u_i$$`
+
+
+```r
+lm(mass ~ log(height), no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   -347.       52.4     -6.61 1.51e- 8
+## 2 log(height)     82.3      10.2      8.06 6.05e-11
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+
+--
+- Here: "A **1 log unit** change in height is associated with an **82-kg** change in mass."
+
+--
+- "A **100%** change in height is associated with a **82-kg** change in mass."
+- "A **10%** change in height is associated with an **8.2-kg** change in mass."
+
+
+---
+
+# Interpreting log-transformed variables
+
+`$$\log(y_i) = \alpha + \beta \log(x_{i}) + u_i$$`
+
+
+```r
+lm(log(mass) ~ log(height), no_jabba) |&gt; tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    -3.76     0.614     -6.12 9.61e- 8
+## 2 log(height)     1.56     0.120     13.0  1.34e-18
+```
+
+Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
+
+--
+- Here: "A **1 log unit** change in height is associated with a **1.6 log unit** change in mass."
+
+--
+- "A **100%** change in height is associated with a **1.6 times** change in mass."
+- "A **100%** change in height is associated with a **160 percent** change in mass."
+
+--
+- "A **10%** change in height is associated with a **16 percent** change in mass."
+- "A **1%** change in height is associated with a **1.6 percent** change in mass."
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
