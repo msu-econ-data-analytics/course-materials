@@ -95,12 +95,8 @@ To use regression effectively in prediction, we have to deal with two issues:
 - More variables improve fit, but how do you avoid overfitting?
 
 **Variance reduction.** Can we improve predictions with some tweaks?
-* OLS tends to have low bias.super[.pink[†]] and relatively low variance.
+* OLS predictions tend to have low bias and relatively low variance.
 * But if we accept a little more bias, we can get big reductions in variance, and therefore better predictions (lower MSE).
-
-.footnote[
-.pink[†] Unbiased, in fact, when the true DGP (population CEF) is linear.
-]
 
 ---
 
@@ -138,7 +134,7 @@ name: shrinkage-why
 
 --
 
-Now you understand shrinkage methods.
+This is the basic idea behind all shrinkage methods. We'll cover 3:
 - .attn[Ridge regression]
 - .attn[Lasso]
 - .attn[Elasticnet]

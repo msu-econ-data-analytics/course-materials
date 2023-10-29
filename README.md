@@ -105,11 +105,10 @@ Fall 2023
 * Modeling nonlinear relationships
 * Using regression models for prediction
 
-[**Topic 12: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/13-Learning.html)
+[**Topic 12: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/12-Learning.html)
 
-* Review: Prediction
-* Statistical learning
-* Model accuracy
+* Overview: Statistical learning
+* Assessing model accuracy
 * Cross-validation
 
 **Topic 13: Prediction Methods**
