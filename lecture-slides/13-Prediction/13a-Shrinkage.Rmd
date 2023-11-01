@@ -442,6 +442,7 @@ So which shrinkage method should you choose?
 <br>.b.orange[-] doesn't work for selection
 <br>.b.orange[-] difficult to interpret output
 <br>.b.orange[+] better when all $\beta_j\neq$ 0
+<br>.b.orange[-] doesn't work when $p>n$ (more predictors than data points)
 ]
 
 .col-right.purple[
@@ -452,6 +453,7 @@ So which shrinkage method should you choose?
 <br>.b.orange[+] great for selection
 <br>.b.orange[+] sparse models easier to interpret
 <br>.b.orange[-] implicitly assumes some $\beta=$ 0
+<br>.b.orange[+] still works when $p>n$
 ]
 
 .left-full[

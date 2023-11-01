@@ -2,7 +2,7 @@
 
 // some helper functions: using a global object DTWidget so that it can be used
 // in JS() code, e.g. datatable(options = list(foo = JS('code'))); unlike R's
-// dynamic scoping, when 'code' is eval()'ed, JavaScript does not know objects
+// dynamic scoping, when 'code' is eval'ed, JavaScript does not know objects
 // from the "parent frame", e.g. JS('DTWidget') will not work unless it was made
 // a global object
 var DTWidget = {};
@@ -823,6 +823,7 @@ HTMLWidgets.widget({
       var disableCols = data.editable.disable ? data.editable.disable.columns : null;
       var numericCols = data.editable.numeric;
       var areaCols = data.editable.area;
+      var dateCols = data.editable.date;
       for (var i = 0; i < target.length; i++) {
         (function(cell, current) {
           var $cell = $(cell), html = $cell.html();
@@ -832,6 +833,8 @@ HTMLWidgets.widget({
             $input = $('<input type="number">');
           } else if (inArray(index, areaCols)) {
             $input = $('<textarea></textarea>');
+          } else if (inArray(index, dateCols)) {
+            $input = $('<input type="date">');
           } else {
             $input = $('<input type="text">');
           }
@@ -849,7 +852,7 @@ HTMLWidgets.widget({
 
           if (immediate) $input.on('blur', function(e) {
             var valueNew = $input.val();
-            if (valueNew != value) {
+            if (valueNew !== value) {
               _cell.data(valueNew);
               if (HTMLWidgets.shinyMode) {
                 changeInput('cell_edit', [cellInfo(cell)], 'DT.cellInfo', null, {priority: 'event'});
