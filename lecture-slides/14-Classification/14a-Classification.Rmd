@@ -84,9 +84,13 @@ name: intro
 
 - Using life/criminal history (and demographics?):<br>Can we predict whether a defendant is .b[granted bail]?
 
+--
+
 - Based upon a set of symptoms and observations:<br>Can we predict a patient's .b[medical condition](s)?
 
-- From the pixels in an image:<br>Can we classify images as .b[chihuahua, blueberry muffin, or other]?
+--
+
+- From the pixels in an image:<br>Can we classify images as .b[chihuahua or blueberry muffin]?
 
 ---
 layout: false
@@ -534,27 +538,16 @@ set_text_color(4,4,orange)
 .qa[A] You should use the .it[right] criterion for your context.
 
 - Are true positives more valuable than true negatives?
---
 <br>.note[Sensitivity] will be key.
 
---
 
 - Do you want to have high confidence in predicted positives?
---
 <br>.note[Precision] is your friend
 
---
-
 - Are all errors equal?
---
-<br>
-.note[Accuracy] is perfect.
-
---
+<br> .note[Accuracy] is perfect.
 
 [There's a lot more](https://yardstick.tidymodels.org/reference/index.html), _e.g._, the .attn[F.sub[1] score] combines precision and sensitivity.
-
-
 
 
 ---
@@ -576,17 +569,9 @@ name: trees
 
 .attn[Decision trees]
 1. work for .hi[both classification and regression]
-
---
 1. are inherently .hi[nonlinear]
-
---
 1. are relatively .hi[simple] and  .hi[interpretable]
-
---
-1. often .hi[underperform] relative to competing methods
-
---
+1. often .hi[underperform] relative to competing methods, but
 1. easily extend to .hi[very competitive ensemble methods] (*many* trees).super[🌲]
 
 .footnote[

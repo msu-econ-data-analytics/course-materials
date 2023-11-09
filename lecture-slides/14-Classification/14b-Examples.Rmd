@@ -1,5 +1,5 @@
 ---
-title: "Lecture 14: Classification"
+title: "Topic 14: Classification"
 subtitle: "Part 2: Examples"
 author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 output:

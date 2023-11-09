@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Topic 14: Classification</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <script src="14a-Classification_files/header-attrs-2.21/header-attrs.js"></script>
+    <link href="14a-Classification_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="14a-Classification_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="14a-Classification_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="14a-Classification_files/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+    <link href="14a-Classification_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="14a-Classification_files/datatables-binding-0.29/datatables.js"></script>
+    <script src="14a-Classification_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <link href="14a-Classification_files/dt-core-1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="14a-Classification_files/dt-core-1.13.4/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="14a-Classification_files/dt-core-1.13.4/js/jquery.dataTables.min.js"></script>
+    <link href="14a-Classification_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="14a-Classification_files/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+    <script src="14a-Classification_files/viz-1.8.2/viz.js"></script>
+    <link href="14a-Classification_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+    <script src="14a-Classification_files/grViz-binding-1.0.10/grViz.js"></script>
+    <link rel="stylesheet" href="css/my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Topic 14: Classification
+]
+.subtitle[
+## Part 1: Methods
+]
+.author[
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+]
+.date[
+### <br> .smallest[*Adapted from <a href="https://github.com/edrubin/EC524W21">“Prediction and machine-learning in econometrics”</a> by Ed Rubin, used with permission. These slides are excluded from this resource’s overall CC license.]
+]
+
+---
+
+exclude: true
+
+
+
+---
+
+# Table of contents
+
+1. [Classification](#intro)
+
+1. [Logistic regression](#logistic)
+
+1. [*k*-nearest neighbors](#knn)
+
+1. [Model assessment](#assessment)
+
+1. [Decision trees](#trees)
+
+1. [Wrap-up](#end)
+
+---
+layout: true
+# Classification
+
+---
+class: inverse, middle
+
+---
+name: intro
+
+.attn[Regression problems] seek to predict the number an outcome will take.
+
+.attn[Classification problems] instead seek to predict the category of an outcome.
+
+**Examples:**
+
+- Using life/criminal history (and demographics?):&lt;br&gt;Can we predict whether a defendant is .b[granted bail]?
+
+--
+
+- Based upon a set of symptoms and observations:&lt;br&gt;Can we predict a patient's .b[medical condition](s)?
+
+--
+
+- From the pixels in an image:&lt;br&gt;Can we classify images as .b[chihuahua or blueberry muffin]?
+
+---
+layout: false
+class: clear
+
+&lt;img src="images/chihuahua-muffin.jpg" width="72%" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Classification
+## Why not regression?
+
+---
+name: no-regress
+
+Regression methods are not made to deal with .b[multiple categories].
+
+.ex[Ex.] Consider three medical diagnoses: .pink[stroke], .purple[overdose], and .orange[seizure].
+
+Regression needs a numeric outcome—how should we code our categories?
+
+`$$Y=\begin{cases}
+  \displaystyle 1 &amp; \text{if }\color{#e64173}{\text{ stroke}} \\
+  \displaystyle 2 &amp; \text{if }\color{#6A5ACD}{\text{ overdose}} \\
+  \displaystyle 3 &amp; \text{if }\color{#FFA500}{\text{ seizure}} \\
+\end{cases}$$`
+
+The categories' ordering is unclear—let alone the actual valuation.
+
+
+---
+name: lpm
+
+In .b[binary outcome] cases, we .it[can] apply linear regression.
+
+These models are called .attn[linear probability models] (LPMs).
+
+The .b[predictions] from an LPM
+
+1. estimate the conditional probability `\(y_i = 1\)`, _i.e._, `\(\mathop{\text{Pr}}\left(y_o = 1 \mid x_o\right)\)`
+
+1. are not restricted to being between 0 and 1
+
+1. provide an ordering—and a reasonable estimate of probability
+
+---
+layout: true
+class: clear, middle
+
+---
+
+Let's consider an example: the `Default` dataset from `ISLR`
+
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-62322b30683bf1b7f530" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-62322b30683bf1b7f530">{"x":{"filter":"none","vertical":false,"data":[["No","No","Yes","No","No","Yes","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","No","Yes","No","No","No","No","No","No","No","No","No"],["No","Yes","No","No","No","No","No","No","No","No","Yes","No","No","Yes","Yes","No","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","No","Yes","No","No","No","Yes","No","No","Yes","No","No","Yes","No","No","Yes","No","No","No","No","No","No","No","Yes","No","Yes","No","Yes","No","No","No","No","No","Yes","No","Yes","No","No","No","No","No","No","No","Yes","No","No","No","No","No","Yes","Yes","No","No","Yes","No","Yes","No","No","No","No","Yes","Yes","No","No","No","Yes","No","No","Yes"],[939.098501835431,397.54248845196,1511.61095196469,301.319402807109,878.446109878267,1673.48634915562,310.130223883326,1272.05389130072,887.201436107651,230.868924844914,421.957264818512,1057.35087177407,891.403240954195,1216.58625032905,522.381180598609,1558.86107533,1464.39479015494,740.885186560821,0,1734.22804374841,1155.1750058879,728.356058470814,991.060968479028,640.819040858052,539.834793088502,141.026549625642,1207.05248263756,1288.44855995707,523.708897901411,1182.00008160582,1502.75774867973,131.633998250593,311.889288737823,1200.62447093622,770.431961924154,1177.2495984995,728.212549683954,1941.90292814168,0,674.204629620179,999.391696394237,670.422582334202,350.051851978195,764.627790674236,401.180757478873,751.354391933644,1360.86563270173,497.881905243542,634.696104527899,157.66047507126,0,605.220968306144,1092.99815937252,650.007041287637,492.657068547904,1322.96904167252,1743.79883736231,509.370892230809,1417.22549877778,1189.75213362091,1642.19231860975,1013.96374594514,678.018921587752,522.15345763795,127.663375125104,800.609332848504,2092.4585301161,182.370459994264,1507.24919460052,382.885062371549,768.37858481136,0,934.969703457723,621.312719186294,1384.73759704675,131.747075963338,772.732074090217,364.663051203468,612.960653042669,431.536055178104,847.056485301184,965.587370085486,932.056966292719,779.657300310476,1151.73331728929,368.086167001206,1458.89346152272,202.321208104165,1416.44476989919,615.704276560405,1807.68449070323,840.988909202537,677.552825772912,1073.16853283521,932.872998040885,1088.48809632531,1508.70177606082,1238.10517698086,309.517982126985,1169.42044435962],[45519.0189767343,22710.8657401321,53506.9449260287,51539.9523173009,29561.7830760682,49310.3329074721,37697.2201903282,44895.5933005043,41641.4535720123,32798.7825914845,21744.9742361818,39651.123507722,46611.7316362549,18140.6239934368,23440.0642225885,45255.9671130598,13968.5080055771,34196.067455362,9321.4637343151,37621.6331723075,40398.3993465472,32388.6157596306,37597.3230643757,19055.9165274273,13119.6858549153,11314.3917806231,24747.8899692653,21216.9625737112,48091.7445309658,18102.833748716,53129.7830394396,42028.0085987333,46116.1315257271,18973.9076818191,53398.3147279233,35419.6103097622,50403.5592512078,23467.126966094,33781.6563086993,46481.9526798699,23688.6489687946,53666.1923387936,48411.9866835366,26188.0694950508,39686.6759484968,27179.7616531196,22310.9295094468,55543.6246875475,32594.6922349326,42125.7336109977,24892.9156877399,21792.3215199717,37351.3396590005,41427.8773217528,10154.1562624726,51956.2918282558,17541.0028662017,39546.4726439018,16053.9742636275,50838.5172180485,24444.3121751467,49653.797125496,59416.7788647884,40717.1625219394,13942.2441190945,50324.5549267962,14514.7699586373,45507.9336965974,24057.5179445895,42620.5302295829,43325.9703901599,30360.5489438194,42325.7499854437,39372.0771909379,23083.6670866922,36947.7786180191,47161.2767003098,10239.9724854423,43392.887089339,46941.0589440984,13741.3270672054,16440.0996975194,45505.3072242837,40804.4757033746,23149.5474930787,51601.3608445693,21186.5629553544,37188.5693842123,33099.4968843458,39376.3946187014,42308.9544537047,15406.2074109607,20745.0153256246,51668.9608305471,61192.8971316666,38171.3720733572,25338.2646859801,37544.9421289734,35293.1935706219,19879.2481698692]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>default<\/th>\n      <th>student<\/th>\n      <th>balance<\/th>\n      <th>income<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 0, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[2,3]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+
+---
+exclude: true
+
+
+
+---
+
+.hi-purple[The data:] The outcome, default, only takes two values (only 3.3% default).
+
+&lt;img src="14a-Classification_files/figure-html/boxplot-default-balance-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+.hi-purple[The data:] The outcome, default, only takes two values (only 3.3% default).
+
+&lt;img src="14a-Classification_files/figure-html/plot-default-points-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.hi-pink[The linear probability model] struggles with prediction in this setting.
+
+&lt;img src="14a-Classification_files/figure-html/plot-default-lpm-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Logistic regression
+
+---
+class: inverse, middle
+
+---
+name: logistic
+## Intro
+
+.attn[Logistic regression] .b[models the probability] that our outcome `\(Y\)` belongs to a .b[specific category] (often whichever category we think of as `TRUE`).
+
+--
+
+For example, we just saw a graph where
+$$
+`\begin{align}
+  \mathop{\text{Pr}}\left(\text{Default} = \text{Yes} | \text{Balance}\right) = p(\text{Balance})
+\end{align}`
+$$
+we are modeling the probability of `default` as a function of `balance`.
+
+--
+
+We use the .b[estimated probabilities] to .b[make predictions], _e.g._,
+- if `\(p(\text{Balance})\geq 0.5\)`, we could predict "Yes" for Default
+
+---
+name: logistic-logistic
+## What's .it[logistic]?
+
+We want to model probability as a function of the predictors `\(\left(\beta_0 + \beta_1 X\right)\)`.
+
+.col-centered[
+.hi-pink[Linear probability model]
+&lt;br&gt;
+.pink[linear] transform. of predictors
+
+$$
+`\begin{align}
+  p(X) = \beta_0 + \beta_1 X
+\end{align}`
+$$
+]
+
+.col-centered[
+.hi-orange[Logistic model]
+&lt;br&gt;
+.orange[logistic] transform. of predictors
+
+$$
+`\begin{align}
+  p(X) = \dfrac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+\end{align}`
+$$
+]
+
+.clear-up[
+What does this .it[logistic function] `\(\left(\frac{e^x}{1+e^x}\right)\)` do?
+]
+
+1. ensures predictions are between 0 `\((x\rightarrow-\infty)\)` and 1 `\((x\rightarrow\infty)\)`
+
+1. forces an S-shaped curve through the data
+
+---
+layout: false
+class: clear, middle
+
+.hi-orange[Logistic regression]'s predictions of `\(\mathop{p}(\text{Balance})\)`
+
+&lt;img src="14a-Classification_files/figure-html/plot-default-logistic-2-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+layout: true
+# *k*-nearest neighbors
+
+---
+class: inverse, middle
+
+---
+name: knn
+## Setup
+
+*k*-nearest neighbors (KNN) simply assigns a category based upon the nearest `\(K\)` neighbors' votes (their values).
+
+--
+
+.note[More formally:] Using the `\(K\)` closest neighbors.super[.pink[†]] to test observation `\(\color{#6A5ACD}{\mathbf{x_0}}\)`, we calculate the share of the observations whose class equals `\(j\)`,
+$$
+`\begin{align}
+  \hat{\mathop{\text{Pr}}}\left(\mathbf{y} = j | \mathbf{X} = \color{#6A5ACD}{\mathbf{x_0}}\right) = \dfrac{1}{K} \sum_{i \in \mathcal{N}_0} \mathop{\mathbb{I}}\left( \color{#FFA500}{\mathbf{y}}_i = j \right)
+\end{align}`
+$$
+These shares are our estimates for the unknown conditional probabilities.
+
+We then assign observation `\(\color{#6A5ACD}{\mathbf{x_0}}\)` to the class with the highest probability.
+
+.footnote[
+.pink[†] In `\(\color{#6A5ACD}{\mathbf{X}}\)` space, a.k.a. Euclidean distance.
+]
+---
+name: knn-fig
+layout: false
+class: clear, middle
+
+.b[KNN in action]
+&lt;br&gt;.note[Left:] K=3 estimation for "x". .note[Right:] KNN decision boundaries.
+&lt;img src="images/isl-knn.png" width="2867" style="display: block; margin: auto;" /&gt;
+.smaller.it[Source: ISL]
+---
+class: clear, middle
+
+The choice of K is very important—ranging from super flexible to inflexible.
+---
+class: clear, middle
+.b[KNN error rates], as K increases
+&lt;img src="images/isl-knn-error.png" width="85%" style="display: block; margin: auto;" /&gt;
+.smaller.it[Source: ISL]
+
+
+
+
+---
+layout: true
+# Model assessment
+
+---
+class: inverse, middle
+
+---
+name: assessment
+
+## Can't use MSE anymore
+
+With categorical variables, MSE doesn't work—_e.g._,
+.center[
+`\(\color{#FFA500}{\mathbf{y}} - \hat{\color{#FFA500}{\mathbf{y}}} =\)` .orange[(Chihuahua)] - .orange[(Blueberry muffin)] `\(=\)` ...?
+]
+
+Clearly we need a different way to define model performance.
+
+---
+
+The most common approach is exactly what you'd guess...
+
+.hi-slate[Training error rate] The share of training predictions that we get wrong.
+$$
+`\begin{align}
+  \dfrac{1}{n} \sum_{i=1}^{n} \mathbb{I}\!\left( \color{#FFA500}{y}_i \neq \hat{\color{#FFA500}{y}}_i \right)
+\end{align}`
+$$
+where `\(\mathbb{I}\!\left( \color{#FFA500}{y}_i \neq \hat{\color{#FFA500}{y}}_i \right)\)` is an indicator function that equals 1 whenever our prediction is wrong.
+
+--
+
+.hi-pink[Test error rate] The share of test predictions that we get wrong.
+.center[
+Average `\(\mathbb{I}\!\left( \color{#FFA500}{y}_0 \neq \hat{\color{#FFA500}{y}}_0 \right)\)` in our .hi-pink[test data]
+]
+
+
+---
+name: how
+## Example: the Default data
+
+
+
+
+Logistic regression (with only one predictor: balance) guesses 97.25% of the observations correctly.
+
+--
+- Is this good?
+
+--
+
+- Remember that 3.33% of the observations actually defaulted. So we would get 96.67% right by guessing "No" for everyone..super[.pink[†]]
+
+.footnote[
+.pink[†] This idea is called the .it[null classifier].
+]
+
+--
+
+
+- We .it[did] guess 30.03% of the defaults, which is clearer better than 0%.
+
+--
+
+.qa[Q] How can we more formally assess our model's performance?
+
+.qa[A] All roads lead to the .attn[confusion matrix].
+
+---
+name: confusion
+## The confusion matrix
+
+The .attn[confusion matrix] is us a convenient way to display
+&lt;br&gt;.hi-orange[correct] and .hi-purple[incorrect] predictions for each class of our outcome.
+
+
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:cm-right-wrong">
+<col><col><col><col><tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td colspan="2" style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Truth</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</td></tr>
+<tr>
+<td rowspan="2" style="vertical-align: middle; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Prediction</td><th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(255, 165, 0);">True Negative (TN)</span></td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(106, 90, 205);">False Negative (FN)</span></td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(106, 90, 205);">False Positive (FP)</span></td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(255, 165, 0);">True Positive (TP)</span></td></tr>
+</table>
+
+
+--
+
+The .attn[accuracy] of a method is the share of .orange[correct] predictions, _i.e._,
+.center[
+.b[Accuracy] = (.hi-orange[TN] + .hi-orange[TP]) / (.hi-orange[TN] + .hi-orange[TP] + .hi-purple[FN] + .hi-purple[FP])
+]
+
+--
+
+This matrix also helps display many other measures of assessment.
+
+---
+## The confusion matrix
+
+.attn[Sensitivity:] the share of positive outcomes `\(Y=1\)` that we correctly predict.
+
+.center[
+.b[Sensitivity] = .hi-orange[TP] / (.hi-orange[TP] + .hi-purple[FN])
+]
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:cm-sensitivity">
+<col><col><col><col><tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td colspan="2" style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Truth</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"><span style="color: rgb(106, 90, 205);">Yes</span></td></tr>
+<tr>
+<td rowspan="2" style="vertical-align: middle; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Prediction</td><th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">True Negative (TN)</td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(106, 90, 205);">False Negative (FN)</span></td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">False Positive (FP)</td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(255, 165, 0);">True Positive (TP)</span></td></tr>
+</table>
+
+
+Sensitivity is also called .attn[recall] and the .attn[true-positive rate].
+
+One minus sensitivity is the .attn[type-II error rate].
+---
+## The confusion matrix
+
+.attn[Specificity:] the share of neg. outcomes `\((Y=0)\)` that we correctly predict.
+
+.center[
+.b[Specificity] = .hi-orange[TN] / (.hi-orange[TN] + .hi-purple[FP])
+]
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:cm-specificity">
+<col><col><col><col><tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td colspan="2" style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Truth</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"><span style="color: rgb(106, 90, 205);">No</span></td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</td></tr>
+<tr>
+<td rowspan="2" style="vertical-align: middle; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Prediction</td><th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(255, 165, 0);">True Negative (TN)</span></td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">False Negative (FN)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(106, 90, 205);">False Positive (FP)</span></td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">True Positive (TP)</td></tr>
+</table>
+
+
+One minus specificity is the .attn[false-positive rate] or .attn[type-I error rate].
+
+---
+## The confusion matrix
+
+.attn[Precision:] the share of predicted positives `\((\hat{Y}=1)\)` that are correct.
+
+.center[
+.b[Precision] = .hi-orange[TP] / (.hi-orange[TP] + .hi-purple[FP])
+]
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:cm-precision">
+<col><col><col><col><tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td colspan="2" style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Truth</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></td><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"></th><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 1pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Yes</td></tr>
+<tr>
+<td rowspan="2" style="vertical-align: middle; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">Prediction</td><th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">No</th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">True Negative (TN)</td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 1pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">False Negative (FN)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 1pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;"><span style="color: rgb(106, 90, 205);">Yes</span></th><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 1pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(106, 90, 205);">False Positive (FP)</span></td><td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"><span style="color: rgb(255, 165, 0);">True Positive (TP)</span></td></tr>
+</table>
+
+
+---
+## Which criterion?
+
+.qa[Q] So .it[which] criterion should we use?
+
+--
+
+.qa[A] You should use the .it[right] criterion for your context.
+
+- Are true positives more valuable than true negatives?
+&lt;br&gt;.note[Sensitivity] will be key.
+
+
+- Do you want to have high confidence in predicted positives?
+&lt;br&gt;.note[Precision] is your friend
+
+- Are all errors equal?
+&lt;br&gt; .note[Accuracy] is perfect.
+
+[There's a lot more](https://yardstick.tidymodels.org/reference/index.html), _e.g._, the .attn[F.sub[1] score] combines precision and sensitivity.
+
+
+---
+layout: true
+# Decision trees
+
+---
+class: inverse, middle
+
+---
+name: trees
+## Fundamentals
+
+.attn[Decision trees]
+- split the .it[predictor space] (our `\(\mathbf{X}\)`) into regions
+- then predict the most-common value within a region
+
+--
+
+.attn[Decision trees]
+1. work for .hi[both classification and regression]
+1. are inherently .hi[nonlinear]
+1. are relatively .hi[simple] and  .hi[interpretable]
+1. often .hi[underperform] relative to competing methods, but
+1. easily extend to .hi[very competitive ensemble methods] (*many* trees).super[🌲]
+
+.footnote[
+🌲 Though the ensembles will be much less interpretable.
+]
+
+---
+layout: true
+class: clear
+
+---
+exclude: true
+
+
+
+---
+.ex[Example:] .b[A simple decision tree] classifying credit-card default
+
+<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-31f6eeda866e13789732" style="width:756px;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-31f6eeda866e13789732">{"x":{"diagram":"\ndigraph {\n\ngraph [layout = dot, overlap = false, fontsize = 14]\n\nnode [shape = oval, fontname = \"Fira Sans\", color = Gray95, style = filled]\ns1 [label = \"Bal. > 1,800\"]\ns2 [label = \"Bal. < 1,972\"]\ns3 [label = \"Inc. > 27K\"]\n\nnode [shape = egg, fontname = \"Fira Sans\", color = Purple, style = filled, fontcolor = White]\nl1 [label = \"No (98%)\"]\nl4 [label = \"No (69%)\"]\n\nnode [shape = egg, fontname = \"Fira Sans\", color = Orange, style = filled, fontcolor = White]\nl2 [label = \"Yes (76%)\"]\nl3 [label = \"Yes (59%)\"]\n\nedge [fontname = \"Fira Sans\", color = Grey70]\ns1 -> l1 [label = \"F\"]\ns1 -> s2 [label = \"T\"]\ns2 -> s3 [label = \"T\"]\ns2 -> l2 [label = \"F\"]\ns3 -> l3 [label = \"T\"]\ns3 -> l4 [label = \"F\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+name: ex-partition
+
+Let's see how the tree works
+--
+—starting with our data (default: .orange[Yes] .it[vs.] .purple[No]).
+
+
+
+&lt;img src="14a-Classification_files/figure-html/plot-raw-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+The .hi-pink[first partition] splits balance at $1,800.
+
+&lt;img src="14a-Classification_files/figure-html/plot-split1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+The .hi-pink[second partition] splits balance at $1,972, (.it[conditional on bal. &gt; $1,800]).
+
+&lt;img src="14a-Classification_files/figure-html/plot-split2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+The .hi-pink[third partition] splits income at $27K .b[for] bal. between $1,800 and $1,972.
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+These three partitions give us four .b[regions]...
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3b-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.b[Predictions] cover each region (_e.g._, using the region's most common class).
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3c-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.b[Predictions] cover each region (_e.g._, using the region's most common class).
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3d-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.b[Predictions] cover each region (_e.g._, using the region's most common class).
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3e-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.b[Predictions] cover each region (_e.g._, using the region's most common class).
+
+&lt;img src="14a-Classification_files/figure-html/plot-split3f-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+layout: true
+class: clear, middle
+
+---
+name: linearity
+
+.qa[Q] How do trees compare to linear models?
+
+.tran[.b[A] It depends how linear truth is.]
+
+---
+
+.qa[Q] How do trees compare to linear models?
+
+.qa[A] It depends how linear the true boundary is.
+
+---
+
+.b[Linear boundary:] trees struggle to recreate a line.
+
+&lt;img src="images/compare-linear.png" width="5784" style="display: block; margin: auto;" /&gt;
+
+.ex.small[Source: ISL, p. 315]
+
+---
+
+.b[Nonlinear boundary:] trees easily replicate the nonlinear boundary.
+
+&lt;img src="images/compare-nonlinear.png" width="5784" style="display: block; margin: auto;" /&gt;
+
+.ex.small[Source: ISL, p. 315]
+
+
+
+---
+layout: false
+class: inverse, middle
+name: end
+# Wrap-up
+
+---
+# For the project
+
+Let's recap the models you now have to work with:
+
+For **regression** (continuous outcome variables):
+- Linear regression with shrinkage/regularization
+  - Ridge or lasso (tune `\(\lambda\)`)
+  - Elasticnet (tune `\(\lambda\)` and `\(\alpha\)`)
+- *k*-nearest neighbors (`mode="regression"`; tune `\(k\)`)
+
+For **classification** (categorical outcome variables):
+- Logistic regression with shrinkage/regularization
+  - Ridge, lasso, elasticnet (as above)
+- *k*-nearest neighbors (`mode="classification"`; tune `\(k\)`)
+- (We haven't covered how to tune decision trees.)
+
+---
+# Ensemble methods
+
+If we try multiple *types* of models, how do we choose among them?
+- You could just choose the one that performs best in cross-validation.
+- But different methods have different strengths. The 2nd-best model may still have useful information.
+- Often, the *best* prediction will **combine predictions from multiple models.**
+
+Simple ensemble model:
+- For **regression:** Take the average prediction across multiple models.
+- For **classification:** Take the majority vote across multiple models.
+
+---
+# More advanced topics
+
+If you go further in machine learning, you can learn about:
+
+**Methods**
+- Random forests (generalization of decision trees)
+- Boosting and bagging
+- Support vector machines
+- Neural nets / deep learning
+- Unsupervised learning
+
+**Applications**
+- Text analysis (natural language processing)
+- Image (and video) processing
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

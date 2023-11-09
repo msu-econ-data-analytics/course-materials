@@ -127,13 +127,13 @@ Fall 2023
 
 **Topic 14: Classification Methods**
 
-* [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/15a-Classification.html)
+* [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/14a-Classification.html)
   - Classification
   - Logistic regression
   - *k*-nearest neighbors
   - Model assessment
   - Decision trees
-* [**Part 2: Examples**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/15b-Examples.html)
+* [**Part 2: Examples**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/14b-Examples.html)
   - Logistic regression and KNN
   - Cross-validation
   - Decision trees
