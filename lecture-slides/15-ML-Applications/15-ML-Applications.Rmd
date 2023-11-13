@@ -146,7 +146,7 @@ But be careful once you start using these for decisions with real stakes.
 
 - **Predictive models can easily reproduce patterns of racial bias** (or other forms of bias) found in society.
   - Given the far reaches of historical (and ongoing) discrimination, race can affect virtually any of your variables.
-  - If race is a good predictor, excluding it will simply put more weight on other variables that proxy for race (zip code, name, purchases).
+  - If race is a good predictor, excluding it will simply put more weight on other variables that proxy for race.
   - If your training data reflect discrimination, your model will too.
 
 
@@ -183,9 +183,29 @@ class: inverse, middle
 
 ---
 
-.smallest[Yeh, Perez, Driscoll, Azzari, Tang, Lobell, Ermon, Burke (2020). ["Using publicly available satellite imagery and deep learning to understand economic well-being in Africa,"](https://www.nature.com/articles/s41467-020-16185-w) *Nature Communications*.]
+**Layout Parser** (from a team led by [Melissa Dell](https://dell-research-harvard.github.io/resources.html))
+- A Python library that uses deep learning to convert document images into structured databases.
+
+```{r, echo=F, out.width="90%"}
+knitr::include_graphics("images/news_example.png")
+```
+
+---
+
+**Layout Parser** (from a team led by [Melissa Dell](https://dell-research-harvard.github.io/resources.html))
+
+Even works on 13th-century business records from Japan:
+
+```{r, echo=F, out.width="100%"}
+knitr::include_graphics("images/tk_key.png")
+```
+
+
+---
 
 Local measurements of well-being are critical for public service delivery, but data is lacking across much of Africa. Can satellite data help?
+
+.smallest[Yeh, Perez, Driscoll, Azzari, Tang, Lobell, Ermon, Burke (2020). ["Using publicly available satellite imagery and deep learning to understand economic well-being in Africa,"](https://www.nature.com/articles/s41467-020-16185-w) *Nature Communications*.]
 
 ```{r, echo=F, out.width="100%"}
 knitr::include_graphics("images/yeh-fig1.png")
@@ -270,11 +290,11 @@ We don't actually care about the coefficients on the controls, only that we elim
 ---
 
 It would be nice to have a principled way to choose the control variables that "really matter".
-- But now this may be starting to sound familiar...
+- But this might sound like a familiar problem...
 
 --
 
-This is a job for the **lasso.**
+This is a job for the **lasso!**
 
 ---
 
@@ -326,7 +346,7 @@ This is a job for the **lasso.**
   - In one half of your sample, form predictive models for $y$ and $T$.
   - In the other half, regress the prediction errors on each other: OLS of $(y-\hat{y})$ on $(T-\hat{T})$ to get $\hat{\beta}$.
 - This is called **double/debiased machine learning.**
-
+  - Causal inference as a problem of predicting counterfactuals.
 
 ---
 layout: true
@@ -348,9 +368,6 @@ But $\beta$ is just an *average* treatment effect...
 Can we predict the **individual treatment effect** $\hat{\beta}_i$ for each person $i$?
 
 ---
-
-Want to estimate the causal effect $\beta$ of $T_i$ on $y_i$:
-$$y_i = \alpha + \beta T_i + u_i$$
 
 Several approaches. Rough intuition for one:
 $$y_i = \alpha + (\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + ...) \times T_i + u_i$$
@@ -437,9 +454,15 @@ knitr::include_graphics("images/ks-te-distribution.png")
 knitr::include_graphics("images/ks-predictors.png")
 ```
 
-**Who responds most?** High baseline consumption and low home values.
+**Who responds most?**
+--
 
-**Who *increases* energy use?** Those with very low baseline consumption (social comparison may be backfiring - gives "permission" to use more).
+High baseline consumption and low home values.
+
+**Who *increases* energy use?**
+--
+
+Those with very low baseline consumption (social comparison may be backfiring - gives "permission" to use more).
 
 ---
 

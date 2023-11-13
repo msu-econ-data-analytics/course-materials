@@ -139,7 +139,7 @@ Fall 2023
   - Decision trees
   - Teach your laptop to read
 
-[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/16-ML-Applications.html)
+[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html)
 
 * Predicting outcomes
 * Constructing new data
