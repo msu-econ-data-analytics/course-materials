@@ -149,7 +149,7 @@ Fall 2023
 **Topic 16: Spatial Analysis**
 
 * [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf)
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/10-Spatial-part1.html)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html)
   - Spatial data and quick mapping
   - Reference systems and projections
 * [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/10-Spatial-part2.html)

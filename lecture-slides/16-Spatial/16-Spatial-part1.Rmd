@@ -394,7 +394,7 @@ qtm(states_utm11N)
 
 **4. Pseudo Plate Caree**
 - Distorts everything! Simply a graph of latitude vs. longitude.
-- Common default, but no excuse for using it in 2022.
+- Common default, but no excuse for using it in 2023.
 ```{r, out.width="65%"}
 plot(states$geometry, asp = 1)
 ```
