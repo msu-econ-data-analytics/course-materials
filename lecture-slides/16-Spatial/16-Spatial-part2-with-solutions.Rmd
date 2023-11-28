@@ -275,6 +275,16 @@ tm_shape(alameda) + tm_polygons(alpha = 0.5) +
 **Map only the BART stations that are within Alameda County.**  
 Make them nice big dots with a fun color. (Hint: use `tm_dots()`.)
 
+--
+
+```{r, fig.height=2.75}
+stations_alameda = stations |>
+  st_transform(st_crs(alameda)) |>
+  st_filter(alameda)
+tm_shape(alameda) + tm_polygons(alpha = 0.5) +
+  tm_shape(stations_alameda) + tm_dots(col = "purple", size = 0.2)
+```
+
 
 ---
 class: inverse, middle
@@ -352,6 +362,16 @@ str(protected_intersection)
 
 **Combine these Southern California counties into one shape and map it:** Los Angeles, Orange, and San Diego.
 
+--
+
+```{r, fig.height=2.5}
+county_list = c("Los Angeles", "Orange", "San Diego")
+socal = counties |>
+  filter(NAME %in% county_list) |>
+  st_union()
+tm_shape(socal) + tm_polygons(col = "yellow", alpha = 0.5)
+```
+
 
 ---
 
@@ -408,6 +428,95 @@ tm_shape(stations_1km) + tm_polygons(col = "pink") +
 **What fraction of the area of Alameda County is within 2 km of a BART station?**
 
 Hint: Make a step-by-step plan before you begin.
+
+--
+
+Plan -
+
+1. Buffer all BART stations by 2000 m (not just the ones in Alameda County)
+2. Intersect these buffers with Alameda County
+3. Union the remaining buffers (to avoid double-counting areas near multiple stations)
+4. Calculate the area of this union (in an equal-area projected CRS)
+5. Calculate the area of Alameda County (same)
+
+Map the result after each step to make sure you got what you expected.
+
+---
+
+# Challenge
+
+**What fraction of the area of Alameda County is within 2 km of a BART station?**
+
+1\. Buffer all BART stations by 2000 m
+```{r, fig.height=3}
+stations_2km = st_buffer(stations, dist = 2000)
+qtm(stations_2km)
+```
+
+---
+
+# Challenge
+
+**What fraction of the area of Alameda County is within 2 km of a BART station?**
+
+2\. Intersect these buffers with Alameda County
+```{r, fig.height=3}
+stations_2km_proj = st_transform(stations_2km, st_crs(alameda))
+stations_2km_alameda = st_intersection(stations_2km_proj, alameda)
+qtm(stations_2km_alameda)
+```
+
+---
+
+# Challenge
+
+**What fraction of the area of Alameda County is within 2 km of a BART station?**
+
+3\. Union the remaining buffers (to avoid double-counting areas near multiple stations)
+```{r, fig.height=3}
+union_buffers = st_union(stations_2km_alameda)
+tm_shape(alameda) + tm_polygons(alpha = 0.5) +
+  tm_shape(union_buffers) + tm_polygons(col = "skyblue", alpha = 0.5)
+```
+
+---
+
+# Challenge
+
+**What fraction of the area of Alameda County is within 2 km of a BART station?**
+
+4\. Calculate the area of this union (in an equal-area projected CRS)
+```{r}
+crs_albers = st_crs(alameda)
+stopifnot(st_crs(union_buffers) == crs_albers)
+area_near_transit = set_units(st_area(union_buffers), km^2)
+area_near_transit
+```
+
+5\. Calculate the area of Alameda County (same)
+```{r}
+area_county = set_units(st_area(alameda), km^2)
+area_county
+```
+
+---
+
+# Challenge
+
+**What fraction of the area of Alameda County is within 2 km of a BART station?**
+
+Putting it all together and writing as one pipeline:
+```{r}
+area_near_transit = stations |>
+  st_buffer(dist = 2000) |>
+  st_transform(st_crs(alameda)) |>
+  st_intersection(alameda) |>
+  st_union() |>
+  st_area()
+area_near_transit / st_area(alameda)
+```
+
+So about 11%.
 
 
 ---
@@ -574,6 +683,36 @@ schools_tract |>
 
 **What fraction of the population of Alameda County has a BART station in their Census tract?** (Hint: `c_race` is total population.)
 
+--
+
+Plan -
+
+1. Spatial join BART stations to Census tracts.
+2. Sum the population of these tracts.
+3. Compare it to total population.
+
+---
+
+# Challenge
+
+**What fraction of the population of Alameda County has a BART station in their Census tract?** (Hint: `c_race` is total population.)
+
+```{r}
+# Spatial join stations to tracts
+tracts2 = tracts |>
+  st_transform(st_crs(stations)) |>
+  st_join(stations)
+stopifnot(nrow(tracts2) == nrow(tracts))
+
+# Sum population by whether a tract has a station
+tracts3 = tracts2 |>
+  st_drop_geometry() |>
+  mutate(has_station = as.integer(!is.na(objectid))) |>
+  rename(population = c_race)
+summarize(tracts3, population = sum(population), .by = has_station)
+sum(filter(tracts3, has_station==1)$population) / sum(tracts3$population)
+```
+
 
 ---
 
@@ -584,6 +723,55 @@ But Census tracts don't really correspond to anything meaningful in people's dai
 **What fraction of the population of Alameda County is within 2 km of a BART station?**
 
 You can't do this perfectly. Try to find the least bad way, and state what assumptions you're making.
+
+--
+
+One simple plan: (inaccurate)
+1. Find the Census tracts that intersect the unioned station buffers.
+2. Calculate the population of these tracts.
+3. Compare it to total population. (Assumption: The entire population of each tract lives within the station buffers.)
+
+---
+
+# Challenge
+
+**What fraction of the population of Alameda County is within 2 km of a BART station?**
+
+```{r, fig.height=3}
+# Intersect Census tracts with unioned station buffers
+tracts_near_transit = tracts |>
+  st_transform(st_crs(union_buffers)) |> 
+  st_intersection(union_buffers)
+# Calculate population of these tracts
+(pop_near_transit = sum(tracts_near_transit$c_race))
+# Calculate fraction of total population
+(pop_total = sum(tracts$c_race))
+pop_near_transit / pop_total
+```
+
+But this is an upper bound (overestimate) of the true answer.
+
+
+---
+
+# Challenge
+
+**What fraction of the population of Alameda County is within 2 km of a BART station?**
+
+Another plan: (more accurate but imperfect)
+
+1. Get the portions of Census tracts that intersect the unioned station buffers.
+
+2. Calculate the fraction of each Census tract that falls within these buffers.
+
+  a. Union intersections within each Census tract.
+  a. Calculate the areas of the intersections.
+  a. Calculate the areas of the Census tracts.
+  a. (Spatial) join intersections to Census tracts.
+
+3. Calculate the population of each Census tract within buffers. (Assumption: Population density is uniform within each Census tract.)
+
+4. Sum population within buffers, and in total.
 
 
 ---

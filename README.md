@@ -152,7 +152,7 @@ Fall 2023
 * [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html)
   - Spatial data and quick mapping
   - Reference systems and projections
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/10-Spatial-part2.html)
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html)
   - Spatial queries (measurement, relationships)
   - Spatial subsetting
   - Geometry operations
