@@ -362,7 +362,22 @@ str(protected_intersection)
 
 **Combine these Southern California counties into one shape and map it:** Los Angeles, Orange, and San Diego.
 
---
+You should get this:
+
+```{r, fig.height=3.5, echo = F}
+county_list = c("Los Angeles", "Orange", "San Diego")
+socal = counties |>
+  filter(NAME %in% county_list) |>
+  st_union()
+tm_shape(socal) + tm_polygons(col = "yellow", alpha = 0.5)
+```
+
+
+---
+
+# Challenge
+
+**Combine these Southern California counties into one shape and map it:** Los Angeles, Orange, and San Diego.
 
 ```{r, fig.height=2.5}
 county_list = c("Los Angeles", "Orange", "San Diego")
@@ -371,7 +386,6 @@ socal = counties |>
   st_union()
 tm_shape(socal) + tm_polygons(col = "yellow", alpha = 0.5)
 ```
-
 
 ---
 
@@ -763,11 +777,12 @@ Another plan: (more accurate but imperfect)
 1. Get the portions of Census tracts that intersect the unioned station buffers.
 
 2. Calculate the fraction of each Census tract that falls within these buffers.
-
-  a. Union intersections within each Census tract.
-  a. Calculate the areas of the intersections.
-  a. Calculate the areas of the Census tracts.
-  a. (Spatial) join intersections to Census tracts.
+<ol type='a'>
+<li>Union intersections within each Census tract.</li>
+<li>Calculate the areas of the intersections.</li>
+<li>Calculate the areas of the Census tracts.</li>
+<li>(Spatial) join intersections to Census tracts.</li>
+</ol>
 
 3. Calculate the population of each Census tract within buffers. (Assumption: Population density is uniform within each Census tract.)
 

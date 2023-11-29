@@ -112,7 +112,7 @@ library(tmap)
 
 Set your working directory (in your console) to the location of this file. E.g.:
 ```{r, eval=F}
-setwd("C:/git/491/course-materials/lecture-slides/10-Spatial")
+setwd("C:/git/491/course-materials/lecture-slides/16-Spatial")
 ```
 
 ---
