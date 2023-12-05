@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Lecture 17: Databases and Big Data</title>
+    <title>Topic 17: Databases and Big Data</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 491/560 Fall 2022   Montana State University" />
-    <script src="17-Databases_files/header-attrs-2.14/header-attrs.js"></script>
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <script src="17-Databases_files/header-attrs-2.21/header-attrs.js"></script>
     <link href="17-Databases_files/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="17-Databases_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="17-Databases_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -15,10 +15,10 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Lecture 17: Databases and Big Data
+# Topic 17: Databases and Big Data
 ]
 .author[
-### Nick Hagerty <br> ECNS 491/560 Fall 2022 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
 ]
 .date[
 ### .small[<br> *These slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/16-databases/16-databases.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -163,7 +163,7 @@ To retrieve data from a databases, we submit a **query**.
 
 # Databases and the tidyverse
 
-Basically all databases use **SQL** (Structured Query Language). SQL is:
+Basically all databases use **SQL** (Structured Query Language).
 * SQL is powerful but old and less intuitive than the tidyverse.
 
 Fortunately, `dbplyr` makes it super easy to interact with databases from R.
@@ -264,23 +264,23 @@ flights_db
 
 ```
 #&gt; # Source:   table&lt;flights&gt; [?? x 19]
-#&gt; # Database: sqlite 3.39.4 []
-#&gt;     year month   day dep_time sched_de…¹ dep_d…² arr_t…³ sched…⁴ arr_d…⁵ carrier
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;      &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;  
-#&gt;  1  2013     1     1      517        515       2     830     819      11 UA     
-#&gt;  2  2013     1     1      533        529       4     850     830      20 UA     
-#&gt;  3  2013     1     1      542        540       2     923     850      33 AA     
-#&gt;  4  2013     1     1      544        545      -1    1004    1022     -18 B6     
-#&gt;  5  2013     1     1      554        600      -6     812     837     -25 DL     
-#&gt;  6  2013     1     1      554        558      -4     740     728      12 UA     
-#&gt;  7  2013     1     1      555        600      -5     913     854      19 B6     
-#&gt;  8  2013     1     1      557        600      -3     709     723     -14 EV     
-#&gt;  9  2013     1     1      557        600      -3     838     846      -8 B6     
-#&gt; 10  2013     1     1      558        600      -2     753     745       8 AA     
-#&gt; # … with more rows, 9 more variables: flight &lt;int&gt;, tailnum &lt;chr&gt;,
-#&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-#&gt; #   minute &lt;dbl&gt;, time_hour &lt;dbl&gt;, and abbreviated variable names
-#&gt; #   ¹​sched_dep_time, ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+#&gt;  1  2013     1     1      517            515         2      830            819
+#&gt;  2  2013     1     1      533            529         4      850            830
+#&gt;  3  2013     1     1      542            540         2      923            850
+#&gt;  4  2013     1     1      544            545        -1     1004           1022
+#&gt;  5  2013     1     1      554            600        -6      812            837
+#&gt;  6  2013     1     1      554            558        -4      740            728
+#&gt;  7  2013     1     1      555            600        -5      913            854
+#&gt;  8  2013     1     1      557            600        -3      709            723
+#&gt;  9  2013     1     1      557            600        -3      838            846
+#&gt; 10  2013     1     1      558            600        -2      753            745
+#&gt; # ℹ more rows
+#&gt; # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+#&gt; #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+#&gt; #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dbl&gt;
 ```
 
 ---
@@ -296,7 +296,7 @@ flights_db |&gt; select(year:day, dep_delay, arr_delay)
 
 ```
 #&gt; # Source:   SQL [?? x 5]
-#&gt; # Database: sqlite 3.39.4 []
+#&gt; # Database: sqlite 3.41.2 []
 #&gt;     year month   day dep_delay arr_delay
 #&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;
 #&gt;  1  2013     1     1         2        11
@@ -309,7 +309,7 @@ flights_db |&gt; select(year:day, dep_delay, arr_delay)
 #&gt;  8  2013     1     1        -3       -14
 #&gt;  9  2013     1     1        -3        -8
 #&gt; 10  2013     1     1        -2         8
-#&gt; # … with more rows
+#&gt; # ℹ more rows
 ```
 
 ---
@@ -325,23 +325,23 @@ flights_db |&gt; filter(dep_delay &gt; 240)
 
 ```
 #&gt; # Source:   SQL [?? x 19]
-#&gt; # Database: sqlite 3.39.4 []
-#&gt;     year month   day dep_time sched_de…¹ dep_d…² arr_t…³ sched…⁴ arr_d…⁵ carrier
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;      &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;  
-#&gt;  1  2013     1     1      848       1835     853    1001    1950     851 MQ     
-#&gt;  2  2013     1     1     1815       1325     290    2120    1542     338 EV     
-#&gt;  3  2013     1     1     1842       1422     260    1958    1535     263 EV     
-#&gt;  4  2013     1     1     2115       1700     255    2330    1920     250 9E     
-#&gt;  5  2013     1     1     2205       1720     285      46    2040     246 AA     
-#&gt;  6  2013     1     1     2343       1724     379     314    1938     456 EV     
-#&gt;  7  2013     1     2     1332        904     268    1616    1128     288 EV     
-#&gt;  8  2013     1     2     1412        838     334    1710    1147     323 UA     
-#&gt;  9  2013     1     2     1607       1030     337    2003    1355     368 AA     
-#&gt; 10  2013     1     2     2131       1512     379    2340    1741     359 UA     
-#&gt; # … with more rows, 9 more variables: flight &lt;int&gt;, tailnum &lt;chr&gt;,
-#&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-#&gt; #   minute &lt;dbl&gt;, time_hour &lt;dbl&gt;, and abbreviated variable names
-#&gt; #   ¹​sched_dep_time, ²​dep_delay, ³​arr_time, ⁴​sched_arr_time, ⁵​arr_delay
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+#&gt;  1  2013     1     1      848           1835       853     1001           1950
+#&gt;  2  2013     1     1     1815           1325       290     2120           1542
+#&gt;  3  2013     1     1     1842           1422       260     1958           1535
+#&gt;  4  2013     1     1     2115           1700       255     2330           1920
+#&gt;  5  2013     1     1     2205           1720       285       46           2040
+#&gt;  6  2013     1     1     2343           1724       379      314           1938
+#&gt;  7  2013     1     2     1332            904       268     1616           1128
+#&gt;  8  2013     1     2     1412            838       334     1710           1147
+#&gt;  9  2013     1     2     1607           1030       337     2003           1355
+#&gt; 10  2013     1     2     2131           1512       379     2340           1741
+#&gt; # ℹ more rows
+#&gt; # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+#&gt; #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+#&gt; #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dbl&gt;
 ```
 
 ---
@@ -359,7 +359,7 @@ flights_db |&gt;
 
 ```
 #&gt; # Source:   SQL [?? x 2]
-#&gt; # Database: sqlite 3.39.4 []
+#&gt; # Database: sqlite 3.41.2 []
 #&gt;    dest  delay
 #&gt;    &lt;chr&gt; &lt;dbl&gt;
 #&gt;  1 ABQ   13.7 
@@ -372,14 +372,14 @@ flights_db |&gt;
 #&gt;  8 BDL   17.7 
 #&gt;  9 BGR   19.5 
 #&gt; 10 BHM   29.7 
-#&gt; # … with more rows
+#&gt; # ℹ more rows
 ```
 
 ---
 
 # Laziness as a virtue
 
-**What does `# Source: lazy query` mean?**
+Why does it say `# Source: SQL [?? x 2]`? **Evaluation is lazy.**
 * `dbplyr` does as little in R as possible.
 * Instead it passes everything to the database.
 * It doesn't pull any data into R until you ask for it.
@@ -408,7 +408,7 @@ toc()
 ```
 
 ```
-#&gt; 0.23 sec elapsed
+#&gt; 0.17 sec elapsed
 ```
 
 ---
@@ -432,7 +432,7 @@ toc()
 ```
 
 ```
-#&gt; 0.02 sec elapsed
+#&gt; 0.17 sec elapsed
 ```
 --
 
@@ -452,13 +452,13 @@ print(tailnum_delay_db, n = 2)
 
 ```
 #&gt; # Source:     SQL [?? x 4]
-#&gt; # Database:   sqlite 3.39.4 []
+#&gt; # Database:   sqlite 3.41.2 []
 #&gt; # Ordered by: desc(mean_arr_delay)
 #&gt;   tailnum mean_dep_delay mean_arr_delay     n
 #&gt;   &lt;chr&gt;            &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
 #&gt; 1 N11119            32.6           30.3   148
 #&gt; 2 N16919            32.4           29.9   251
-#&gt; # … with more rows
+#&gt; # ℹ more rows
 ```
 
 ```r
@@ -466,7 +466,7 @@ toc()
 ```
 
 ```
-#&gt; 1.58 sec elapsed
+#&gt; 1.51 sec elapsed
 ```
 
 Even then it only pulls down exactly as many rows as you request.
@@ -505,7 +505,7 @@ tailnum_delay
 #&gt;  8 N21130            27.0           25.0   126
 #&gt;  9 N24128            24.8           24.9   129
 #&gt; 10 N22971            26.5           24.7   230
-#&gt; # … with 1,191 more rows
+#&gt; # ℹ 1,191 more rows
 ```
 
 ---
@@ -556,17 +556,14 @@ tailnum_delay_db |&gt; show_query()
 
 ```
 #&gt; &lt;SQL&gt;
-#&gt; SELECT *
-#&gt; FROM (
-#&gt;   SELECT
-#&gt;     `tailnum`,
-#&gt;     AVG(`dep_delay`) AS `mean_dep_delay`,
-#&gt;     AVG(`arr_delay`) AS `mean_arr_delay`,
-#&gt;     COUNT(*) AS `n`
-#&gt;   FROM `flights`
-#&gt;   GROUP BY `tailnum`
-#&gt; )
-#&gt; WHERE (`n` &gt; 100.0)
+#&gt; SELECT
+#&gt;   `tailnum`,
+#&gt;   AVG(`dep_delay`) AS `mean_dep_delay`,
+#&gt;   AVG(`arr_delay`) AS `mean_arr_delay`,
+#&gt;   COUNT(*) AS `n`
+#&gt; FROM `flights`
+#&gt; GROUP BY `tailnum`
+#&gt; HAVING (COUNT(*) &gt; 100.0)
 #&gt; ORDER BY `mean_arr_delay` DESC
 ```
 ]
@@ -1634,7 +1631,7 @@ ON f.year = w.year AND f.month = w.month
 
 4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
 
-5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing -- calculating the percentage within SQL requires a subquery.)*
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing. Calculating the percentage within SQL requires a subquery.)*
 
 
 ---
@@ -1763,7 +1760,7 @@ effort_by_country
 #&gt;  8 GBR              4383738.
 #&gt;  9 JPN              4347252.
 #&gt; 10 NOR              4128516.
-#&gt; # … with 116 more rows
+#&gt; # ℹ 116 more rows
 ```
 
 ---
@@ -1807,17 +1804,17 @@ globe
 #&gt; # A tibble: 20,412 × 3
 #&gt;    lat_bin_center lon_bin_center fishing_hours
 #&gt;             &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;
-#&gt;  1           49.5           -5.5        68192.
-#&gt;  2           65.5          -32.5          624.
-#&gt;  3           70.5          -54.5         3814.
-#&gt;  4           54.5          -10.5         4527.
-#&gt;  5           64.5          -23.5        25260.
-#&gt;  6           66.5          -17.5        25166.
-#&gt;  7           73.5           21.5         1146.
-#&gt;  8           54.5           15.5         6876.
-#&gt;  9           72.5           65.5          259.
-#&gt; 10           70.5           37.5         2806.
-#&gt; # … with 20,402 more rows
+#&gt;  1           52.5          -12.5        15109.
+#&gt;  2           75.5           40.5        14164.
+#&gt;  3           70.5           47.5         1251.
+#&gt;  4           52.5          154.          4258.
+#&gt;  5          -55.5          -72.5          349.
+#&gt;  6          -49.5          -61.5         1726.
+#&gt;  7           51.5           -7.5        33791.
+#&gt;  8           63.5          -16.5         7498.
+#&gt;  9           61.5          176.          4180.
+#&gt; 10           69.5           38.5         1748.
+#&gt; # ℹ 20,402 more rows
 ```
 
 ---

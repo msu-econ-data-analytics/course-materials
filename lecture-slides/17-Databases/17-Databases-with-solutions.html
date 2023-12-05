@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Topic 17: Databases and Big Data</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <script src="17-Databases-with-solutions_files/header-attrs-2.21/header-attrs.js"></script>
+    <link href="17-Databases-with-solutions_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="17-Databases-with-solutions_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="17-Databases-with-solutions_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Topic 17: Databases and Big Data
+]
+.author[
+### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+]
+.date[
+### .small[<br> *These slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/16-databases/16-databases.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
+]
+
+---
+
+exclude: true
+
+
+
+---
+
+# Table of contents
+
+1. [Tools for big data](#bigdata)
+
+1. [Databases in R](#databases)
+
+1. [Writing SQL queries](#sql)
+
+1. [Getting started with BigQuery](#bigquery)
+
+
+---
+class: inverse, middle
+name: bigdata
+
+# Tools for big data
+
+---
+
+# Tools for big data
+
+**What if your datasets are too big to fit in your computer's memory?**
+
+* You probably don't have more than 32 or 64 GB of RAM.
+* Many types of data (e.g., raster data or videos) can easily exceed that.
+* Companies like Amazon and Google work with petabytes of data.
+
+--
+
+**What if your models are taking too long to run on your computer?**
+
+* OLS has a closed-form solution -- `\((X'X)^{-1}X'Y\)` -- but complex specifications can still take a while.
+* Many other statistical models take much longer, since they require numerical optimization.
+* Machine learning models can take orders of magnitude longer to fit and tune.
+
+--
+
+**"Big data is when your workflow breaks."** -Randall Prium
+
+---
+
+# Tools for big data
+
+Solutions that are suboptimal but might be good enough:
+
+**1. Use a random sample of your data to develop your code.**
+   * I.e., use only 10%, 1%, 0.001%, etc.
+   * And then run it on the full dataset only once at the end.
+   * Or don't -- maybe a sample is enough for your purposes!
+
+**2. Talk someone into letting you use a more powerful computer.**
+   * Not always feasible, easy, sustainable, or sufficient.
+   * Check out Montana State's [high performance computing resources](https://www.montana.edu/uit/rci/hpc/).
+
+---
+
+# Tools for big data
+
+Better solutions:
+
+1. **Databases**
+   * An architecture for storing and retrieving data that avoids loading the entire dataset into memory.
+1. **Parallelization ("embarassingly parallel")**
+   * Speed up iterations by parallelizing them across multiple cores on one computer.
+1. **Distributed computing**
+   * Parallelize tasks by breaking up data into chunks and handing it to multiple computers, then combining results.
+1. **Cloud computing**
+   * Get more computing power, memory, or processors by working on virtual machines on remote servers.
+
+---
+
+# Cloud computing
+
+**Set up a virtual machine (VM) on a cloud computing platform.**
+* Easy and cheap. (Much more so than setting up your own server!)
+* Get billed for exactly as much power, memory, and time as you need.
+* For most purposes, you won't use more than a few dollars per month.
+
+**Platforms:**
+* [Google Cloud Compute Engine](https://cloud.google.com/compute/)
+* [Amazon Web Services](https://aws.amazon.com/)
+* [Posit Cloud](https://posit.cloud/) (affiliated with RStudio).
+
+**Tutorials** by Grant McDermott: [Part 1](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/13-gce-i/13-gce-i.html), [Part 2](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/14-gce-ii/14-gce-ii.html).
+
+---
+
+# Distributed computing: Spark
+
+**Spark is a "unified analytics engine for large-scale data processing."**
+* Spark Core: enables distributed computing
+* Spark SQL: a SQL implementation
+* MLlib: An extensive machine learning library.
+
+Spark can scale in ways that other systems can't.
+* Move from a local test dataset to a massive dataset on a remote cluster, with minimal changes to your code.
+
+**Key advantage:** Ability to process data both **in memory** and **on disk.**
+* Combines the best features of cluster computing and relational databases.
+* Uses the optimal combination of resources for where it's deployed.
+* Does most of this quietly, behind the scenes.
+
+**Tutorial** by Grant McDermott: [Here](https://raw.githack.com/uo-ec607/lectures/master/17-spark/17-spark.html)
+
+
+---
+class: inverse, middle
+name: databases
+
+# Databases in R
+
+---
+
+# Preliminaries
+
+Install the packages we'll be using:
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, nycflights13, tictoc)
+```
+
+---
+
+# Databases
+
+**Databases can help when:**
+1. Your data is too large to fit into memory at once
+   - And you don't actually need all of it, only parts or a summary.
+1. Your data is continuously updated by other people/processes.
+
+**Databases store data:**
+* On disk, not in memory.
+* On remote servers (usually, but may also be local).
+* Relationally: they contain multiple tables linked by keys.
+
+To retrieve data from a databases, we submit a **query**.
+* We only get back the results of the query, not the entire raw data.
+* Databases are extremely efficient at executing queries over data stored on disk.
+
+---
+
+# Databases and the tidyverse
+
+Basically all databases use **SQL** (Structured Query Language).
+* SQL is powerful but old and less intuitive than the tidyverse.
+
+Fortunately, `dbplyr` makes it super easy to interact with databases from R.
+* It can automatically translate tidyverse pipelines to SQL.
+* You don't even *need* to learn any SQL to use databases in R.
+
+But we'll still cover some SQL syntax.
+* Knowing SQL gives you a lot more flexibility.
+* And it's necessary for many data science jobs.
+
+---
+
+# SQLite
+
+We'll use **SQLite** as our specific database backend.
+* Not very scalable, but lightweight and open-source.
+* Otherwise we would need to separately install a whole database system.
+
+Some other (more powerful) implementations of SQL:
+* **MySQL:** Open-source. Used by Google, Facebook, LinkedIn, Twitter.
+* **PostgreSQL:** Open-source. Used by Instagram, Reddit.
+* **Oracle** and **Microsoft SQL Server:** widespread in corporate environments.
+* **Google BigQuery:** Cloud solution that you can use with `bigrquery`.
+
+---
+
+# R packages
+
+**The R packages we need:**
+1. `dbplyr` translates tidyverse code to SQL.
+2. `DBI` helps R connect to the database.
+3. A backend interface to the specific type of database we want to work with.
+  * `RSQLite` provides this interface
+  * And also fully embeds a SQLite database.
+
+---
+
+# Connecting to a database
+
+Open an (empty) database connection via `DBI::dbConnect`:
+* The first argument is always the database backend.
+* Other arguments vary across database implementations.
+
+
+```r
+lite_con = dbConnect(RSQLite::SQLite(), path = ":memory:")
+```
+
+The path `":memory:"` creates a temporary in-memory database that we'll play around with *as if* it is a remote on-disk database.
+
+---
+
+# Populate some tables
+
+Our database is empty so far.
+
+Let's copy in our old friend, the `flights` dataframe from `nycflights13`.
+
+
+```r
+copy_to(
+  dest = lite_con, 
+  df = nycflights13::flights, 
+  name = "flights",
+  temporary = FALSE, 
+  indexes = list(c("year", "month", "day"), "carrier", "tailnum", "dest")
+  )
+```
+
+---
+
+# Reference a database table
+
+Now we can use `dplyr::tbl` to use this database table as if it were a dataframe in R:
+
+
+```r
+flights_db = tbl(lite_con, "flights")
+class(flights_db)
+```
+
+```
+#&gt; [1] "tbl_SQLiteConnection" "tbl_dbi"              "tbl_sql"             
+#&gt; [4] "tbl_lazy"             "tbl"
+```
+
+```r
+flights_db
+```
+
+```
+#&gt; # Source:   table&lt;flights&gt; [?? x 19]
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+#&gt;  1  2013     1     1      517            515         2      830            819
+#&gt;  2  2013     1     1      533            529         4      850            830
+#&gt;  3  2013     1     1      542            540         2      923            850
+#&gt;  4  2013     1     1      544            545        -1     1004           1022
+#&gt;  5  2013     1     1      554            600        -6      812            837
+#&gt;  6  2013     1     1      554            558        -4      740            728
+#&gt;  7  2013     1     1      555            600        -5      913            854
+#&gt;  8  2013     1     1      557            600        -3      709            723
+#&gt;  9  2013     1     1      557            600        -3      838            846
+#&gt; 10  2013     1     1      558            600        -2      753            745
+#&gt; # ℹ more rows
+#&gt; # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+#&gt; #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+#&gt; #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dbl&gt;
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+
+```r
+# Select columns
+flights_db |&gt; select(year:day, dep_delay, arr_delay)
+```
+
+```
+#&gt; # Source:   SQL [?? x 5]
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;     year month   day dep_delay arr_delay
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1  2013     1     1         2        11
+#&gt;  2  2013     1     1         4        20
+#&gt;  3  2013     1     1         2        33
+#&gt;  4  2013     1     1        -1       -18
+#&gt;  5  2013     1     1        -6       -25
+#&gt;  6  2013     1     1        -4        12
+#&gt;  7  2013     1     1        -5        19
+#&gt;  8  2013     1     1        -3       -14
+#&gt;  9  2013     1     1        -3        -8
+#&gt; 10  2013     1     1        -2         8
+#&gt; # ℹ more rows
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+
+```r
+# Filter rows
+flights_db |&gt; filter(dep_delay &gt; 240) 
+```
+
+```
+#&gt; # Source:   SQL [?? x 19]
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+#&gt;  1  2013     1     1      848           1835       853     1001           1950
+#&gt;  2  2013     1     1     1815           1325       290     2120           1542
+#&gt;  3  2013     1     1     1842           1422       260     1958           1535
+#&gt;  4  2013     1     1     2115           1700       255     2330           1920
+#&gt;  5  2013     1     1     2205           1720       285       46           2040
+#&gt;  6  2013     1     1     2343           1724       379      314           1938
+#&gt;  7  2013     1     2     1332            904       268     1616           1128
+#&gt;  8  2013     1     2     1412            838       334     1710           1147
+#&gt;  9  2013     1     2     1607           1030       337     2003           1355
+#&gt; 10  2013     1     2     2131           1512       379     2340           1741
+#&gt; # ℹ more rows
+#&gt; # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+#&gt; #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+#&gt; #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dbl&gt;
+```
+
+---
+
+# Generating queries
+
+`dbplr` will automatically translate tidyverse code to SQL.
+
+```r
+# Calculate the mean delay by destination
+flights_db |&gt;
+  group_by(dest) |&gt;
+  summarize(delay = mean(dep_delay))
+```
+
+```
+#&gt; # Source:   SQL [?? x 2]
+#&gt; # Database: sqlite 3.41.2 []
+#&gt;    dest  delay
+#&gt;    &lt;chr&gt; &lt;dbl&gt;
+#&gt;  1 ABQ   13.7 
+#&gt;  2 ACK    6.46
+#&gt;  3 ALB   23.6 
+#&gt;  4 ANC   12.9 
+#&gt;  5 ATL   12.5 
+#&gt;  6 AUS   13.0 
+#&gt;  7 AVL    8.19
+#&gt;  8 BDL   17.7 
+#&gt;  9 BGR   19.5 
+#&gt; 10 BHM   29.7 
+#&gt; # ℹ more rows
+```
+
+---
+
+# Laziness as a virtue
+
+Why does it say `# Source: SQL [?? x 2]`? **Evaluation is lazy.**
+* `dbplyr` does as little in R as possible.
+* Instead it passes everything to the database.
+* It doesn't pull any data into R until you ask for it.
+* It delays the analysis until the last possible moment.
+
+**Demonstration:** How long does it take to calculate mean departure and arrival delays for each plane (i.e., unique tail number)?
+
+---
+
+# Laziness as a virtue
+
+Using the `flights` data frame:
+
+```r
+tic()
+tailnum_delay_tv = flights |&gt; 
+  group_by(tailnum) |&gt;
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |&gt; 
+  filter(n &gt; 100) |&gt;
+  arrange(desc(mean_arr_delay))
+toc()
+```
+
+```
+#&gt; 0.17 sec elapsed
+```
+
+---
+
+# Laziness as a virtue
+
+Using the `flights_db` database table:
+
+```r
+tic()
+tailnum_delay_db = flights_db |&gt; 
+  group_by(tailnum) |&gt;
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |&gt; 
+  filter(n &gt; 100) |&gt;
+  arrange(desc(mean_arr_delay))
+toc()
+```
+
+```
+#&gt; 0.18 sec elapsed
+```
+--
+
+This code does not actually do any calculations! Or even communicate with the database!
+
+---
+
+# Laziness as a virtue
+
+Only when you print the object does it generate the SQL and query the database:
+
+
+```r
+tic()
+print(tailnum_delay_db, n = 4)
+```
+
+```
+#&gt; # Source:     SQL [?? x 4]
+#&gt; # Database:   sqlite 3.41.2 []
+#&gt; # Ordered by: desc(mean_arr_delay)
+#&gt;   tailnum mean_dep_delay mean_arr_delay     n
+#&gt;   &lt;chr&gt;            &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 N11119            32.6           30.3   148
+#&gt; 2 N16919            32.4           29.9   251
+#&gt; 3 N14998            29.4           27.9   230
+#&gt; 4 N15910            29.3           27.6   280
+#&gt; # ℹ more rows
+```
+
+```r
+toc()
+```
+
+```
+#&gt; 1.5 sec elapsed
+```
+
+Even then it tries to do as little work as possible and only pulls down a few rows.
+
+---
+
+# Collect data into your R environment
+
+Once you figure out what data you need, use `collect` to pull the data into a local data frame.
+
+
+```r
+tailnum_delay = tailnum_delay_db |&gt; collect()
+class(tailnum_delay)
+```
+
+```
+#&gt; [1] "tbl_df"     "tbl"        "data.frame"
+```
+
+```r
+tailnum_delay
+```
+
+```
+#&gt; # A tibble: 1,201 × 4
+#&gt;    tailnum mean_dep_delay mean_arr_delay     n
+#&gt;    &lt;chr&gt;            &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+#&gt;  1 N11119            32.6           30.3   148
+#&gt;  2 N16919            32.4           29.9   251
+#&gt;  3 N14998            29.4           27.9   230
+#&gt;  4 N15910            29.3           27.6   280
+#&gt;  5 N13123            29.6           26.0   121
+#&gt;  6 N11192            27.5           25.9   154
+#&gt;  7 N14950            26.2           25.3   219
+#&gt;  8 N21130            27.0           25.0   126
+#&gt;  9 N24128            24.8           24.9   129
+#&gt; 10 N22971            26.5           24.7   230
+#&gt; # ℹ 1,191 more rows
+```
+
+---
+
+# Collect data into your R environment
+
+Now this is a real data frame and we can use it like any other. Is there a relationship between departure and arrival delays?
+
+
+```r
+tailnum_delay |&gt; ggplot(aes(x = mean_dep_delay, y = mean_arr_delay)) +
+  geom_point(alpha = 0.3) +
+  geom_abline(intercept = 0, slope = 1, col="orange")
+```
+
+&lt;img src="17-Databases-with-solutions_files/figure-html/tailnum_delay_ggplot-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, middle
+name: sql
+
+# Writing SQL queries
+
+---
+
+# SQL queries
+
+Let's see what SQL query was generated by `dbplyr`:
+.pull-left[
+
+```r
+tailnum_delay_db = flights_db |&gt; 
+  group_by(tailnum) |&gt;
+  summarize(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) |&gt; 
+  filter(n &gt; 100) |&gt;
+  arrange(desc(mean_arr_delay))
+```
+]
+.pull-right[
+
+```r
+tailnum_delay_db |&gt; show_query()
+```
+
+```
+#&gt; &lt;SQL&gt;
+#&gt; SELECT
+#&gt;   `tailnum`,
+#&gt;   AVG(`dep_delay`) AS `mean_dep_delay`,
+#&gt;   AVG(`arr_delay`) AS `mean_arr_delay`,
+#&gt;   COUNT(*) AS `n`
+#&gt; FROM `flights`
+#&gt; GROUP BY `tailnum`
+#&gt; HAVING (COUNT(*) &gt; 100.0)
+#&gt; ORDER BY `mean_arr_delay` DESC
+```
+]
+
+The SQL code is arguably less elegant. It also does not follow the logical order of operations.
+
+---
+layout: false
+class: clear
+
+&lt;img src="https://wizardzines.com/zines/sql/samples/from.png" width="47%" style="display: block; margin: auto;" /&gt;
+.smaller[Source: Julia Evans, [*Become a Select Star*](https://wizardzines.com/zines/sql/)]
+
+---
+
+# Using SQL directly in R
+
+Let's first generate a simple SQL query we can use to build on:
+
+
+```r
+flights_db |&gt; 
+  filter(dep_delay &gt; 240) |&gt; 
+  head(5) |&gt; 
+  show_query()
+```
+
+```
+#&gt; &lt;SQL&gt;
+#&gt; SELECT *
+#&gt; FROM `flights`
+#&gt; WHERE (`dep_delay` &gt; 240.0)
+#&gt; LIMIT 5
+```
+
+Note: The backticks around objects (`flights` and `dep_delay`) are not strictly necessary.
+
+---
+
+# SQL chunks in R Markdown
+
+When you're using R Markdown, you can directly embed SQL queries:
+
+```sql
+SELECT *
+FROM flights
+WHERE dep_delay &gt; 240
+LIMIT 5
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;5 records&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; carrier &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; flight &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; tailnum &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; origin &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; dest &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hour &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; minute &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; time_hour &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 848 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1835 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 853 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1950 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 851 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MQ &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3944 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N942MQ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; BWI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 184 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357081200 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1815 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1325 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 290 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2120 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 338 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4417 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N17185 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OMA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 213 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1134 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357063200 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1842 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1422 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1958 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1535 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 263 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4633 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N18120 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; BTV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 266 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357066800 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2115 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1700 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 255 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2330 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1920 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 250 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 9E &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3347 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N924XJ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CVG &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 589 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357077600 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2205 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1720 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 285 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2040 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 246 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N5DNAA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MIA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 146 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1085 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357077600 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# SQL queries in regular R scripts
+
+Using `DBI::dbGetQuery()`:
+
+
+```r
+dbGetQuery(lite_con, "SELECT * FROM flights WHERE dep_delay &gt; 240.0 LIMIT 5")
+```
+
+```
+#&gt;   year month day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt; 1 2013     1   1      848           1835       853     1001           1950
+#&gt; 2 2013     1   1     1815           1325       290     2120           1542
+#&gt; 3 2013     1   1     1842           1422       260     1958           1535
+#&gt; 4 2013     1   1     2115           1700       255     2330           1920
+#&gt; 5 2013     1   1     2205           1720       285       46           2040
+#&gt;   arr_delay carrier flight tailnum origin dest air_time distance hour minute
+#&gt; 1       851      MQ   3944  N942MQ    JFK  BWI       41      184   18     35
+#&gt; 2       338      EV   4417  N17185    EWR  OMA      213     1134   13     25
+#&gt; 3       263      EV   4633  N18120    EWR  BTV       46      266   14     22
+#&gt; 4       250      9E   3347  N924XJ    JFK  CVG      115      589   17      0
+#&gt; 5       246      AA   1999  N5DNAA    EWR  MIA      146     1085   17     20
+#&gt;    time_hour
+#&gt; 1 1357081200
+#&gt; 2 1357063200
+#&gt; 3 1357066800
+#&gt; 4 1357077600
+#&gt; 5 1357077600
+```
+
+---
+
+# SQL queries in regular R scripts
+
+What tables do we have in our database?
+
+```r
+dbListTables(lite_con)
+```
+
+```
+#&gt; [1] "flights"      "sqlite_stat1" "sqlite_stat4"
+```
+
+Show the columns/fields of a table:
+
+```r
+dbListFields(lite_con, "flights")
+```
+
+```
+#&gt;  [1] "year"           "month"          "day"            "dep_time"      
+#&gt;  [5] "sched_dep_time" "dep_delay"      "arr_time"       "sched_arr_time"
+#&gt;  [9] "arr_delay"      "carrier"        "flight"         "tailnum"       
+#&gt; [13] "origin"         "dest"           "air_time"       "distance"      
+#&gt; [17] "hour"           "minute"         "time_hour"
+```
+
+---
+
+# SQL syntax
+
+**From before:** Return the first 5 rows that meet a specified filter:
+
+```sql
+SELECT *
+FROM flights
+WHERE dep_delay &gt; 240
+LIMIT 5
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;5 records&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; carrier &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; flight &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; tailnum &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; origin &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; dest &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hour &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; minute &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; time_hour &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 848 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1835 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 853 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1950 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 851 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MQ &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3944 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N942MQ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; BWI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 184 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357081200 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1815 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1325 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 290 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2120 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 338 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4417 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N17185 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OMA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 213 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1134 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357063200 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1842 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1422 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1958 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1535 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 263 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4633 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N18120 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; BTV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 266 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357066800 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2115 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1700 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 255 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2330 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1920 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 250 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 9E &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3347 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N924XJ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; CVG &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 589 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357077600 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2205 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1720 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 285 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2040 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 246 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N5DNAA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MIA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 146 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1085 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357077600 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# SQL syntax
+
+Return only selected columns:
+
+```sql
+SELECT dep_delay, arr_delay
+FROM flights
+LIMIT 5
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;5 records&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# SQL syntax
+
+Count rows:
+
+```sql
+SELECT COUNT(*)
+FROM flights
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;1 records&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; COUNT(*) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 336776 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Count distinct/unique values:
+
+```sql
+SELECT COUNT(DISTINCT dep_delay)
+FROM flights
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;1 records&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; COUNT(DISTINCT dep_delay) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 527 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# Challenge
+
+`mutate(new_var = var 1 * var2)` translates to `SELECT var1 * var2 AS near_var`.
+
+Can you translate this R code to a SQL query?
+
+
+```r
+flights_db |&gt;
+  select(distance, air_time) |&gt;
+  mutate(speed = distance / (air_time / 60))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+
+
+```sql
+SELECT distance, air_time, distance / (air_time / 60) AS speed
+FROM flights
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;Displaying records 1 - 10&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; speed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1400 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 370.0441 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1416 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 374.2731 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1089 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 408.3750 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1576 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 516.7213 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 762 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 394.1379 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 719 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 150 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 287.6000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1065 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 158 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 404.4304 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 229 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 53 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 259.2453 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 944 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 404.5714 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 733 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 138 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 318.6957 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# Joins
+
+Joins are more flexible in SQL than R.
+
+Let's put the `weather` data frame in the database as well:
+
+```r
+copy_to(
+  dest = lite_con,
+  df = nycflights13::weather,
+  name = "weather",
+  temporary = FALSE,
+  indexes = list(c("year", "month", "day", "hour"))
+  )
+```
+
+---
+
+# Joins
+
+Here's an example:
+
+```sql
+SELECT *
+FROM flights AS f
+LEFT JOIN weather AS w 
+ON f.origin = w.origin AND f.year = w.year AND f.month = w.month 
+  AND f.day = w.day AND f.hour = w.hour
+```
+
+
+&lt;table&gt;
+&lt;caption&gt;Displaying records 1 - 10&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; carrier &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; flight &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; tailnum &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; origin &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; dest &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hour &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; minute &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; time_hour &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; origin &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hour &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; temp &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dewp &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; humid &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; wind_dir &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; wind_speed &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; wind_gust &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; precip &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; pressure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; visib &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; time_hour &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 517 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 819 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; UA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1545 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N14228 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; IAH &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1400 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 64.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.65858 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 533 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; UA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1714 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N24211 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; IAH &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1416 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 24.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 250 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14.96014 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.86482 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 540 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 923 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1141 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N619AA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MIA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1089 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14.96014 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1012.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 544 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 545 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1022 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; B6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 725 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N804JB &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; BQN &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1576 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14.96014 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1012.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 812 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; DL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 461 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N668DN &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ATL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 762 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 24.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.11092 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.01560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 740 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 728 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; UA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1696 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N39463 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ORD &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 150 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 719 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 64.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.65858 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357034400 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 555 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 913 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 854 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; B6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 507 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N516JB &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; FLL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 158 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1065 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EWR &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 67.21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 240 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11.50780 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1012.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 557 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 709 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 723 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -14 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EV &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5708 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N829AS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; IAD &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 53 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 229 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 24.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.11092 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.01560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 557 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 838 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 846 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; B6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N593JB &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; MCO &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 944 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; JFK &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 64.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13.80936 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1012.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 745 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 301 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; N3ALAA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ORD &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 138 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 733 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LGA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 24.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 260 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.11092 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.01560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1011.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1357038000 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# Tidyverse-to-SQL summary table
+
+|tidyverse | SQL |
+|--|--|
+| &lt;code&gt;dataset &amp;vert;&gt;&lt;/code&gt;  | `FROM dataset` |
+| `select()`     | `SELECT` |
+| `filter()`     | `WHERE` |
+| `mutate()`     | `SELECT ... AS` |
+| `arrange()`     | `ORDER BY` |
+| &lt;code&gt;group_by() &amp;vert;&gt; summarize()&lt;/code&gt;   | `SELECT ... AS ... GROUP BY` |
+| `left_join()`   | `LEFT JOIN ... ON` |
+| `head()`        | `LIMIT` |
+
+---
+
+# More challenges
+
+**Use SQL queries to answer these questions for year 2013:**
+
+1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows.
+
+2. List the number of flights to Bozeman per month, naming this column `flights_count`. Were they year-round or in specific seasons?
+
+3. What were the top 10 longest flights out of NYC airports?
+
+4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
+
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing. Calculating the percentage within SQL requires a subquery.)*
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Disconnect
+
+When you're done using a database, make sure to **disconnect** from the connection:
+
+
+```r
+dbDisconnect(lite_con)
+```
+
+
+---
+class: inverse, middle
+name: bigquery
+
+# Getting started with BigQuery
+
+---
+
+# Google Cloud BigQuery
+
+If you want to learn more SQL, I suggest you play around with **Google BigQuery** using the [web interface](https://console.cloud.google.com/bigquery). 
+- Sandbox (Google Cloud Free Tier): Free to analyze 1 TB per month.
+- Free trial of Google Cloud: Gives you a $300 credit to use for 90 days.
+- Cheap after that: Half a cent per GB.
+
+Incredible [public datasets](https://www.reddit.com/r/bigquery/wiki/datasets/). E.g.:
+* All open-source code on GitHub (1.7+ TB)
+* 1.9 billion comments on Reddit (546+ GB)
+* 1 billion taxi trips in NYC (130+ GB)
+
+You can get started with Google's tutorial on [how to query a public dataset](https://cloud.google.com/bigquery/docs/quickstarts/query-public-dataset-console).
+
+---
+
+# Try it out
+
+**Start here:** [https://console.cloud.google.com/bigquery](https://console.cloud.google.com/bigquery)
+1. Log in with your personal Google account
+2. Agree to the terms to use BigQuery
+3. **DISMISS** the banner asking you to start your free trial (do not activate it unless you want to)
+4. Create a project (Select a Project --&gt; New Project)
+5. Copy your Project Number (click on the Google Cloud logo)
+
+Store your project number as an **environment variable,** like with API keys.
+* Run this line **IN YOUR R CONSOLE,** replacing the fake string of digits with your project number:
+
+```r
+Sys.setenv(GCE_DEFAULT_PROJECT_ID = "1234567890")
+```
+
+---
+
+# Connect to BigQuery
+
+In particular, using public data from Global Fishing Watch:
+
+
+```r
+gfw_con = dbConnect(
+  bigrquery::bigquery(),
+  project = "global-fishing-watch",
+  dataset = "global_footprint_of_fisheries",
+  billing = Sys.getenv("GCE_DEFAULT_PROJECT_ID")
+  )
+
+dbListTables(gfw_con)
+```
+
+```
+#&gt; [1] "fishing_effort"          "fishing_effort_byvessel"
+#&gt; [3] "fishing_vessels"         "vessels"
+```
+
+---
+
+# Which countries fish the most?
+
+
+```sql
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+```
+
+What this looks like in the R Markdown script:
+````markdown
+```{sql connection = gfw_con, output.var = "effort_by_country"}
+SELECT flag, SUM(fishing_hours) AS total_fishing_hours
+FROM fishing_effort
+GROUP BY flag
+ORDER BY total_fishing_hours DESC
+```
+
+Running job '1234567890.job_HiDalrETlYSSTb6XvKty8tMX4j_f.US' [|]  2s
+Complete
+Billed: 2.35 GB
+Downloading first chunk of data.
+Downloading the remaining 10,412 rows in 2 chunks of (up to) 10,000 rows.
+````
+
+---
+
+# Which countries fish the most?
+
+
+```r
+effort_by_country
+```
+
+```
+#&gt; # A tibble: 126 × 2
+#&gt;    flag  total_fishing_hours
+#&gt;    &lt;chr&gt;               &lt;dbl&gt;
+#&gt;  1 CHN             57711389.
+#&gt;  2 ESP              8806223.
+#&gt;  3 ITA              6790417.
+#&gt;  4 FRA              6122613.
+#&gt;  5 RUS              5660001.
+#&gt;  6 KOR              5585248.
+#&gt;  7 TWN              5337054.
+#&gt;  8 GBR              4383738.
+#&gt;  9 JPN              4347252.
+#&gt; 10 NOR              4128516.
+#&gt; # ℹ 116 more rows
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+We need a nested query:
+
+
+```sql
+SELECT
+  lat_bin_center,
+  lon_bin_center,
+  SUM(fishing_hours) AS fishing_hours
+FROM (
+  SELECT
+    *,
+    FLOOR(lat_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lat_bin_center,
+    FLOOR(lon_bin / 100.0) * 1.0 + 0.5 * 1.0 AS lon_bin_center
+  FROM fishing_effort
+  WHERE
+    _PARTITIONTIME &gt;= '2016-01-01 00:00:00' AND
+    _PARTITIONTIME &lt;= '2016-12-31 00:00:00'
+    AND fishing_hours &gt; 0.0
+)
+GROUP BY lat_bin_center, lon_bin_center
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+Here are the results:
+
+
+```r
+globe
+```
+
+```
+#&gt; # A tibble: 20,412 × 3
+#&gt;    lat_bin_center lon_bin_center fishing_hours
+#&gt;             &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;
+#&gt;  1           52.5          -12.5        15109.
+#&gt;  2           75.5           40.5        14164.
+#&gt;  3           70.5           47.5         1251.
+#&gt;  4           52.5          154.          4258.
+#&gt;  5          -55.5          -72.5          349.
+#&gt;  6          -49.5          -61.5         1726.
+#&gt;  7           51.5           -7.5        33791.
+#&gt;  8           63.5          -16.5         7498.
+#&gt;  9           61.5          176.          4180.
+#&gt; 10           69.5           38.5         1748.
+#&gt; # ℹ 20,402 more rows
+```
+
+---
+
+# Extract a 1° grid of fishing hours
+
+
+&lt;img src="17-Databases-with-solutions_files/figure-html/unnamed-chunk-24-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Always disconnect
+
+
+```r
+dbDisconnect(gfw_con)
+```
+
+
+---
+
+# Summary
+
+1. [Tools for big data](#bigdata)
+
+1. [Databases in R](#databases)
+
+1. [Writing SQL queries](#sql)
+
+1. [Getting started with BigQuery](#bigquery)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

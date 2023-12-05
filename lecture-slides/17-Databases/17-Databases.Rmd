@@ -1,5 +1,5 @@
 ---
-title: "Lecture 17: Databases and Big Data"
+title: "Topic 17: Databases and Big Data"
 author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
 date: ".small[<br> *These slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/16-databases/16-databases.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 output:
@@ -178,7 +178,7 @@ To retrieve data from a databases, we submit a **query**.
 
 # Databases and the tidyverse
 
-Basically all databases use **SQL** (Structured Query Language). SQL is:
+Basically all databases use **SQL** (Structured Query Language).
 * SQL is powerful but old and less intuitive than the tidyverse.
 
 Fortunately, `dbplyr` makes it super easy to interact with databases from R.
@@ -301,7 +301,7 @@ flights_db |>
 
 # Laziness as a virtue
 
-**What does `# Source: lazy query` mean?**
+Why does it say `# Source: SQL [?? x 2]`? **Evaluation is lazy.**
 * `dbplyr` does as little in R as possible.
 * Instead it passes everything to the database.
 * It doesn't pull any data into R until you ask for it.
@@ -627,7 +627,7 @@ ON f.year = w.year AND f.month = w.month
 
 4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
 
-5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing -- calculating the percentage within SQL requires a subquery.)*
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing. Calculating the percentage within SQL requires a subquery.)*
 
 
 ---

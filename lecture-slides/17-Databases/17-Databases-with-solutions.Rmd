@@ -1,7 +1,7 @@
 ---
 title: "Topic 17: Databases and Big Data"
 author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
-date: "<br> *Based partly on materials by [Grant McDermott](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/15-databases/15-databases.html) under an MIT license."
+date: ".small[<br> *These slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/16-databases/16-databases.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
@@ -191,7 +191,7 @@ To retrieve data from a databases, we submit a **query**.
 
 # Databases and the tidyverse
 
-Basically all databases use **SQL** (Structured Query Language). SQL is:
+Basically all databases use **SQL** (Structured Query Language).
 * SQL is powerful but old and less intuitive than the tidyverse.
 
 Fortunately, `dbplyr` makes it super easy to interact with databases from R.
@@ -307,7 +307,7 @@ flights_db |>
 
 # Laziness as a virtue
 
-**What does `# Source: lazy query` mean?**
+Why does it say `# Source: SQL [?? x 2]`? **Evaluation is lazy.**
 * `dbplyr` does as little in R as possible.
 * Instead it passes everything to the database.
 * It doesn't pull any data into R until you ask for it.
@@ -623,7 +623,7 @@ ON f.origin = w.origin AND f.year = w.year AND f.month = w.month
 
 # More challenges
 
-Use SQL queries to answer these questions for year 2013:
+**Use SQL queries to answer these questions for year 2013:**
 
 1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows.
 
@@ -633,7 +633,7 @@ Use SQL queries to answer these questions for year 2013:
 
 4. Ignore duplicate routes. Which 10 distinct *routes* had the longest flights?
 
-5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below and above freezing -- calculating the percentage within SQL requires a subquery.)*
+5. **Advanced:** What percentage of flights took off in freezing temperatures? Make sure to confirm the join gives you what you want. *(Hint: First just count the number of flights that took off in temperatures below/above freezing. Calculating the percentage within SQL requires a subquery.)*
 
 ```{sql connection=lite_con, echo=F, eval=F}
 /* 1. How many nonstop flights went from New York airports to Bozeman (BZN)? Return all matching rows. */
