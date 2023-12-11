@@ -219,7 +219,7 @@ This is a list of further resources that you may find helpful throughout (and af
 * [GitHub Guides: Hello World](https://guides.github.com/activities/hello-world/). Branches and merges in GitHub.
 * [GitHub Guides: Forking Projects](https://guides.github.com/activities/forking/). Forking and pull requests in GitHub.
 * [*Happy Git and GitHub for the useR*](https://happygitwithr.com/) (Jenny Bryan). How to take advantage of RStudio's convenient built-in features that integrate Git and GitHub.
-* [*Big Data in Economics* Lecture 2: Version Control with Git(Hub)](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/02-git/02-git.html) (Grant McDermott). Getting started with Git at the command line.
+* [*Big Data in Economics* Lecture 2: Version Control with Git(Hub)](https://raw.githack.com/uo-ec607/lectures/master/02-git/02-Git.html) (Grant McDermott). Getting started with Git at the command line.
 * [*Data Science for Economists* Ch. 3: Using Git and GitHub.com](https://raw.githack.com/tyleransom/DScourseS21/master/LectureNotes/03-CLI-Git/git_tutorial.pdf) (Tyler Ransom). More on Git at the command line.
 
 ### Data wrangling with the tidyverse
@@ -277,6 +277,7 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries). Another great tutorial, though focused more on ecology than social science.
 * [*Modern Data Science with R* Chapters 17-18](https://mdsr-book.github.io/mdsr2e/ch-spatial.html) (Baumer, Kaplan, and Horton). Chapter 17: Working with geospatial data. Chapter 18: Geospatial computations.
 * [*Geocomputation with R*](https://geocompr.robinlovelace.net/) (Lovelace, Nowosad, and Muenchow). Comprehensive treatment of GIS tools in R.
+* [*Raster Analysis with `terra`*](https://www.wvview.org/os_sa/15b_Raster_Analysis_terra.html) (Aaron Maxwell). Up-to-date introduction to working with raster data in R.
 
 ### Data visualization
 * [*Introduction to Data Science* Chapters 6-10: Data Visualization](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry).

@@ -130,7 +130,7 @@ Better solutions:
 * [Amazon Web Services](https://aws.amazon.com/)
 * [Posit Cloud](https://posit.cloud/) (affiliated with RStudio).
 
-**Tutorials** by Grant McDermott: [Part 1](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/13-gce-i/13-gce-i.html), [Part 2](https://raw.githack.com/uo-ec510-2020-spring/lectures/master/14-gce-ii/14-gce-ii.html).
+**Tutorials** by Grant McDermott: [Part 1](https://raw.githack.com/uo-ec607/lectures/master/14-gce-i/14-gce-i.html), [Part 2](https://raw.githack.com/uo-ec607/lectures/master/14-gce-ii/14-gce-ii.html).
 
 ---
 
