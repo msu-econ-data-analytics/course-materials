@@ -1,4 +1,6 @@
-% Course Materials for Advanced Data Analytics in Economics
+---
+title: Course Materials for Advanced Data Analytics in Economics
+---
 
 Nick Hagerty, Montana State University
 
