@@ -1,4 +1,4 @@
-# Course Materials for Advanced Data Analytics in Economics
+% Course Materials for Advanced Data Analytics in Economics
 
 Nick Hagerty, Montana State University
 
@@ -14,10 +14,12 @@ Except where otherwise noted, this work is licensed under <a rel="license" href=
 
 ## Lecture slides
 
-Fall 2023
+Fall 2024
+
+### Part I: Pre-Analytical Tools
 
 [**Topic 1: R Basics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html)
-([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf))
+<!-- ([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf)) -->
 
 * About R
 * Operators
@@ -61,43 +63,38 @@ Fall 2023
 * Webscraping
 * Using APIs
 
-[**Topic 7: Best Practices for Coding and Workflows**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html)
+[**Topic 7: Best Practices of Coding and Workflows**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html)
 
 * The perils of bad data cleaning
 * Reproducibility and transparency
 * Best practices (code organization, file organization, version control, abstraction, commenting, unit tests)
 
-**Topic 8: Exploratory Analysis**
 
-* [**Part 1: Understanding individual variables**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part1.html)
+### Part II: Core Analytical Tools
+
+[**Topic 8: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html)
+
+* The Data Generating Process
+* Potential outcomes, counterfactuals, and causal inference
+* Descriptive, Predictive, or Causal Analysis?
+
+**Topic 9: Exploratory Analysis**
+
+* [**Part 1: Understanding variables**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part1.html)
   * Summaries, frequency tables and crosstabs in R
   * Characterizing distributions
   * Handling extreme values
   * Handling variable transformations
   * Handling missing data
 
-* [**Part 2: Understanding variable relationships**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part2.html)
+* [**Part 2: Understanding relationships**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part2.html)
   * Characterizing relationships
   * Binscatter
   * The Conditional Expectation Function
   * Adjusting for other variables
   * Bin smoothing and local regression
 
-[**Topic 9: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html)
-
-* Basics of `ggplot2`
-* Plotting examples
-* Colors and themes
-* Principles of data visualization
-* Case studies
-
-[**Topic 10: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html)
-
-* The Data Generating Process
-* Potential outcomes, counterfactuals, and causal inference
-* Descriptive, Predictive, or Causal Analysis?
-
-[**Topic 11: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/11-Regression.html)
+[**Topic 10: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/11-Regression.html)
 
 * Basic regression in R
 * Indicator and interaction terms
@@ -105,13 +102,36 @@ Fall 2023
 * Modeling nonlinear relationships
 * Using regression models for prediction
 
-[**Topic 12: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/12-Learning.html)
+[**Topic 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html)
+
+* Basics of `ggplot2`
+* Plotting examples
+* Colors and themes
+* Principles of data visualization
+* Case studies
+
+
+### Part III: Extended Analytical Tools
+
+**Topic 12: Spatial Analysis**
+
+* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html)
+  - Spatial data and quick mapping
+  - Reference systems and projections
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html)
+  - Spatial queries (measurement, relationships)
+  - Spatial subsetting
+  - Geometry operations
+  - Spatial joins
+
+[**Topic 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/12-Learning.html)
 
 * Overview: Statistical learning
 * Assessing model accuracy
 * Cross-validation
 
-**Topic 13: Prediction Methods**
+**Topic 14: Prediction Methods**
 
 * [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/13a-Shrinkage.html)
   - Shrinkage methods
@@ -125,7 +145,24 @@ Fall 2023
   - Prediction
   - Dependence
 
-**Topic 14: Classification Methods**
+[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html)
+
+* Predicting outcomes
+* Constructing new data
+* Selecting covariates
+* Predicting causal effects
+
+[**Topic 16: Databases and Big Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html)
+
+* Tools for big data
+* Databases in R
+* Writing SQL queries
+* Getting started with BigQuery
+
+
+### Part IV: Further extensions not covered in class
+
+**ML Methods for Classification Tasks**
 
 * [**Part 1: Methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/14a-Classification.html)
   - Classification
@@ -139,31 +176,6 @@ Fall 2023
   - Decision trees
   - Teach your laptop to read
 
-[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html)
-
-* Predicting outcomes
-* Constructing new data
-* Selecting covariates
-* Predicting causal effects
-
-**Topic 16: Spatial Analysis**
-
-* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf)
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html)
-  - Spatial data and quick mapping
-  - Reference systems and projections
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html)
-  - Spatial queries (measurement, relationships)
-  - Spatial subsetting
-  - Geometry operations
-  - Spatial joins
-
-[**Topic 17: Databases and Big Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html)
-
-* Tools for big data
-* Databases in R
-* Writing SQL queries
-* Getting started with BigQuery
 
 ---
 
@@ -272,13 +284,6 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Introduction to Data Science* Chapter 28: Smoothing](https://rafalab.github.io/dsbook/smoothing.html) (Rafael A. Irizarry). Bin smoothing, kernels, and local regression.
 * DataCamp tutorial (free for 6 months for enrolled students): [Exploratory Data Analysis in R](https://learn.datacamp.com/courses/exploratory-data-analysis-in-r).
 
-### Spatial analysis
-* [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Great tutorial. Core concepts, vector data, spatial analysis, raster data.
-* [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries). Another great tutorial, though focused more on ecology than social science.
-* [*Modern Data Science with R* Chapters 17-18](https://mdsr-book.github.io/mdsr2e/ch-spatial.html) (Baumer, Kaplan, and Horton). Chapter 17: Working with geospatial data. Chapter 18: Geospatial computations.
-* [*Geocomputation with R*](https://geocompr.robinlovelace.net/) (Lovelace, Nowosad, and Muenchow). Comprehensive treatment of GIS tools in R.
-* [*Raster Analysis with `terra`*](https://www.wvview.org/os_sa/15b_Raster_Analysis_terra.html) (Aaron Maxwell). Up-to-date introduction to working with raster data in R.
-
 ### Data visualization
 * [*Introduction to Data Science* Chapters 6-10: Data Visualization](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry).
 * [*Modern Data Science with R* Chapters 2-3](https://mdsr-book.github.io/mdsr2e/ch-vizI.html) (Baumer, Kaplan, and Horton). Chapter 2: Principles of data visualization. Chapter 3: Plotting with ggplot2.
@@ -297,6 +302,13 @@ This is a list of further resources that you may find helpful throughout (and af
 * DataCamp tutorials (free for 6 months for enrolled students):
   - [Introduction to Regression in R](https://learn.datacamp.com/courses/introduction-to-regression-in-r)
   - [Intermediate Regression in R](https://learn.datacamp.com/courses/intermediate-regression-in-r)
+
+### Spatial analysis
+* [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Great tutorial. Core concepts, vector data, spatial analysis, raster data.
+* [Introduction to Geospatial Raster and Vector Data with R](https://datacarpentry.org/r-raster-vector-geospatial/) (The Carpentries). Another great tutorial, though focused more on ecology than social science.
+* [*Modern Data Science with R* Chapters 17-18](https://mdsr-book.github.io/mdsr2e/ch-spatial.html) (Baumer, Kaplan, and Horton). Chapter 17: Working with geospatial data. Chapter 18: Geospatial computations.
+* [*Geocomputation with R*](https://geocompr.robinlovelace.net/) (Lovelace, Nowosad, and Muenchow). Comprehensive treatment of GIS tools in R.
+* [*Raster Analysis with `terra`*](https://www.wvview.org/os_sa/15b_Raster_Analysis_terra.html) (Aaron Maxwell). Up-to-date introduction to working with raster data in R.
 
 ### Fundamentals of machine learning
 * [*ISLR* Ch. 2: Statistical Learning](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Statistical learning, assessing model accuracy.

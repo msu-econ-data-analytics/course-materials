@@ -1,7 +1,7 @@
 ---
 title: "Topic 1: R Basics"
 subtitle: ""
-author: "Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty* <br> ECNS 460/560 Fall 2024 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/r-basics.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).]"
 
 output:
@@ -58,9 +58,11 @@ knitr::opts_chunk$set(
 
 1. [About R](#R)
 
-1. [Operators](#operators)
+1. [Getting started with R](#basics)
 
-1. [Objects and functions](#objects)
+1. [Reference: Operators](#operators)
+
+1. [Reference: Objects and functions](#objects)
 
 1. [Data frames](#data-frames)
 
@@ -152,9 +154,10 @@ Rising competitor to both: Julia
 - Some of you will know more than me about things we’re learning about
   *	Please speak up and share!
 
+
 ---
 
-# R and RStudio
+# R versus RStudio
 
 - R is like the car's engine
 
@@ -172,11 +175,12 @@ Rising competitor to both: Julia
 
 1. **Try a new script and save it**
 
-1. **Set global options (Tools -> Options)**
-  * Uncheck "Restore .RData into workspace at start"
-  * Set "Save workspace to .RData on exit" to "Never"
+1. **Use scripts for everything**
 
 1. **Keyboard shortcuts**
+  * Up-arrow to access previous commands
+  * Ctl+Enter (or Cmd+Return) to run selected lines
+
 
 ---
 
@@ -193,7 +197,7 @@ As we go through examples, **retype everything yourself and run it line by line*
 class: inverse, middle
 name: operators
 
-# Operators
+# Reference: Operators
 
 ---
 
@@ -269,7 +273,7 @@ What should you do if you don't understand it?
 class: inverse, middle
 name: objects
 
-# Objects and functions
+# Reference: Objects and functions
 
 ---
 
@@ -370,6 +374,13 @@ log(bill)
 log(exp(50))
 ```
 
+
+---
+class: inverse, middle
+name: data-frames
+
+# Data frames
+
 ---
 
 # Data types
@@ -388,12 +399,6 @@ class(a)
 class("a")
 class(TRUE)
 ```
-
----
-class: inverse, middle
-name: data-frames
-
-# Data frames
 
 ---
 
@@ -457,6 +462,7 @@ head(murders)
 View(murders)
 ```
 
+
 ---
 
 # The accessor ($)
@@ -515,12 +521,13 @@ rm(a)
 But generally it's better to just **start a new R session.** (Try this now.)
 
 * Your environment is transient. Don't get attached to objects in it.
-
 * Exit R when you're done working. Never save your environment.
-
 * To re-create objects later, plan to re-run your script.
-
 * When you need to keep something, save it to a file (we'll get to this soon).
+
+**Set these global options (Tools -> Options)**
+  * Uncheck "Restore .RData into workspace at start"
+  * Set "Save workspace to .RData on exit" to "Never"
 
 
 ---
@@ -644,6 +651,8 @@ codes
 ---
 
 # Challenge
+
+Pair programming! Try this with a neighbor:
 
 ```{r, eval=F}
 library(dslabs)
@@ -824,7 +833,7 @@ sum(low)
 
 # Challenge
 
-Try this on your own, and compare with a neighbor:
+Try this with a neighbor:
 
 **Which state has the most murders?**
 
@@ -900,13 +909,16 @@ record$grades[3]
 
 ---
 
+
 # Table of contents
 
 1. [About R](#R)
 
-1. [Operators](#operators)
+1. [Getting started with R](#basics)
 
-1. [Objects and functions](#objects)
+1. [Reference: Operators](#operators)
+
+1. [Reference: Objects and functions](#objects)
 
 1. [Data frames](#data-frames)
 
@@ -914,3 +926,8 @@ record$grades[3]
 
 1. [Miscellaneous basics](#misc)
 
+
+```{r gen_pdf, include = FALSE, cache = FALSE, eval = TRUE}
+# infile = grep("(?<!solutions)\\.html", list.files(), perl=T, value=T)
+# pagedown::chrome_print(input = infile, timeout = 100)
+```

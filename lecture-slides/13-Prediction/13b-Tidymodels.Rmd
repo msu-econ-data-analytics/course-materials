@@ -536,7 +536,7 @@ How about listing only the non-zero coefficients?
 
 ```{r}
 coefs_nonzero = coefs |>
-  filter(estimate > 0)
+  filter(estimate != 0)
 ```
 
 ```{R, echo = F}

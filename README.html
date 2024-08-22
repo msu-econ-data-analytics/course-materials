@@ -11,7 +11,7 @@
 
 
 
-<title>README</title>
+<title>Course Materials for Advanced Data Analytics in Economics</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -348,12 +348,12 @@ display: none;
 
 
 
+<h1 class="title toc-ignore">Course Materials for Advanced Data
+Analytics in Economics</h1>
 
 </div>
 
 
-<div id="course-materials-for-advanced-data-analytics-in-economics" class="section level1">
-<h1>Course Materials for Advanced Data Analytics in Economics</h1>
 <p>Nick Hagerty, Montana State University</p>
 <p>Except where otherwise noted, this work is licensed under
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative
@@ -364,9 +364,12 @@ slides</a> | <a href="#supplemental-labs">Supplemental labs</a> | <a href="#exte
 <hr />
 <div id="lecture-slides" class="section level2">
 <h2>Lecture slides</h2>
-<p>Fall 2023</p>
+<p>Fall 2024</p>
+<div id="part-i-pre-analytical-tools" class="section level3">
+<h3>Part I: Pre-Analytical Tools</h3>
 <p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/01-R-basics/01-R-basics.html"><strong>Topic
-1: R Basics</strong></a> (<a href="https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf">.pdf</a>)</p>
+1: R Basics</strong></a>
+<!-- ([.pdf](https://github.com/msu-econ-data-analytics/course-materials/blob/main/lecture-slides/01-R-basics/01-R-basics.pdf)) --></p>
 <ul>
 <li>About R</li>
 <li>Operators</li>
@@ -418,17 +421,27 @@ version</a>)</li>
 <li>Using APIs</li>
 </ul>
 <p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/07-Best-Practices/07-Best-Practices.html"><strong>Topic
-7: Best Practices for Coding and Workflows</strong></a></p>
+7: Best Practices of Coding and Workflows</strong></a></p>
 <ul>
 <li>The perils of bad data cleaning</li>
 <li>Reproducibility and transparency</li>
 <li>Best practices (code organization, file organization, version
 control, abstraction, commenting, unit tests)</li>
 </ul>
-<p><strong>Topic 8: Exploratory Analysis</strong></p>
+</div>
+<div id="part-ii-core-analytical-tools" class="section level3">
+<h3>Part II: Core Analytical Tools</h3>
+<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html"><strong>Topic
+8: Distinguishing Goals of Data Analysis</strong></a></p>
+<ul>
+<li>The Data Generating Process</li>
+<li>Potential outcomes, counterfactuals, and causal inference</li>
+<li>Descriptive, Predictive, or Causal Analysis?</li>
+</ul>
+<p><strong>Topic 9: Exploratory Analysis</strong></p>
 <ul>
 <li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part1.html"><strong>Part
-1: Understanding individual variables</strong></a>
+1: Understanding variables</strong></a>
 <ul>
 <li>Summaries, frequency tables and crosstabs in R</li>
 <li>Characterizing distributions</li>
@@ -437,7 +450,7 @@ control, abstraction, commenting, unit tests)</li>
 <li>Handling missing data</li>
 </ul></li>
 <li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part2.html"><strong>Part
-2: Understanding variable relationships</strong></a>
+2: Understanding relationships</strong></a>
 <ul>
 <li>Characterizing relationships</li>
 <li>Binscatter</li>
@@ -446,24 +459,8 @@ control, abstraction, commenting, unit tests)</li>
 <li>Bin smoothing and local regression</li>
 </ul></li>
 </ul>
-<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html"><strong>Topic
-9: Data Visualization</strong></a></p>
-<ul>
-<li>Basics of <code>ggplot2</code></li>
-<li>Plotting examples</li>
-<li>Colors and themes</li>
-<li>Principles of data visualization</li>
-<li>Case studies</li>
-</ul>
-<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html"><strong>Topic
-10: Distinguishing Goals of Data Analysis</strong></a></p>
-<ul>
-<li>The Data Generating Process</li>
-<li>Potential outcomes, counterfactuals, and causal inference</li>
-<li>Descriptive, Predictive, or Causal Analysis?</li>
-</ul>
 <p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/11-Regression.html"><strong>Topic
-11: Regression Modeling</strong></a></p>
+10: Regression Modeling</strong></a></p>
 <ul>
 <li>Basic regression in R</li>
 <li>Indicator and interaction terms</li>
@@ -471,14 +468,45 @@ control, abstraction, commenting, unit tests)</li>
 <li>Modeling nonlinear relationships</li>
 <li>Using regression models for prediction</li>
 </ul>
+<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html"><strong>Topic
+11: Data Visualization</strong></a></p>
+<ul>
+<li>Basics of <code>ggplot2</code></li>
+<li>Plotting examples</li>
+<li>Colors and themes</li>
+<li>Principles of data visualization</li>
+<li>Case studies</li>
+</ul>
+</div>
+<div id="part-iii-extended-analytical-tools" class="section level3">
+<h3>Part III: Extended Analytical Tools</h3>
+<p><strong>Topic 12: Spatial Analysis</strong></p>
+<ul>
+<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf"><strong>Intro
+to Geospatial Data</strong></a></li>
+<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html"><strong>Part
+1</strong></a>
+<ul>
+<li>Spatial data and quick mapping</li>
+<li>Reference systems and projections</li>
+</ul></li>
+<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html"><strong>Part
+2</strong></a>
+<ul>
+<li>Spatial queries (measurement, relationships)</li>
+<li>Spatial subsetting</li>
+<li>Geometry operations</li>
+<li>Spatial joins</li>
+</ul></li>
+</ul>
 <p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/12-Learning.html"><strong>Topic
-12: Machine Learning Fundamentals</strong></a></p>
+13: Machine Learning Fundamentals</strong></a></p>
 <ul>
 <li>Overview: Statistical learning</li>
 <li>Assessing model accuracy</li>
 <li>Cross-validation</li>
 </ul>
-<p><strong>Topic 13: Prediction Methods</strong></p>
+<p><strong>Topic 14: Prediction Methods</strong></p>
 <ul>
 <li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/13a-Shrinkage.html"><strong>Part
 1: Shrinkage methods</strong></a>
@@ -498,7 +526,26 @@ control, abstraction, commenting, unit tests)</li>
 <li>Dependence</li>
 </ul></li>
 </ul>
-<p><strong>Topic 14: Classification Methods</strong></p>
+<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html"><strong>Topic
+15: Machine Learning in Economics</strong></a></p>
+<ul>
+<li>Predicting outcomes</li>
+<li>Constructing new data</li>
+<li>Selecting covariates</li>
+<li>Predicting causal effects</li>
+</ul>
+<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html"><strong>Topic
+16: Databases and Big Data</strong></a></p>
+<ul>
+<li>Tools for big data</li>
+<li>Databases in R</li>
+<li>Writing SQL queries</li>
+<li>Getting started with BigQuery</li>
+</ul>
+</div>
+<div id="part-iv-further-extensions-not-covered-in-class" class="section level3">
+<h3>Part IV: Further extensions not covered in class</h3>
+<p><strong>ML Methods for Classification Tasks</strong></p>
 <ul>
 <li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Classification/14a-Classification.html"><strong>Part
 1: Methods</strong></a>
@@ -518,42 +565,8 @@ control, abstraction, commenting, unit tests)</li>
 <li>Teach your laptop to read</li>
 </ul></li>
 </ul>
-<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html"><strong>Topic
-15: Machine Learning in Economics</strong></a></p>
-<ul>
-<li>Predicting outcomes</li>
-<li>Constructing new data</li>
-<li>Selecting covariates</li>
-<li>Predicting causal effects</li>
-</ul>
-<p><strong>Topic 16: Spatial Analysis</strong></p>
-<ul>
-<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf"><strong>Intro
-to Geospatial Data</strong></a></li>
-<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html"><strong>Part
-1</strong></a>
-<ul>
-<li>Spatial data and quick mapping</li>
-<li>Reference systems and projections</li>
-</ul></li>
-<li><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html"><strong>Part
-2</strong></a>
-<ul>
-<li>Spatial queries (measurement, relationships)</li>
-<li>Spatial subsetting</li>
-<li>Geometry operations</li>
-<li>Spatial joins</li>
-</ul></li>
-</ul>
-<p><a href="https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/17-Databases/17-Databases.html"><strong>Topic
-17: Databases and Big Data</strong></a></p>
-<ul>
-<li>Tools for big data</li>
-<li>Databases in R</li>
-<li>Writing SQL queries</li>
-<li>Getting started with BigQuery</li>
-</ul>
 <hr />
+</div>
 </div>
 <div id="supplemental-labs" class="section level2">
 <h2>Supplemental labs</h2>
@@ -811,28 +824,6 @@ smoothing, kernels, and local regression.</li>
 Data Analysis in R</a>.</li>
 </ul>
 </div>
-<div id="spatial-analysis" class="section level3">
-<h3>Spatial analysis</h3>
-<ul>
-<li><a href="https://github.com/dlab-berkeley/R-Geospatial-Fundamentals">R
-Geospatial Fundamentals</a> (UC Berkeley D-Lab). Great tutorial. Core
-concepts, vector data, spatial analysis, raster data.</li>
-<li><a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction
-to Geospatial Raster and Vector Data with R</a> (The Carpentries).
-Another great tutorial, though focused more on ecology than social
-science.</li>
-<li><a href="https://mdsr-book.github.io/mdsr2e/ch-spatial.html"><em>Modern
-Data Science with R</em> Chapters 17-18</a> (Baumer, Kaplan, and
-Horton). Chapter 17: Working with geospatial data. Chapter 18:
-Geospatial computations.</li>
-<li><a href="https://geocompr.robinlovelace.net/"><em>Geocomputation
-with R</em></a> (Lovelace, Nowosad, and Muenchow). Comprehensive
-treatment of GIS tools in R.</li>
-<li><a href="https://www.wvview.org/os_sa/15b_Raster_Analysis_terra.html"><em>Raster
-Analysis with <code>terra</code></em></a> (Aaron Maxwell). Up-to-date
-introduction to working with raster data in R.</li>
-</ul>
-</div>
 <div id="data-visualization" class="section level3">
 <h3>Data visualization</h3>
 <ul>
@@ -882,6 +873,28 @@ to Regression in R</a></li>
 <li><a href="https://learn.datacamp.com/courses/intermediate-regression-in-r">Intermediate
 Regression in R</a></li>
 </ul></li>
+</ul>
+</div>
+<div id="spatial-analysis" class="section level3">
+<h3>Spatial analysis</h3>
+<ul>
+<li><a href="https://github.com/dlab-berkeley/R-Geospatial-Fundamentals">R
+Geospatial Fundamentals</a> (UC Berkeley D-Lab). Great tutorial. Core
+concepts, vector data, spatial analysis, raster data.</li>
+<li><a href="https://datacarpentry.org/r-raster-vector-geospatial/">Introduction
+to Geospatial Raster and Vector Data with R</a> (The Carpentries).
+Another great tutorial, though focused more on ecology than social
+science.</li>
+<li><a href="https://mdsr-book.github.io/mdsr2e/ch-spatial.html"><em>Modern
+Data Science with R</em> Chapters 17-18</a> (Baumer, Kaplan, and
+Horton). Chapter 17: Working with geospatial data. Chapter 18:
+Geospatial computations.</li>
+<li><a href="https://geocompr.robinlovelace.net/"><em>Geocomputation
+with R</em></a> (Lovelace, Nowosad, and Muenchow). Comprehensive
+treatment of GIS tools in R.</li>
+<li><a href="https://www.wvview.org/os_sa/15b_Raster_Analysis_terra.html"><em>Raster
+Analysis with <code>terra</code></em></a> (Aaron Maxwell). Up-to-date
+introduction to working with raster data in R.</li>
 </ul>
 </div>
 <div id="fundamentals-of-machine-learning" class="section level3">
@@ -1035,7 +1048,6 @@ Data Science with R</em> Chapter 15: Database querying using SQL</a>
 Data Science with R</em> Chapter 21: Epilogue: Towards “big data”</a>
 (Baumer, Kaplan, and Horton).</li>
 </ul>
-</div>
 </div>
 </div>
 
