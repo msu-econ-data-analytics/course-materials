@@ -713,6 +713,25 @@ with(murders, plot(x = population, y = total))  # These lines are equivalent
 ```
 &lt;img src="01-R-basics-with-solutions_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
+---
+
+# Challenge
+
+Pair programming! Try this with a neighbor:
+
+**Plot a histogram of state murder rates, per 100,000 people.** (Hint: You can use usual arithmetic operations on vectors; they work element-wise.)
+
+Bonus, if you finish quickly: Which state has the worst murder rate?
+
+--
+ 
+Solution:
+
+```r
+hist(murders$total / murders$population * 100000)
+```
+
+&lt;img src="01-R-basics-with-solutions_files/figure-html/unnamed-chunk-36-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, middle
