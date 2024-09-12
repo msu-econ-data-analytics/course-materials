@@ -1,6 +1,6 @@
 ---
 title: "Topic 5: Data Cleaning"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts] 
@@ -85,7 +85,7 @@ flights_planes = inner_join(
   planes |> rename(year_built = year),
   by = "tailnum"
   )
-flights_planes |> summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+flights_planes |> summarize(across(c(air_time, distance, seats), \(x) mean(x, na.rm=T)))
 
 ```
 

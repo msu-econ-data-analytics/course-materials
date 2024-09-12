@@ -1,6 +1,6 @@
 ---
 title: "Topic 4: Data Wrangling in the Tidyverse"
-author: "Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty* <br> ECNS 460/560 <br> Montana State University"
 date: ".smaller[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/05-tidyverse/05-tidyverse.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE). Images are from [ModernDive](https://moderndive.com/3-wrangling.html) by Chester Ismay and Albert Y. Kim, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]"
 output:
   xaringan::moon_reader:
