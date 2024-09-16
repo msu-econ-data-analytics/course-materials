@@ -85,7 +85,8 @@ flights_planes = inner_join(
   planes |> rename(year_built = year),
   by = "tailnum"
   )
-flights_planes |> summarize(across(c(air_time, distance, seats), \(x) mean(x, na.rm=T)))
+flights_planes |> 
+  summarize(across(c(air_time, distance, seats), \(x) mean(x, na.rm=T)))
 
 ```
 
@@ -163,13 +164,13 @@ Can you find the problem here? Try to figure out how it arises and why.
 inner_flights_planes = flights |>
   inner_join(planes |> rename(year_built = year), by="tailnum")
 inner_flights_planes |> 
-  summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+  summarize(across(c(air_time, distance, seats), \(x) mean(x, na.rm=T)))
 ```
 ```{r}
 left_flights_planes = flights |>
   left_join(planes |> rename(year_built = year), by="tailnum")
 left_flights_planes |> 
-  summarize(across(c(air_time, distance, seats), mean, na.rm=T))
+  summarize(across(c(air_time, distance, seats), \(x) mean(x, na.rm=T)))
 
 ```
 
@@ -1002,13 +1003,13 @@ name: checklist
 
 # Data Cleaning Checklist
 
-**Part A.** Get to know your data frame.
+Neither exhaustive nor necessary for all purposes, but a good starting point.
 
 ***
 
-1. **Convert file formats**, as necessary.
+1. **Convert file formats** as necessary, and import your data.
 
-1. **Import data and wrangle into a tidy layout.**
+1. **Structure data into tidy format** if not already.
 
 1. **Remove irrelevant, garbage, or empty** columns and rows.
 
@@ -1024,92 +1025,114 @@ name: checklist
 
 # Data Cleaning Checklist
 
-**Part B.** Check your variables.
+Neither exhaustive nor necessary for all purposes, but a good starting point.
 
 ***
 
-1. **Understand patterns of missing values.**
-  - Find out why they're missing.
-  - Make sure they are not more widespread than you expect.
-  - Convert other intended designations (i.e., -1 or -999) to NA.
-  - Distinguish between missing values and true zeros.
+<ol start=8>
 
-1. **Convert to numeric** when variables are inappropriately stored as strings. Correct typos as necessary.
+<li><b>Convert variable formats</b> as necessary:
 
-1. **Convert to date/time** format where appropriate.
+<ul>
+   <li> Numeric variables -- may be inappropriately stored as strings when there are typos.
+   <li> Dates and times -- store in date or time format.
+   <li> Binary variables -- code as 0/1 integers (not "Yes"/"No" or 1/2).
+   <li> Factors -- use when strings take a limited set of possible values.
+   <li> ID variables -- store as integers or character, not numeric.
+   <li> Strings of digits -- store as character, not numeric.
+</ul>
+<br>
 
-1. **Recode binary variables** as 0/1 as necessary. (Often stored as "Yes"/"No" or 1/2.)
+<li><b>Understand patterns of missing values.</b>
 
-1. **Convert to factors** when strings take a limited set of possible values.
+<ul>
+   <li> Find out why they're missing.
+   <li> Make sure they are not more widespread than you expect.
+   <li> Convert other intended designations (i.e., -1 or -999) to NA.
+   <li> Distinguish between missing values and true zeros.
+</ul>
+<br>
 
+</ol>
 
 ---
 
 # Data Cleaning Checklist
 
-**Part C.** Check the values of your quantitative variables.
+<ol start=10>
 
-***
+<li><b>Make units and scales consistent.</b> Avoid having in the same variable:
 
-1. **Make units and scales consistent.** Avoid having in the same variable:
-  - Some values in meters and others in feet.
-  - Some values in USD and others in GBP.
-  - Some percentages as 40% and others as 0.4.
-  - Some values as millions and others as billions.
+<ul>
+   <li> Some values in meters and others in feet.
+   <li> Some values in USD and others in GBP.
+   <li> Some percentages as 40% and others as 0.4.
+   <li> Some values as millions and others as billions.
+</ul>
+<br>
 
-1. **Perform logical checks on quantitative variables:**
-  - Define any range restrictions each variable should satisfy, and check them.
-  - Correct any violations that are indisputable data entry mistakes.
-  - Create a flag variable to mark remaining violations.
+<li><b>Enforce logical conditions on quantitative variables.</b>
+
+<ul>
+   <li> Define any range restrictions each variable should satisfy, and check them.
+   <li> Correct any violations that are indisputable data entry mistakes.
+   <li> Create a flag variable to mark remaining violations.
+</ul>
+<br>
+ 
+<li><b>Clean string variables</b> as needed. Some common operations:
+
+<ul>
+   <li> Make entirely uppercase or lowercase
+   <li> Remove punctuation
+   <li> Trim spaces (extra, starting, ending)
+   <li> Ensure order of names is consistent
+   <li> Remove uninformative words like "the" and "a"
+   <li> Correct spelling inconsistencies (consider text clustering packages)
+</ul>
+<br>
+
+</ol>
 
 ---
 
 # Data Cleaning Checklist
 
-**Part D.** Check the rest of your values.
+Neither exhaustive nor necessary for all purposes, but a good starting point.
 
 ***
 
-1. **Clean string variables.** Some common operations:
-  - Make entirely uppercase or lowercase
-  - Remove punctuation
-  - Trim spaces (extra, starting, ending)
-  - Ensure order of names is consistent
-  - Remove uninformative words like "the" and "a"
-  - Correct spelling inconsistencies (consider text clustering packages)
+<ol start=13>
 
-1. **Literally look at your data** tables every step of the way, to spot issues you haven't thought of, and to make sure you're actually doing what you think you're doing.
+<li><b>Save your clean data</b> to disk before further manipulation (merging data, transforming variables, restricting the sample). Think of the whole wrangling/cleaning/analysis pipeline as 2 distinct phases:
 
+<ul>
+   <li> Taking messy data from external sources and making a nice, neat table that you are likely to use for multiple purposes in analysis.
+   <li> Taking that nice, neat table and doing all kinds of new things with it.
+</ul>
+<br>
+
+</ol>
 
 ---
 
-# Data Cleaning Checklist
-
-**Part E.** Finish up the cleaning phase.
-
-***
-
-1. **Save your clean data** to disk before further manipulation (merging dataframes, transforming variables, restricting the sample). Think of the whole wrangling/cleaning/analysis pipeline as 2 big phases:
-
-  - Taking messy data from external sources and making a nice, neat table that you are likely to use for multiple purposes in analysis.
-  - Taking that nice, neat table and doing all kinds of new things with it.
+# Best practices for data cleaning
 
 1. **Record all steps in a script.**
-  
+
+--
+
 1. **Never overwrite the original raw data file.**
 
+--
 
----
+1. **When editing values, identify observations by substantive logical conditions** rather than by observation ID or (even worse) row number. You want the changes you make to be rule-based, for 2 reasons:
+   * So that they're general -- able to handle upstream changes to the data.
+   * So that they're principled -- no one can accuse you of cherry-picking.
 
-# Data cleaning tips
+--
 
-Whenever possible, make changes to values ONLY by logical conditions on one or more substantive variables -- not by observation ID or (even worse) row number.
-
-You want the changes you make to be rule-based, for 2 reasons:
-
-* So that they're general -- able to handle upstream changes to the data.
-* So that they're principled -- no one can accuse you of cherry-picking.
-
+1. **Look at your data** every step of the way, to spot issues you haven't thought of, and to make sure you're actually doing what you think you're doing.
 
 ---
 
