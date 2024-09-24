@@ -3,7 +3,7 @@
   <head>
     <title>Topic 6: Data Acquisition</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Topic 6: Data Acquisition
 ]
 .author[
-### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -176,32 +176,7 @@ Let's scrape this table with `rvest`.
 
 ```r
 library(tidyverse)
-```
-
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.1     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-```
-
-```r
 library(rvest)
-```
-
-```
-## 
-## Attaching package: 'rvest'
-## 
-## The following object is masked from 'package:readr':
-## 
-##     guess_encoding
 ```
 
 First, read the whole page into R:
@@ -214,9 +189,9 @@ page
 
 ```
 ## {html_document}
-## &lt;html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-page-header-disabled vector-feature-sticky-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-zebra-design-disabled vector-feature-custom-font-size-clientpref-disabled vector-feature-client-preferences-disabled" lang="en" dir="ltr"&gt;
+## &lt;html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-page-header-disabled vector-feature-sticky-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-1 vector-feature-appearance-pinned-clientpref-1 vector-feature-night-mode-enabled skin-theme-clientpref-day vector-toc-available" lang="en" dir="ltr"&gt;
 ## [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
-## [2] &lt;body class="skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr ...
+## [2] &lt;body class="skin--responsive skin-vector skin-vector-search-vue mediawik ...
 ```
 
 ---
@@ -587,20 +562,20 @@ bzn_house_prices
 ```
 
 ```
-## # A tibble: 86 × 4
+## # A tibble: 98 × 4
 ##    realtime_start realtime_end date       value   
 ##    &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;   
-##  1 2023-09-27     2023-09-27   2016-07-01 524950.0
-##  2 2023-09-27     2023-09-27   2016-08-01 525000.0
-##  3 2023-09-27     2023-09-27   2016-09-01 519450.0
-##  4 2023-09-27     2023-09-27   2016-10-01 529000.0
-##  5 2023-09-27     2023-09-27   2016-11-01 527000.0
-##  6 2023-09-27     2023-09-27   2016-12-01 552450.0
-##  7 2023-09-27     2023-09-27   2017-01-01 583500.0
-##  8 2023-09-27     2023-09-27   2017-02-01 592000.0
-##  9 2023-09-27     2023-09-27   2017-03-01 558125.0
-## 10 2023-09-27     2023-09-27   2017-04-01 599000.0
-## # ℹ 76 more rows
+##  1 2024-09-23     2024-09-23   2016-07-01 524950.0
+##  2 2024-09-23     2024-09-23   2016-08-01 525000.0
+##  3 2024-09-23     2024-09-23   2016-09-01 519450.0
+##  4 2024-09-23     2024-09-23   2016-10-01 529000.0
+##  5 2024-09-23     2024-09-23   2016-11-01 527000.0
+##  6 2024-09-23     2024-09-23   2016-12-01 552450.0
+##  7 2024-09-23     2024-09-23   2017-01-01 583500.0
+##  8 2024-09-23     2024-09-23   2017-02-01 592000.0
+##  9 2024-09-23     2024-09-23   2017-03-01 558125.0
+## 10 2024-09-23     2024-09-23   2017-04-01 599000.0
+## # ℹ 88 more rows
 ```
 
 ---
@@ -620,7 +595,7 @@ bzn_house_prices
 ```
 
 ```
-## # A tibble: 86 × 2
+## # A tibble: 98 × 2
 ##    date       median_price
 ##    &lt;date&gt;            &lt;dbl&gt;
 ##  1 2016-07-01       524950
@@ -633,7 +608,7 @@ bzn_house_prices
 ##  8 2017-02-01       592000
 ##  9 2017-03-01       558125
 ## 10 2017-04-01       599000
-## # ℹ 76 more rows
+## # ℹ 88 more rows
 ```
 
 ---
@@ -653,12 +628,16 @@ ggplot(bzn_house_prices, aes(x = date, y = median_price)) +
 
 # Challenge
 
-**How has Bozeman's pandemic housing market compared with other cities?**
-* Get similar data from 2-3 other housing markets you're interested in.
-* Plot time-series graphs for each housing market.
-* More advanced:
-  - Write a function to retrieve each series.
-  - Combine all the results in 1 dataframe (keep it tidy!).
+**How has Bozeman's post-pandemic housing market compared with other cities?**
+* Get similar data from 1 other housing market you're interested in.
+* Plot a time-series graph for this market and compare it with Bozeman's.
+
+More advanced:
+ - Get data from several more housing markets.
+ - Combine all the results in 1 dataframe (keep it tidy!) and plot them all on 1 graph.
+  
+Even more advanced:
+ - Write and use a function to retrieve each series.
 
 ---
 

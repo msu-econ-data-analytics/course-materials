@@ -3,7 +3,7 @@
   <head>
     <title>Topic 6: Data Acquisition</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Topic 6: Data Acquisition
 ]
 .author[
-### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -176,32 +176,7 @@ Let's scrape this table with `rvest`.
 
 ```r
 library(tidyverse)
-```
-
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.1     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-```
-
-```r
 library(rvest)
-```
-
-```
-## 
-## Attaching package: 'rvest'
-## 
-## The following object is masked from 'package:readr':
-## 
-##     guess_encoding
 ```
 
 First, read the whole page into R:
@@ -582,12 +557,16 @@ ggplot(bzn_house_prices, aes(x = date, y = median_price)) +
 
 # Challenge
 
-**How has Bozeman's pandemic housing market compared with other cities?**
-* Get similar data from 2-3 other housing markets you're interested in.
-* Plot time-series graphs for each housing market.
-* More advanced:
-  - Write a function to retrieve each series.
-  - Combine all the results in 1 dataframe (keep it tidy!).
+**How has Bozeman's post-pandemic housing market compared with other cities?**
+* Get similar data from 1 other housing market you're interested in.
+* Plot a time-series graph for this market and compare it with Bozeman's.
+
+More advanced:
+ - Get data from several more housing markets.
+ - Combine all the results in 1 dataframe (keep it tidy!) and plot them all on 1 graph.
+  
+Even more advanced:
+ - Write and use a function to retrieve each series.
 
 
 ---

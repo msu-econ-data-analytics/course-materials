@@ -1,6 +1,6 @@
 ---
 title: "Topic 6: Data Acquisition"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/07-web-apis/07-web-apis.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 output:
   xaringan::moon_reader:
@@ -169,7 +169,7 @@ Webpages are largely made out of HTML and CSS files that we have to parse.
 --
 
 Let's scrape this table with `rvest`.
-```{r, results = F}
+```{r, results = F, message = F}
 library(tidyverse)
 library(rvest)
 ```
@@ -438,12 +438,16 @@ ggplot(bzn_house_prices, aes(x = date, y = median_price)) +
 
 # Challenge
 
-**How has Bozeman's pandemic housing market compared with other cities?**
-* Get similar data from 2-3 other housing markets you're interested in.
-* Plot time-series graphs for each housing market.
-* More advanced:
-  - Write a function to retrieve each series.
-  - Combine all the results in 1 dataframe (keep it tidy!).
+**How has Bozeman's post-pandemic housing market compared with other cities?**
+* Get similar data from 1 other housing market you're interested in.
+* Plot a time-series graph for this market and compare it with Bozeman's.
+
+More advanced:
+ - Get data from several more housing markets.
+ - Combine all the results in 1 dataframe (keep it tidy!) and plot them all on 1 graph.
+  
+Even more advanced:
+ - Write and use a function to retrieve each series.
 
 
 ---
