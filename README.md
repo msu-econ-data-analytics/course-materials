@@ -271,7 +271,7 @@ This is a list of further resources that you may find helpful throughout (and af
 * [Evidence on Research Transparency in Economics](https://pubs.aeaweb.org/doi/pdf/10.1257/jep.35.3.193) (Edward Miguel, *Journal of Economic Perspectives* 2021).
 * [Best Practices for Scientific Computing](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745) (Wilson et al. 2014).
 * [Code and Data for the Social Sciences: A Practitioner's Guide](https://web.stanford.edu/~gentzkow/research/CodeAndData.pdf) (Gentzkow & Shapiro 2014).
-* [Coding for Economists: A Language-Agnostic Guide to Programming for Economists](https://scholar.harvard.edu/files/ristovska/files/coding_for_econs_20190221.pdf) (Ljubica "LJ" Ristovska 2019).
+* [Coding for Economists: A Language-Agnostic Guide to Programming for Economists](https://ljristovska.com/assets/docs/coding_for_econs_20190221.pdf) (Ljubica "LJ" Ristovska 2019).
 * [The tidyverse style guide](https://style.tidyverse.org/) (Hadley Wickham).
 
 ### Distinguishing goals of data analysis
