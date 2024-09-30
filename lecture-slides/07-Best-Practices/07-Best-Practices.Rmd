@@ -1,6 +1,6 @@
 ---
 title: "Topic 7: <br> Best Practices for Coding & Workflows"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts] 
