@@ -1,6 +1,6 @@
 ---
-title: "Topic 10: <br> Distinguishing Goals of Data Analysis"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+title: "Topic 8: <br> Distinguishing Goals of Data Analysis"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts] 
@@ -545,11 +545,11 @@ Key differences among the 3 goals:
 What **methods** should we use for each goal?
 
 1. .hi-turquoise[**Descriptive analysis:**] **Exploratory analysis and regression.**
-   - Already covered / covering next class!
+   - Starting next week!
    
 2. .hi[**Causal inference:**] **Econometrics.**
    - See your other classes.
 
 3. .hi-purple[**Prediction:**] **Statistical learning / machine learning.**
-   - Introduction next week!
+   - Introduction later in the semester!
 

@@ -72,7 +72,7 @@ Fall 2024
 
 ### Part II: Core Analytical Tools
 
-[**Topic 8: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Distinguishing-Goals/10-Distinguishing-Goals.html)
+[**Topic 8: Distinguishing Goals of Data Analysis**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Distinguishing-Goals/08-Distinguishing-Goals.html)
 
 * The Data Generating Process
 * Potential outcomes, counterfactuals, and causal inference
@@ -80,21 +80,21 @@ Fall 2024
 
 **Topic 9: Exploratory Analysis**
 
-* [**Part 1: Understanding variables**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part1.html)
+* [**Part 1: Understanding variables**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/08-Exploratory-part1.html)
   * Summaries, frequency tables and crosstabs in R
   * Characterizing distributions
   * Handling extreme values
   * Handling variable transformations
   * Handling missing data
 
-* [**Part 2: Understanding relationships**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/08-Exploratory/08-Exploratory-part2.html)
+* [**Part 2: Understanding relationships**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Exploratory/08-Exploratory-part2.html)
   * Characterizing relationships
   * Binscatter
   * The Conditional Expectation Function
   * Adjusting for other variables
   * Bin smoothing and local regression
 
-[**Topic 10: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Regression/11-Regression.html)
+[**Topic 10: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Regression/11-Regression.html)
 
 * Basic regression in R
 * Indicator and interaction terms
@@ -102,7 +102,7 @@ Fall 2024
 * Modeling nonlinear relationships
 * Using regression models for prediction
 
-[**Topic 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/09-Visualization/09-Visualization.html)
+[**Topic 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/09-Visualization.html)
 
 * Basics of `ggplot2`
 * Plotting examples
@@ -284,6 +284,14 @@ This is a list of further resources that you may find helpful throughout (and af
 * [*Introduction to Data Science* Chapter 28: Smoothing](https://rafalab.github.io/dsbook/smoothing.html) (Rafael A. Irizarry). Bin smoothing, kernels, and local regression.
 * DataCamp tutorial (free for 6 months for enrolled students): [Exploratory Data Analysis in R](https://learn.datacamp.com/courses/exploratory-data-analysis-in-r).
 
+### Regression modeling in R
+* [*Big Data in Economics* Lecture 8: Regression Analysis in R](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) (Grant McDermott).
+* [*Prediction and Machine Learning* Lab 4: Regression with R](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/04RReg/04RReg.html) (Ed Rubin).
+* [*ISLR* Ch. 7: Moving Beyond Linearity](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Polynomial regressions, step functions, splines.
+* DataCamp tutorials (free for 6 months for enrolled students):
+  - [Introduction to Regression in R](https://learn.datacamp.com/courses/introduction-to-regression-in-r)
+  - [Intermediate Regression in R](https://learn.datacamp.com/courses/intermediate-regression-in-r)
+
 ### Data visualization
 * [*Introduction to Data Science* Chapters 6-10: Data Visualization](https://rafalab.github.io/dsbook/introduction-to-data-visualization.html) (Rafael A. Irizarry).
 * [*Modern Data Science with R* Chapters 2-3](https://mdsr-book.github.io/mdsr2e/ch-vizI.html) (Baumer, Kaplan, and Horton). Chapter 2: Principles of data visualization. Chapter 3: Plotting with ggplot2.
@@ -294,14 +302,6 @@ This is a list of further resources that you may find helpful throughout (and af
 * DataCamp tutorials (free for 6 months for enrolled students):
   - [Introduction to Data Visualization with ggplot2](https://learn.datacamp.com/courses/introduction-to-data-visualization-with-ggplot2)
   - [Intermediate Data Visualization with ggplot2](https://learn.datacamp.com/courses/intermediate-data-visualization-with-ggplot2)
-
-### Regression modeling in R
-* [*Big Data in Economics* Lecture 8: Regression Analysis in R](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) (Grant McDermott).
-* [*Prediction and Machine Learning* Lab 4: Regression with R](https://raw.githack.com/edrubin/EC525S19/master/NotesLab/04RReg/04RReg.html) (Ed Rubin).
-* [*ISLR* Ch. 7: Moving Beyond Linearity](https://web.stanford.edu/~hastie/ISLR2/ISLRv2_website.pdf) (James, Witten, Hastie, Tibshirani). Polynomial regressions, step functions, splines.
-* DataCamp tutorials (free for 6 months for enrolled students):
-  - [Introduction to Regression in R](https://learn.datacamp.com/courses/introduction-to-regression-in-r)
-  - [Intermediate Regression in R](https://learn.datacamp.com/courses/intermediate-regression-in-r)
 
 ### Spatial analysis
 * [R Geospatial Fundamentals](https://github.com/dlab-berkeley/R-Geospatial-Fundamentals) (UC Berkeley D-Lab). Great tutorial. Core concepts, vector data, spatial analysis, raster data.
