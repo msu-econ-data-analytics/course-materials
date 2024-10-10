@@ -1,6 +1,6 @@
 ---
 title: "Topic 11: Regression Modeling"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 
 output:
@@ -62,6 +62,8 @@ knitr::opts_chunk$set(
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+
 
 1. [Appendix: Interpreting coefficients](#interpret)
 
@@ -778,6 +780,56 @@ ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
 
 
 ---
+class: inverse, middle
+name: missing
+
+# Handling missing data
+
+---
+
+# Missing data
+
+Best option: **Find it.** (The alternatives are not great...)
+
+--
+
+Try to figure out why the values are missing. Then choose one of these options:
+
+**Delete** the observations with missing values.
+- Most common choice in economics research.
+- Caveat results as valid *for the nonmissing sample*.
+- No problem at all under a "Missing Completely at Random" assumption. (Plausible?)
+- Usually the only option if your outcome variable is missing.
+
+--
+
+**Impute** the values (with means/medians, group means, or "multiple imputation" methods).
+- Fill in the missing value, predicting it based on the values of other variables.
+- Still relies on a "Missing at Random" assumption.
+- Common in prediction problems.
+- Rare in economics. For causal inference, can introduce new problems.
+
+---
+
+# Missing data
+
+**Interpolate** the values between its neighbors in time or space.
+- Time: Assume values change linearly (or exponentially) between observations.
+  - Useful in panel data for control variables / predictors.
+  - Example: Control for population in each year, but only have data every 10 years.
+- Space: Assume values change smoothly in two spatial dimensions.
+  - Inverse distance weighting; kriging (can be done using GIS tools)
+  - Example: Fill in groundwater levels at every farm, but only have measurements at certain places.
+
+--
+
+**Create a flag** (binary variable) to indicate observations with missing values.
+- Then replace the `NA`'s in the original variable with a consistent value, such as `0` or the sample mean. This works so long as you always include both variables in the analysis.
+- Allows you to keep the observation and not lose the rest of its information.
+- Easy. Works well for both prediction and causal inference.
+
+
+---
 
 # Summary
 
@@ -790,6 +842,8 @@ ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+1. [Handling missing data](#missing)
 
 1. [Appendix: Interpreting coefficients](#interpret)
 

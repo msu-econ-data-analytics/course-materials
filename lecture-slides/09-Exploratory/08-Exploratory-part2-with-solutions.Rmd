@@ -1,7 +1,7 @@
 ---
 title: "Topic 8: Exploratory Analysis"
 subtitle: "Part 2: See how variables relate to each other"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: [default, metropolis, metropolis-fonts]
@@ -227,10 +227,10 @@ Binscatter divides your X variable into "bins" and plots the mean of Y within ea
 First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
 ```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
-london2 = london2 |>
-  mutate(longitude_bins = factor(ntile(longitude, 50)))
-ggplot(london2, aes(x = longitude, y = ln_price, color = longitude_bins)) +
-  geom_point()
+london2 = london2 |> mutate(longitude_bins = factor(ntile(longitude, 40)),
+                            bin_color = factor(ntile(longitude, 40) %% 8))
+ggplot(london2, aes(x = longitude, y = ln_price, color = bin_color)) +
+  geom_point() + scale_color_brewer(palette = "Set2")
 ```
 
 ---
@@ -238,14 +238,15 @@ ggplot(london2, aes(x = longitude, y = ln_price, color = longitude_bins)) +
 # Binscatter
 
 Then, calculate the means of both X and Y within each bin.
-```{r, fig.height = 3.5, message = FALSE, warning = FALSE, out.width = "80%"}
+```{r, fig.height = 3.25, message = FALSE, warning = FALSE, out.width = "80%"}
 london3 = london2 |>
   group_by(longitude_bins) |>
   mutate(ln_price_binned = mean(ln_price, na.rm = TRUE),
          longitude_binned = mean(longitude, na.rm = TRUE))
 ggplot(london3) +
-  geom_point(aes(x = longitude, y = ln_price, color = longitude_bins)) +
-  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2)
+  geom_point(aes(x = longitude, y = ln_price, color = bin_color)) +
+  geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
+  scale_color_brewer(palette = "Set2")
 ```
 
 ---
@@ -506,7 +507,21 @@ So... **why are we always running regressions??**
 
 # Why Use Regression?
 
-**Regression provides the best linear approximation of the CEF.**
+**Regression gives the best linear approximation of the CEF.**
+
+- Again, "best" in the sense of lowest possible mean squared error.
+
+**Why?** The intuition:
+- Regression minimizes the *vertical* sum of squared errors.
+- The mean *also* minimizes the sum of squared errors for a given value of $X_i$.
+- So the regression line approximates the mean over all values of $X_i$, or the CEF.
+- Try out [this game](https://old.mathematik.tu-clausthal.de/en/mathematics-interactive/statistics/guessing-the-regression-line/).
+
+---
+
+# Why Use Regression?
+
+**Regression gives the best linear approximation of the CEF.**
 
 - Again, "best" in the sense of lowest possible mean squared error.
 
@@ -517,30 +532,6 @@ Regression is a **good way to summarize the CEF,** even when the CEF is not line
 How useful is *your* regression in *your* situation?
 - Look at a nonparametric estimate of your CEF to see if your regression is a good approximation.
 - That is: binscatter or local regression.
-
----
-class: clear, center, middle
-
-Adding the population regression function
-
-```{R, fig_reg_cef2, echo = F, cache = T, fig.height = 7, fig.width = 10.5}
-# Estimate the relationship
-cef_lm <- lm(y ~ x, data = cef_df)
-# Find the regression points
-lm_df <- tibble(
-  x = 8:22,
-  y = predict(object = cef_lm, newdata = data.frame(x = 8:22))
-)
-# Figure
-gg_cef_focus +
-  geom_path(
-    data = lm_df,
-    aes(x = y, y = x |> as.factor(), group = 1),
-    alpha = 0.5,
-    color = "orange",
-    size = 2
-  )
-```
 
 ---
 

@@ -3,7 +3,7 @@
   <head>
     <title>Topic 8: Exploratory Analysis</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -20,7 +20,7 @@ class: center, middle, inverse, title-slide
 ## Part 1: Understand individual variables
 ]
 .author[
-### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
 ]
 
 ---
@@ -66,8 +66,6 @@ name: toc
 1. [Handle your extreme values](#extreme)
 
 1. [Choose whether to transform variables](#transform)
-
-1. [Handle your missing data](#missing)
 
 
 ---
@@ -848,33 +846,36 @@ ggplot(vienna, aes(ln_rating_count)) +
 
 Now we can see finer differences among values in the left (bottom) of the distribution... at the expense of compressing values in the right (top) of the distribution. 
 
-&lt;/br&gt;
+Many common and important variables tend to follow approximately lognormal distributions (e.g., income, landholdings, trade quantities).
+- I.e., they are right-skewed before taking the log, but normally distributed afterward.
 
 **Which should we prefer,** the raw variable or the log-transformed variable?
 
 --
-
-&lt;/br&gt;
 
 For right-skewed data, log-transformed variables...
 
 1. Are **less sensitive to extremely large values.**
 2. Better reflect the **central tendency** (the mean is closer to the median and mode).
 
-These are nice properties, but not always the best reason to transform (or not). Another issue is even more fundamental:
-- What type of **variation** you think is most important.
+--
+
+These are nice properties, but not always the best reason to transform (or not). Two other considerations are even more fundamental:
+1. What type of **variation** you care about most.
+2. What type of **data generating process** you think created the variation.
 
 ---
 
 # Transformations
 
-What variation do you care about more: **level** or **proportional differences?**
-- Each tick on the raw histogram increases # of ratings by the same number.
-- Each tick on the transformed histogram multiplies # of ratings by the same factor.
+**1. What type of variation do you care about more: level changes or proportional changes?**
 
-In other words, is this variable created by an **additive** or **multiplicative** process?
+**Levels:** Each tick on the raw histogram **increments** # of ratings by the same **number.**
+- 10 `\(\rightarrow\)` 20 matters equally as 110 `\(\rightarrow\)` 120. 100 `\(\rightarrow\)` 200 matters much more.
 
-We are going to use this **variation** to learn about how this variable relates to other variables -- so we want to match the variation we're working with to the variation we care about.
+**Logs:** Each tick on the log-transformed histogram **multiplies** # of ratings by the same **factor.**
+- 10 `\(\rightarrow\)` 20 matters equally as 100 `\(\rightarrow\)` 200. 110 `\(\rightarrow\)` 120 matters much less.
+- Why? If `\(\log(x_1) - \log(x_0) = c\)`, then `\(x_1 = k x_0\)` (where `\(k \equiv e^c\)`).
 
 &lt;img src="08-Exploratory-part1_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
@@ -882,17 +883,73 @@ We are going to use this **variation** to learn about how this variable relates 
 
 # Transformations
 
-The natural log is by far the most common transformation in economics. Why?
+**1. What type of variation do you care about more: level changes or proportional changes?**
 
-- Many common and important variables follow approximately lognormal distributions (e.g., income, landholdings, trade quantities).
+Often, proportional changes seem more policy-relevant than level changes (everyone's income increases by 2% vs. by $1000).
 
-- Proportional changes in these variables often seem more policy-relevant than level changes (everyone's income increases by 2% vs. by $1000).
+We are going to use this variation to learn about how this variable relates to other variables -- so we want to match the variation we're working with to the variation we care about.
 
-- It allows us to directly estimate elasticities, which we like because they're unitless and convenient in many theoretical models.
+&lt;/br&gt;
 
-Other transformations can be used, but may be harder to interpret:
-- Box-Cox, square root, exponential.
-- Normalization on the (0, 1) interval: max/min, sigmoidal, hyperbolic tangent.
+&lt;img src="08-Exploratory-part1_files/figure-html/unnamed-chunk-36-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Transformations
+
+**2. Is the variation created by an additive or multiplicative process?**
+
+We are going to use this **variation** to learn about how this variable relates to other variables -- so we want to match the actual data generating process as closely as possible.
+- Estimates are likely to be more precise.
+- Their interpretation is likely to be more meaningful.
+
+Often, proportional effects seem more likely than level effects (a policy increases everyone's income by 2% vs. by $1000).
+
+--
+
+Example of an **additive** process:
+`$$Rating = 4 + 0.2 \cdot Clean + 0.3 \cdot ListingAccurate$$`
+
+--
+
+Example of a **multiplicative** process:
+`$$CountRatings = CountStays \cdot \textrm{30% give ratings}$$`
+`$$\log(CountRatings) = \log(CountStays) + \log(0.3)$$`
+
+---
+
+# Transformations
+
+**2. Is the variation created by an additive or multiplicative process?**
+
+Income is likely a chiefly **multiplicative** process:
+
+`$$Income = I_0 + I_0 \cdot (5\%)^{Experience}$$`
+`$$Income = I_0 \cdot (1.05)^{Experience}$$`
+`$$Income = I_0 \cdot (1.05)^{Experience} \cdot (1.2)^{GradDegree}$$`
+
+--
+
+Taking logs lets us represent it linearly:
+
+`$$\log(Income) = \log(I_0) + \log(1.05^{Experience}) + \log(1.2^{GradDegree})$$`
+`$$\log(Income) = \log(I_0) + \log(1.05)\cdot Experience + \log(1.2) \cdot GradDegree$$`
+`$$\log(Income) \approx \log(I_0) + 0.05\cdot Experience + 0.2 \cdot GradDegree$$`
+(using the approximation `\(\log(1 + x) \approx x\)` for small `\(x\)`).
+
+
+---
+
+# Transformations
+
+**Which type of logarithm should you use?**
+
+- For visualizing data, the base-10 logarithm is easiest to interpret.
+
+- For regression estimation, the natural log has the nice property that coefficients can be directly interpreted as approximate percentage changes.
+   * Allows us to directly estimate elasticities, which we like because they're unitless and convenient in many theoretical models.
+
+- Does not matter for your results, just their interpretation (they are equal up to a constant).
 
 ---
 
@@ -915,54 +972,17 @@ In prediction, often required for inputs to many machine learning algorithms.
 
 
 ---
-class: inverse, middle
-name: missing
 
-# Handle your missing data
+# Transformations
 
----
+**What about other transformations?**
 
-# Missing data
+Rarer in economics, because they are harder to interpret.
 
-Best option: **Find it.** (The alternatives are not great...)
+- Box-Cox, square root, exponential.
+- Normalization on the (0, 1) interval: max/min, sigmoidal, hyperbolic tangent.
 
---
-
-Try to figure out why the values are missing. Then choose one of these options:
-
-**Delete** the observations with missing values.
-- Most common choice in economics research.
-- Caveat results as valid *for the nonmissing sample*.
-- No problem at all under a "Missing Completely at Random" assumption. (Plausible?)
-- Usually the only option if your outcome variable is missing.
-
---
-
-**Impute** the values (with means/medians, group means, or "multiple imputation" methods).
-- Fill in the missing value, predicting it based on the values of other variables.
-- Still relies on a "Missing at Random" assumption.
-- Common in prediction problems.
-- Rare in economics. For causal inference, can introduce new problems.
-
----
-
-# Missing data
-
-**Interpolate** the values between its neighbors in time or space.
-- Time: Assume values change linearly (or exponentially) between observations.
-  - Useful in panel data for control variables / predictors.
-  - Example: Control for population in each year, but only have data every 10 years.
-- Space: Assume values change smoothly in two spatial dimensions.
-  - Inverse distance weighting; kriging (can be done using GIS tools)
-  - Example: Fill in groundwater levels at every farm, but only have measurements at certain places.
-
---
-
-**Create a flag** (binary variable) to indicate observations with missing values.
-- Then replace the `NA`'s in the original variable with a consistent value, such as `0` or the sample mean. This works so long as you always include both variables in the analysis.
-- Allows you to keep the observation and not lose the rest of its information.
-- Easy. Works well for both prediction and causal inference.
-
+Avoid unless you have a strong reason for using a specific one.
 
 ---
 
@@ -976,8 +996,7 @@ Try to figure out why the values are missing. Then choose one of these options:
 
 ### Data handling decisions
 * **Extreme values** call for scrutiny but should be excluded only if not created by the data generating process you want to study.
-* Natural log **transformations** are widely useful for describing right-skewed variables.
-* The least-bad way to handle **missing data** depends on your objectives.
+* Logarithmic **transformations** are widely useful for describing right-skewed variables.
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
