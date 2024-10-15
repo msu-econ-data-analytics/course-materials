@@ -3,7 +3,7 @@
   <head>
     <title>Topic 11: Regression Modeling</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Topic 11: Regression Modeling
 ]
 .author[
-### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -56,6 +56,8 @@ class: center, middle, inverse, title-slide
 1. [Basic regression in R](#basics)
 
 1. [Indicator and interaction terms](#indicators)
+
+1. [Handling missing data](#missing)
 
 1. [Econometrics packages in R](#functions)
 
@@ -524,19 +526,74 @@ tidy(summary(reg_challenge))
 ## 6 "height:log(birth_year)"               -0.111     0.0594    -1.87   7.10e- 2
 ```
 
+
+---
+class: inverse, middle
+name: missing
+
+# Handling missing data
+
+---
+
+# Missing data
+
+Best option: **Find it.** (The alternatives are not great...)
+
+--
+
+Try to figure out why the values are missing. Then choose one of these options:
+
+**Delete** the observations with missing values.
+- Most common choice in economics research.
+- Caveat results as valid *for the nonmissing sample*.
+- No problem at all under a "Missing Completely at Random" assumption. (Plausible?)
+- Usually the only option if your outcome variable is missing.
+
+--
+
+**Impute** the values (with means/medians, group means, or "multiple imputation" methods).
+- Fill in the missing value, predicting it based on the values of other variables.
+- Still relies on a "Missing at Random" assumption.
+- Common in prediction problems.
+- Rare in economics. For causal inference, can introduce new problems.
+
+---
+
+# Missing data
+
+**Interpolate** the values between its neighbors in time or space.
+- Time: Assume values change linearly (or exponentially) between observations.
+  - Useful in panel data for control variables / predictors.
+  - Example: Control for population in each year, but only have data every 10 years.
+- Space: Assume values change smoothly in two spatial dimensions.
+  - Inverse distance weighting; kriging (can be done using GIS tools)
+  - Example: Fill in groundwater levels at every farm, but only have measurements at certain places.
+
+--
+
+**Create a flag** (binary variable) to indicate observations with missing values.
+- Then replace the `NA`'s in the original variable with a consistent value, such as `0` or the sample mean. This works so long as you always include both variables in the analysis.
+- Allows you to keep the observation and not lose the rest of its information.
+- Easy. Works well for both prediction and causal inference.
+
+---
+
+# Challenge
+
+1. Estimate this regression in the original `starwars` dataset:
+
+`$$\begin{eqnarray}
+Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
+&amp; &amp; \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
+\end{eqnarray}$$`
+
+2. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
+
+3. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
+
 ---
 
 # More challenge
-
-Try these on your own time:
-
-1. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
-
-2. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
-
----
-
-# Even more challenge
 
 Let's not throw out all those observations just because we can't control for age. Use the flag approach to deal with this variable:
 
@@ -997,6 +1054,8 @@ In predictive analysis, we *do* want to predict the value of the outcome.
 1. [Basic regression in R](#basics)
 
 1. [Indicator and interaction terms](#indicators)
+
+1. [Handling missing data](#missing)
 
 1. [Econometrics packages in R](#functions)
 
