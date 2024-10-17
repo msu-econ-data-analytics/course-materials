@@ -59,11 +59,11 @@ knitr::opts_chunk$set(
 
 1. [Handling missing data](#missing)
 
-1. [Econometrics packages in R](#functions)
-
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+1. [Econometrics packages in R](#functions)
 
 1. [Appendix: Interpreting coefficients](#interpret)
 
@@ -369,6 +369,21 @@ reg_challenge = lm(
 tidy(summary(reg_challenge))
 ```
 
+---
+
+# More challenge
+
+1. Estimate this regression in the original `starwars` dataset:
+
+$$\begin{eqnarray}
+Mass_{i} &=& \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
+& & \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
+\end{eqnarray}$$
+
+2. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
+
+3. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
+
 
 ---
 class: inverse, middle
@@ -421,21 +436,6 @@ Try to figure out why the values are missing. Then choose one of these options:
 
 ---
 
-# Challenge
-
-1. Estimate this regression in the original `starwars` dataset:
-
-$$\begin{eqnarray}
-Mass_{i} &=& \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
-& & \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
-\end{eqnarray}$$
-
-2. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
-
-3. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
-
----
-
 # More challenge
 
 Let's not throw out all those observations just because we can't control for age. Use the flag approach to deal with this variable:
@@ -448,105 +448,6 @@ Let's not throw out all those observations just because we can't control for age
 
 1. Re-run the same regression on the previous slide, using this flag approach. (Make sure to treat the flag variable *exactly* the same way as the continuous variable -- if you were interacting both with X before, interact both with X now.)
   
-
----
-class: inverse, middle
-name: functions
-
-# Econometrics packages in R
-
----
-
-# Robust standard errors
-
-`lm()` uses classical/homoskedastic standard errors, which you basically should **never** use.
-
-You can obtain heteroskedasticity-consistent "robust" standard errors using `estimatr::lm_robust()`.
-
-```{r ols1_robust}
-ols1_robust = lm_robust(mass ~ height, data = starwars)
-ols1_robust
-```
-
-
----
-
-# Clustered standard errors
-
-If you haven't learned about clustering yet...
-
-You want to **cluster** your standard errors whenever your observations are correlated within unit/group/geography (i.e., not fully independent draws from a population).
-
-![](img/slope_hypothesis_testing.png)
-
-Clustering is for cross-sectional or panel data. (Time series data calls for other solutions.)
-
-</br>
-
-.small[Image from xkcd ([source](https://xkcd.com/2533/)) and is not included in this resource's CC license.]
-
----
-
-# Clustered standard errors
-
-To cluster by `homeworld`:
-
-```{r ols1_robust_clustered, warning = FALSE}
-lm_robust(mass ~ height, data = starwars, clusters = homeworld)
-```
-
----
-
-# Fixed effect regressions
-
-Most "real" regressions you run in economics will involve fixed effects of some kind (i.e., many group- or unit-specific indicators).
-
-`fixest::feols()` **should be your new best friend.**
-- It can handle large numbers of fixed effects quickly and quietly.
-- It has tons of options and is *orders of magnitude* faster than alternatives (`lfe` in R or `reghdfe` in Stata).
-- It can also handle simpler regressions, so it deserves to be your default everyday regression function.
-
-Syntax to include species FE:
-
-$$Mass_{i} = \beta_0 + \beta_1 Height_{i} + \lambda_{species} + u_i$$
-
-```{r ols_fe2, results = F}
-ols_fe = feols(mass ~ height | species, data = starwars)
-```
-
----
-
-# Regression tables
-
-Get **quick regression tables** with `fixest::etable()`:
-
-```{r}
-etable(ols_fe, ols_fe)
-```
-
-</br>
-
-Try package `modelsummary` for publication-quality tables that you can output with formatting to LaTeX, Markdown, etc.
-
----
-
-# Other models in R
-
-Instrumental variables (IV) regressions:
-
-- `fixest::feols()` (see, your new best friend!)
-  - Syntax: `y ~ controls | fe | endogenous ~ instrument`.
-- `estimatr::iv_robust()` 
-- `ivreg::ivreg()`
-
-Logit regression:
-
-- `glm(formula, data, family = binomial(link = "logit"))`
-- `feglm(formula, data, family = binomial(link = "logit"))`
-- To get marginal effects, try package `mfx`.
-
-"glm" stands for generalized linear models.
-
 
 
 ---
@@ -835,6 +736,105 @@ ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
 
 
 ---
+class: inverse, middle
+name: functions
+
+# Econometrics packages in R
+
+---
+
+# Robust standard errors
+
+`lm()` uses classical/homoskedastic standard errors, which you basically should **never** use.
+
+You can obtain heteroskedasticity-consistent "robust" standard errors using `estimatr::lm_robust()`.
+
+```{r ols1_robust}
+ols1_robust = lm_robust(mass ~ height, data = starwars)
+ols1_robust
+```
+
+
+---
+
+# Clustered standard errors
+
+If you haven't learned about clustering yet...
+
+You want to **cluster** your standard errors whenever your observations are correlated within unit/group/geography (i.e., not fully independent draws from a population).
+
+![](img/slope_hypothesis_testing.png)
+
+Clustering is for cross-sectional or panel data. (Time series data calls for other solutions.)
+
+</br>
+
+.small[Image from xkcd ([source](https://xkcd.com/2533/)) and is not included in this resource's CC license.]
+
+---
+
+# Clustered standard errors
+
+To cluster by `homeworld`:
+
+```{r ols1_robust_clustered, warning = FALSE}
+lm_robust(mass ~ height, data = starwars, clusters = homeworld)
+```
+
+---
+
+# Fixed effect regressions
+
+Most "real" regressions you run in economics will involve fixed effects of some kind (i.e., many group- or unit-specific indicators).
+
+`fixest::feols()` **should be your new best friend.**
+- It can handle large numbers of fixed effects quickly and quietly.
+- It has tons of options and is *orders of magnitude* faster than alternatives (`lfe` in R or `reghdfe` in Stata).
+- It can also handle simpler regressions, so it deserves to be your default everyday regression function.
+
+Syntax to include species FE:
+
+$$Mass_{i} = \beta_0 + \beta_1 Height_{i} + \lambda_{species} + u_i$$
+
+```{r ols_fe2, results = F}
+ols_fe = feols(mass ~ height | species, data = starwars)
+```
+
+---
+
+# Regression tables
+
+Get **quick regression tables** with `fixest::etable()`:
+
+```{r}
+etable(ols_fe, ols_fe)
+```
+
+</br>
+
+Try package `modelsummary` for publication-quality tables that you can output with formatting to LaTeX, Markdown, etc.
+
+---
+
+# Other models in R
+
+Instrumental variables (IV) regressions:
+
+- `fixest::feols()` (see, your new best friend!)
+  - Syntax: `y ~ controls | fe | endogenous ~ instrument`.
+- `estimatr::iv_robust()` 
+- `ivreg::ivreg()`
+
+Logit regression:
+
+- `glm(formula, data, family = binomial(link = "logit"))`
+- `feglm(formula, data, family = binomial(link = "logit"))`
+- To get marginal effects, try package `mfx`.
+
+"glm" stands for generalized linear models.
+
+
+---
 
 # Summary
 
@@ -844,11 +844,11 @@ ggplot(poly2_fitted, aes(x = longitude)) + theme_light() +
 
 1. [Handling missing data](#missing)
 
-1. [Econometrics packages in R](#functions)
-
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+1. [Econometrics packages in R](#functions)
 
 1. [Appendix: Interpreting coefficients](#interpret)
 

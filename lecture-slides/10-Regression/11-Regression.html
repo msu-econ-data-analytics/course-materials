@@ -59,11 +59,11 @@ class: center, middle, inverse, title-slide
 
 1. [Handling missing data](#missing)
 
-1. [Econometrics packages in R](#functions)
-
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+1. [Econometrics packages in R](#functions)
 
 1. [Appendix: Interpreting coefficients](#interpret)
 
@@ -526,6 +526,21 @@ tidy(summary(reg_challenge))
 ## 6 "height:log(birth_year)"               -0.111     0.0594    -1.87   7.10e- 2
 ```
 
+---
+
+# More challenge
+
+1. Estimate this regression in the original `starwars` dataset:
+
+`$$\begin{eqnarray}
+Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
+&amp; &amp; \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
+\end{eqnarray}$$`
+
+2. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
+
+3. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
+
 
 ---
 class: inverse, middle
@@ -578,21 +593,6 @@ Try to figure out why the values are missing. Then choose one of these options:
 
 ---
 
-# Challenge
-
-1. Estimate this regression in the original `starwars` dataset:
-
-`$$\begin{eqnarray}
-Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \log(Age_i) + \\
-&amp; &amp; \beta_4 Height_i \times \log(Age_i) + \beta_5 1(Jabba_i) + u_i
-\end{eqnarray}$$`
-
-2. Run the same regression, but instead of creating an indicator just for Jabba, filter him out beforehand. Do you get the same results?
-
-3. There was a lot of missing data for `birth_year` (i.e., age). How many observations did `lm()` actually use? (Hint: Explore the resulting object some more.)
-
----
-
 # More challenge
 
 Let's not throw out all those observations just because we can't control for age. Use the flag approach to deal with this variable:
@@ -605,6 +605,310 @@ Let's not throw out all those observations just because we can't control for age
 
 1. Re-run the same regression on the previous slide, using this flag approach. (Make sure to treat the flag variable *exactly* the same way as the continuous variable -- if you were interacting both with X before, interact both with X now.)
   
+
+
+---
+class: inverse, middle
+name: nonlinear
+
+# Modeling nonlinear relationships
+
+---
+
+# Some preliminaries
+
+Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 5% random sample:
+
+```r
+set.seed(123)
+london = read_csv("https://osf.io/ey5p7/download")
+london_sample = london |&gt; 
+  mutate(ln_price = log(price)) |&gt; 
+  filter(!is.na(price)) |&gt;
+  slice_sample(prop = 0.05)
+```
+  
+---
+
+# Modeling nonlinear relationships
+
+**How should we model the relationship between longitude and price?**
+
+--
+
+First, we need to check the CEF with a quick binscatter:
+
+```r
+binsreg(y = london_sample$ln_price, x = london_sample$longitude)
+```
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+```
+## Call: binsreg
+## 
+## Binscatter Plot
+## Bin/Degree selection method (binsmethod)  =  IMSE direct plug-in (select # of bins)
+## Placement (binspos)                       =  Quantile-spaced
+## Derivative (deriv)                        =  0
+## 
+## Group (by)                         =  Full Sample
+## Sample size (n)                    =  2690
+## # of distinct values (Ndist)       =  2690
+## # of clusters (Nclust)             =  NA
+## dots, degree (p)                   =  0
+## dots, smoothness (s)               =  0
+## # of bins (nbins)                  =  21
+```
+
+---
+
+# Modeling nonlinear relationships
+
+So then... **what's wrong with running the following regression?**
+
+```r
+linear = feols(ln_price ~ longitude, data = london_sample)
+tidy(linear)
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)     4.15    0.0231    180.   0       
+## 2 longitude      -1.13    0.147      -7.67 2.35e-14
+```
+
+--
+The plot showed us that a linear specification of longitude is a bad fit.
+* It still tells us an average derivative.
+* But that's not an average that's very useful.
+
+Instead, let's choose a **nonlinear specification** that gets us closer to the true CEF.
+
+--
+1. Bin regression (step functions).
+2. Polynomial regression.
+3. Piecewise functions (splines).
+
+
+---
+
+# 1. Bin regression (step functions)
+
+Just like a binscatter. Use a regression to estimate means by quantile:
+
+```r
+binned = feols(ln_price ~ factor(ntile(longitude, 10)), data = london_sample)
+tidy(binned)
+```
+
+```
+## # A tibble: 10 × 5
+##    term                           estimate std.error statistic  p.value
+##    &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)                      4.14      0.0408    102.   0       
+##  2 factor(ntile(longitude, 10))2    0.263     0.0577      4.55 5.51e- 6
+##  3 factor(ntile(longitude, 10))3    0.394     0.0577      6.83 1.06e-11
+##  4 factor(ntile(longitude, 10))4    0.444     0.0577      7.70 1.96e-14
+##  5 factor(ntile(longitude, 10))5    0.322     0.0577      5.58 2.62e- 8
+##  6 factor(ntile(longitude, 10))6    0.206     0.0577      3.57 3.60e- 4
+##  7 factor(ntile(longitude, 10))7    0.150     0.0577      2.60 9.46e- 3
+##  8 factor(ntile(longitude, 10))8    0.0692    0.0577      1.20 2.30e- 1
+##  9 factor(ntile(longitude, 10))9   -0.115     0.0577     -1.99 4.63e- 2
+## 10 factor(ntile(longitude, 10))10  -0.213     0.0577     -3.70 2.23e- 4
+```
+
+**How do we interpret these coefficients?**
+
+---
+
+# 1. Bin regression (step functions)
+
+To visualize the estimated regression model, generate **fitted values** using `predict`:
+
+```r
+binned_predict = predict(binned, data = london_sample, interval = "confidence")
+binned_fitted = cbind(london_sample, binned_predict)
+head(binned_predict)
+```
+
+```
+##        fit     se.fit   ci_low  ci_high
+## 1 4.213814 0.04077622 4.133858 4.293770
+## 2 3.931437 0.04077622 3.851481 4.011394
+## 3 4.466514 0.04077622 4.386558 4.546470
+## 4 4.538370 0.04077622 4.458414 4.618326
+## 5 4.213814 0.04077622 4.133858 4.293770
+## 6 4.144617 0.04077622 4.064661 4.224573
+```
+
+---
+
+# 1. Bin regression (step functions)
+
+
+```r
+ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
+  geom_point(aes(y = ln_price), alpha = 0.1) +
+  geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = "coral") +
+  geom_line(aes(y = fit), size = 1, color = "orangered4")
+```
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# 1. Bin regression (step functions)
+
+**Pros:**
+- Extremely flexible: Gets us close to the true CEF without having to specify a functional form.
+
+**Cons:**
+
+(Why might they not meet our needs?)
+
+--
+
+- Estimates may be too noisy (high variance).
+- Fitted values have sudden jumps even if the true DGP is smooth.
+
+
+---
+
+# 2. Polynomial regression
+
+Another approach is **polynomial regression.**
+
+The simplest is quadratic -- just two terms for longitude.
+
+
+```r
+poly2 = feols(ln_price ~ longitude + longitude^2, data = london_sample)
+tidy(poly2)
+```
+
+```
+## # A tibble: 3 × 5
+##   term           estimate std.error statistic  p.value
+##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        4.05    0.0245     165.  0       
+## 2 longitude         -3.67    0.280      -13.1 3.82e-38
+## 3 I(longitude^2)    -9.24    0.872      -10.6 9.56e-26
+```
+
+These terms are hard to interpret until we visualize the model.
+
+---
+
+# 2. Polynomial regression
+
+The quadratic model:
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# 2. Polynomial regression
+
+Cubic:
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# 2. Polynomial regression
+
+Quartic:
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# 2. Polynomial regression
+
+**Pro:**
+- Flexible -- easily capture many types of smooth nonlinear relationships.
+- Parsimonious -- fewer coefficients to estimate = lower variance.
+
+**Cons:**
+
+(What do you think?)
+
+--
+- Not so good if CEF is not smooth.
+- Poorly behaved in the tails.
+
+
+---
+
+# 3. Piecewise functions (splines)
+
+Piecewise linear (1 knot at `\(-0.17\)`):
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# 3. Piecewise functions (splines)
+
+Piecewise cubic (7 knots):
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, middle
+name: prediction
+
+# Using regression models for prediction
+
+---
+
+# Using regression models for prediction
+
+Once we estimate a regression model, what might we want to do with it?
+
+1. Learn about the **relationship** between variables *(descriptive analysis, causal inference)*.
+
+2. Use it to **predict** the outcome variable in new data *(predictive analysis)*.
+
+Both of these activities can involve calculating *predicted values* from the model... but we need to be careful.
+
+
+---
+
+# Point 1: Counterfactuals != prediction
+
+**Common point of confusion:** "Isn't the point of estimating a causal effect so that we can use it to *predict* what will happen?"
+- The effect of legalizing cannabis on police arrests.
+- The effect of climate change on economic growth.
+
+Yes! But:
+
+In causal inference, we are only making a prediction **holding everything else constant.**
+- We are never claiming to predict what the future looks like (the overall level of the outcome).
+
+We only want to make a *counterfactual projection:*
+- How different the outcome will be **relative to what it would be without the treatment.** 
+
+In predictive analysis, we *do* want to predict the value of the outcome.
+
+
+---
+
+# Point 2: Confidence/prediction intervals
+
+**Confidence intervals** characterize uncertainty about the **relationships.**
+- If we gathered more data, where would the "true" line of best fit lie?
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Point 2: Confidence/prediction intervals
+
+**Prediction intervals** characterize uncertainty about **individual observations.**
+- If we use this model to predict the outcome for new data points, how close would those predictions be to the truth?
+
+&lt;img src="11-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 class: inverse, middle
@@ -743,310 +1047,6 @@ Logit regression:
 "glm" stands for generalized linear models.
 
 
-
----
-class: inverse, middle
-name: nonlinear
-
-# Modeling nonlinear relationships
-
----
-
-# Some preliminaries
-
-Load the London Airbnb data we used in the Exploratory Analysis lecture, and take a 5% random sample:
-
-```r
-set.seed(123)
-london = read_csv("https://osf.io/ey5p7/download")
-london_sample = london |&gt; 
-  mutate(ln_price = log(price)) |&gt; 
-  filter(!is.na(price)) |&gt;
-  slice_sample(prop = 0.05)
-```
-  
----
-
-# Modeling nonlinear relationships
-
-**How should we model the relationship between longitude and price?**
-
---
-
-First, we need to check the CEF with a quick binscatter:
-
-```r
-binsreg(y = london_sample$ln_price, x = london_sample$longitude)
-```
-
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
-```
-## Call: binsreg
-## 
-## Binscatter Plot
-## Bin/Degree selection method (binsmethod)  =  IMSE direct plug-in (select # of bins)
-## Placement (binspos)                       =  Quantile-spaced
-## Derivative (deriv)                        =  0
-## 
-## Group (by)                         =  Full Sample
-## Sample size (n)                    =  2690
-## # of distinct values (Ndist)       =  2690
-## # of clusters (Nclust)             =  NA
-## dots, degree (p)                   =  0
-## dots, smoothness (s)               =  0
-## # of bins (nbins)                  =  21
-```
-
----
-
-# Modeling nonlinear relationships
-
-So then... **what's wrong with running the following regression?**
-
-```r
-linear = feols(ln_price ~ longitude, data = london_sample)
-tidy(linear)
-```
-
-```
-## # A tibble: 2 × 5
-##   term        estimate std.error statistic  p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)     4.15    0.0231    180.   0       
-## 2 longitude      -1.13    0.147      -7.67 2.35e-14
-```
-
---
-The plot showed us that a linear specification of longitude is a bad fit.
-* It still tells us an average derivative.
-* But that's not an average that's very useful.
-
-Instead, let's choose a **nonlinear specification** that gets us closer to the true CEF.
-
---
-1. Bin regression (step functions).
-2. Polynomial regression.
-3. Piecewise functions (splines).
-
-
----
-
-# 1. Bin regression (step functions)
-
-Just like a binscatter. Use a regression to estimate means by quantile:
-
-```r
-binned = feols(ln_price ~ factor(ntile(longitude, 10)), data = london_sample)
-tidy(binned)
-```
-
-```
-## # A tibble: 10 × 5
-##    term                           estimate std.error statistic  p.value
-##    &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-##  1 (Intercept)                      4.14      0.0408    102.   0       
-##  2 factor(ntile(longitude, 10))2    0.263     0.0577      4.55 5.51e- 6
-##  3 factor(ntile(longitude, 10))3    0.394     0.0577      6.83 1.06e-11
-##  4 factor(ntile(longitude, 10))4    0.444     0.0577      7.70 1.96e-14
-##  5 factor(ntile(longitude, 10))5    0.322     0.0577      5.58 2.62e- 8
-##  6 factor(ntile(longitude, 10))6    0.206     0.0577      3.57 3.60e- 4
-##  7 factor(ntile(longitude, 10))7    0.150     0.0577      2.60 9.46e- 3
-##  8 factor(ntile(longitude, 10))8    0.0692    0.0577      1.20 2.30e- 1
-##  9 factor(ntile(longitude, 10))9   -0.115     0.0577     -1.99 4.63e- 2
-## 10 factor(ntile(longitude, 10))10  -0.213     0.0577     -3.70 2.23e- 4
-```
-
-**How do we interpret these coefficients?**
-
----
-
-# 1. Bin regression (step functions)
-
-To visualize the estimated regression model, generate **fitted values** using `predict`:
-
-```r
-binned_predict = predict(binned, data = london_sample, interval = "confidence")
-binned_fitted = cbind(london_sample, binned_predict)
-head(binned_predict)
-```
-
-```
-##        fit     se.fit   ci_low  ci_high
-## 1 4.213814 0.04077622 4.133858 4.293770
-## 2 3.931437 0.04077622 3.851481 4.011394
-## 3 4.466514 0.04077622 4.386558 4.546470
-## 4 4.538370 0.04077622 4.458414 4.618326
-## 5 4.213814 0.04077622 4.133858 4.293770
-## 6 4.144617 0.04077622 4.064661 4.224573
-```
-
----
-
-# 1. Bin regression (step functions)
-
-
-```r
-ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
-  geom_point(aes(y = ln_price), alpha = 0.1) +
-  geom_ribbon(aes(ymin = ci_low, ymax = ci_high), fill = "coral") +
-  geom_line(aes(y = fit), size = 1, color = "orangered4")
-```
-
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# 1. Bin regression (step functions)
-
-**Pros:**
-- Extremely flexible: Gets us close to the true CEF without having to specify a functional form.
-
-**Cons:**
-
-(Why might they not meet our needs?)
-
---
-
-- Estimates may be too noisy (high variance).
-- Fitted values have sudden jumps even if the true DGP is smooth.
-
-
----
-
-# 2. Polynomial regression
-
-Another approach is **polynomial regression.**
-
-The simplest is quadratic -- just two terms for longitude.
-
-
-```r
-poly2 = feols(ln_price ~ longitude + longitude^2, data = london_sample)
-tidy(poly2)
-```
-
-```
-## # A tibble: 3 × 5
-##   term           estimate std.error statistic  p.value
-##   &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)        4.05    0.0245     165.  0       
-## 2 longitude         -3.67    0.280      -13.1 3.82e-38
-## 3 I(longitude^2)    -9.24    0.872      -10.6 9.56e-26
-```
-
-These terms are hard to interpret until we visualize the model.
-
----
-
-# 2. Polynomial regression
-
-The quadratic model:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# 2. Polynomial regression
-
-Cubic:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# 2. Polynomial regression
-
-Quartic:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# 2. Polynomial regression
-
-**Pro:**
-- Flexible -- easily capture many types of smooth nonlinear relationships.
-- Parsimonious -- fewer coefficients to estimate = lower variance.
-
-**Cons:**
-
-(What do you think?)
-
---
-- Not so good if CEF is not smooth.
-- Poorly behaved in the tails.
-
-
----
-
-# 3. Piecewise functions (splines)
-
-Piecewise linear (1 knot at `\(-0.17\)`):
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# 3. Piecewise functions (splines)
-
-Piecewise cubic (7 knots):
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
-
----
-class: inverse, middle
-name: prediction
-
-# Using regression models for prediction
-
----
-
-# Using regression models for prediction
-
-Once we estimate a regression model, what might we want to do with it?
-
-1. Learn about the **relationship** between variables *(descriptive analysis, causal inference)*.
-
-2. Use it to **predict** the outcome variable in new data *(predictive analysis)*.
-
-Both of these activities can involve calculating *predicted values* from the model... but we need to be careful.
-
-
----
-
-# Point 1: Counterfactuals != prediction
-
-**Common point of confusion:** "Isn't the point of estimating a causal effect so that we can use it to *predict* what will happen?"
-- The effect of legalizing cannabis on police arrests.
-- The effect of climate change on economic growth.
-
-Yes! But:
-
-In causal inference, we are only making a prediction **holding everything else constant.**
-- We are never claiming to predict what the future looks like (the overall level of the outcome).
-
-We only want to make a *counterfactual projection:*
-- How different the outcome will be **relative to what it would be without the treatment.** 
-
-In predictive analysis, we *do* want to predict the value of the outcome.
-
-
----
-
-# Point 2: Confidence/prediction intervals
-
-**Confidence intervals** characterize uncertainty about the **relationships.**
-- If we gathered more data, where would the "true" line of best fit lie?
-
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Point 2: Confidence/prediction intervals
-
-**Prediction intervals** characterize uncertainty about **individual observations.**
-- If we use this model to predict the outcome for new data points, how close would those predictions be to the truth?
-
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-22-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
-
 ---
 
 # Summary
@@ -1057,11 +1057,11 @@ In predictive analysis, we *do* want to predict the value of the outcome.
 
 1. [Handling missing data](#missing)
 
-1. [Econometrics packages in R](#functions)
-
 1. [Modeling nonlinear relationships](#nonlinear)
 
 1. [Using regression models for prediction](#prediction)
+
+1. [Econometrics packages in R](#functions)
 
 1. [Appendix: Interpreting coefficients](#interpret)
 
