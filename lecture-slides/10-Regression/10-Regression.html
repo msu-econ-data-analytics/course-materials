@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Topic 11: Regression Modeling</title>
+    <title>Topic 10: Regression Modeling</title>
     <meta charset="utf-8" />
     <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -14,7 +14,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Topic 11: Regression Modeling
+# Topic 10: Regression Modeling
 ]
 .author[
 ### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
@@ -141,7 +141,7 @@ ols1
 ## 
 ## Coefficients:
 ## (Intercept)       height  
-##    -13.8103       0.6386
+##     -11.487        0.624
 ```
 
 Most valuable information is buried within this object's internal list structure. Try `View(ols1)`.
@@ -164,17 +164,17 @@ summary(ols1)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-##  -61.43  -30.03  -21.13  -17.73 1260.06 
+##  -60.95  -29.51  -20.83  -17.65 1260.29 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept) -13.8103   111.1545  -0.124    0.902
-## height        0.6386     0.6261   1.020    0.312
+## (Intercept) -11.4868   111.3842  -0.103    0.918
+## height        0.6240     0.6262   0.997    0.323
 ## 
-## Residual standard error: 169.4 on 57 degrees of freedom
+## Residual standard error: 169.5 on 57 degrees of freedom
 ##   (28 observations deleted due to missingness)
-## Multiple R-squared:  0.01792,	Adjusted R-squared:  0.0006956 
-## F-statistic:  1.04 on 1 and 57 DF,  p-value: 0.312
+## Multiple R-squared:  0.01712,	Adjusted R-squared:  -0.0001194 
+## F-statistic: 0.9931 on 1 and 57 DF,  p-value: 0.3232
 ```
 
 ---
@@ -189,9 +189,9 @@ summary(ols1)$coefficients
 ```
 
 ```
-##               Estimate  Std. Error    t value  Pr(&gt;|t|)
-## (Intercept) -13.810314 111.1545260 -0.1242443 0.9015590
-## height        0.638571   0.6260583  1.0199865 0.3120447
+##                Estimate  Std. Error    t value  Pr(&gt;|t|)
+## (Intercept) -11.4868157 111.3841576 -0.1031279 0.9182234
+## height        0.6240033   0.6261744  0.9965328 0.3232031
 ```
 
 ---
@@ -212,8 +212,8 @@ tidy(ols1, conf.int = TRUE)
 ## # A tibble: 2 × 7
 ##   term        estimate std.error statistic p.value conf.low conf.high
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (Intercept)  -13.8     111.       -0.124   0.902 -236.       209.  
-## 2 height         0.639     0.626     1.02    0.312   -0.615      1.89
+## 1 (Intercept)  -11.5     111.       -0.103   0.918 -235.       212.  
+## 2 height         0.624     0.626     0.997   0.323   -0.630      1.88
 ```
 
 ---
@@ -232,7 +232,7 @@ ggplot(starwars, aes(x=height, y=mass)) +
   geom_point()
 ```
 
-&lt;img src="11-Regression_files/figure-html/jabba-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/jabba-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -251,8 +251,8 @@ summary(ols2) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
-## 2 height         0.621    0.0707      8.79 4.02e-12
+## 1 (Intercept)  -31.3     12.8        -2.44 1.79e- 2
+## 2 height         0.613    0.0720      8.51 1.14e-11
 ```
 
 ---
@@ -299,10 +299,10 @@ lm(mass ~ masculine, data = humans) |&gt; tidy()
 
 ```
 ## # A tibble: 2 × 5
-##   term        estimate std.error statistic    p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-## 1 (Intercept)     56.3      9.54      5.91 0.00000892
-## 2 masculine       30.6     10.3       2.98 0.00735
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)     56.3      9.52      5.91 0.0000134
+## 2 masculine       29.4     10.3       2.84 0.0108
 ```
 
 How do we interpret the `masculine` coefficient?
@@ -330,8 +330,8 @@ lm(mass ~ feminine + masculine + 0, data = humans) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term      estimate std.error statistic  p.value
 ##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 feminine      56.3      9.54      5.91 8.92e- 6
-## 2 masculine     87.0      3.79     22.9  7.76e-16
+## 1 feminine      56.3      9.52      5.91 1.34e- 5
+## 2 masculine     85.7      4.00     21.4  2.93e-14
 ```
 
 ```r
@@ -343,7 +343,7 @@ group_by(humans, gender) |&gt; summarize(mean(mass, na.rm=T))
 ##   gender    `mean(mass, na.rm = T)`
 ##   &lt;chr&gt;                       &lt;dbl&gt;
 ## 1 feminine                     56.3
-## 2 masculine                    87.0
+## 2 masculine                    85.7
 ```
 
 ---
@@ -359,10 +359,10 @@ lm(mass ~ gender, data = humans) |&gt; tidy()
 
 ```
 ## # A tibble: 2 × 5
-##   term            estimate std.error statistic    p.value
-##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-## 1 (Intercept)         56.3      9.54      5.91 0.00000892
-## 2 gendermasculine     30.6     10.3       2.98 0.00735
+##   term            estimate std.error statistic   p.value
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)         56.3      9.52      5.91 0.0000134
+## 2 gendermasculine     29.4     10.3       2.84 0.0108
 ```
 
 ---
@@ -400,10 +400,10 @@ lm(mass ~ gender * height, data = humans) |&gt; tidy()
 ## # A tibble: 4 × 5
 ##   term                   estimate std.error statistic p.value
 ##   &lt;chr&gt;                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)             -61.0      204.     -0.299    0.768
-## 2 gendermasculine         -15.7      220.     -0.0716   0.944
-## 3 height                    0.733      1.27    0.576    0.572
-## 4 gendermasculine:height    0.163      1.35    0.121    0.905
+## 1 (Intercept)              87.9     103.        0.852   0.407
+## 2 gendermasculine        -177.      130.       -1.36    0.193
+## 3 height                   -0.189     0.616    -0.307   0.763
+## 4 gendermasculine:height    1.15      0.755     1.52    0.148
 ```
 
 How do we interpret the two height coefficients?
@@ -486,12 +486,12 @@ Mass_{i} &amp;=&amp; \beta_0 + \beta_1 Height_i + \beta_2 Height^2_i + \beta_3 \
 ## # A tibble: 6 × 4
 ##     estimate std.error statistic  p.value
 ##        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1    2.12     59.4        0.0357 9.72e- 1
-## 2   -0.190     0.641     -0.297  7.69e- 1
-## 3    8.95      8.36       1.07   2.93e- 1
-## 4    0.00476   0.00211    2.25   3.19e- 2
-## 5 1311.       20.8       63.1    1.89e-33
-## 6   -0.111     0.0594    -1.87   7.10e- 2
+## 1   -0.688    64.4       -0.0107 9.92e- 1
+## 2   -0.114     0.699     -0.163  8.71e- 1
+## 3    8.44      9.00       0.937  3.56e- 1
+## 4    0.00432   0.00232    1.86   7.25e- 2
+## 5 1309.       22.5       58.2    2.07e-32
+## 6   -0.104     0.0641    -1.63   1.14e- 1
 ```
 
 ---
@@ -518,12 +518,12 @@ tidy(summary(reg_challenge))
 ## # A tibble: 6 × 5
 ##   term                                   estimate std.error statistic  p.value
 ##   &lt;chr&gt;                                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 "(Intercept)"                           2.12     59.4        0.0357 9.72e- 1
-## 2 "height"                               -0.190     0.641     -0.297  7.69e- 1
-## 3 "log(birth_year)"                       8.95      8.36       1.07   2.93e- 1
-## 4 "I(height^2)"                           0.00476   0.00211    2.25   3.19e- 2
-## 5 "I(str_detect(name, \"Jabba\"))TRUE" 1311.       20.8       63.1    1.89e-33
-## 6 "height:log(birth_year)"               -0.111     0.0594    -1.87   7.10e- 2
+## 1 "(Intercept)"                          -0.688    64.4       -0.0107 9.92e- 1
+## 2 "height"                               -0.114     0.699     -0.163  8.71e- 1
+## 3 "log(birth_year)"                       8.44      9.00       0.937  3.56e- 1
+## 4 "I(height^2)"                           0.00432   0.00232    1.86   7.25e- 2
+## 5 "I(str_detect(name, \"Jabba\"))TRUE" 1309.       22.5       58.2    2.07e-32
+## 6 "height:log(birth_year)"               -0.104     0.0641    -1.63   1.14e- 1
 ```
 
 ---
@@ -642,7 +642,7 @@ First, we need to check the CEF with a quick binscatter:
 binsreg(y = london_sample$ln_price, x = london_sample$longitude)
 ```
 
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ```
 ## Call: binsreg
@@ -756,7 +756,7 @@ ggplot(binned_fitted, aes(x = longitude)) + theme_light() +
   geom_line(aes(y = fit), size = 1, color = "orangered4")
 ```
 
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -805,21 +805,21 @@ These terms are hard to interpret until we visualize the model.
 # 2. Polynomial regression
 
 The quadratic model:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-15-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # 2. Polynomial regression
 
 Cubic:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # 2. Polynomial regression
 
 Quartic:
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -843,14 +843,14 @@ Quartic:
 # 3. Piecewise functions (splines)
 
 Piecewise linear (1 knot at `\(-0.17\)`):
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # 3. Piecewise functions (splines)
 
 Piecewise cubic (7 knots):
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -898,7 +898,7 @@ In predictive analysis, we *do* want to predict the value of the outcome.
 **Confidence intervals** characterize uncertainty about the **relationships.**
 - If we gathered more data, where would the "true" line of best fit lie?
 
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -907,7 +907,7 @@ In predictive analysis, we *do* want to predict the value of the outcome.
 **Prediction intervals** characterize uncertainty about **individual observations.**
 - If we use this model to predict the outcome for new data points, how close would those predictions be to the truth?
 
-&lt;img src="11-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="10-Regression_files/figure-html/unnamed-chunk-21-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -931,12 +931,12 @@ ols1_robust
 ```
 
 ```
-##               Estimate  Std. Error    t value     Pr(&gt;|t|)    CI Lower
-## (Intercept) -13.810314 23.45557632 -0.5887859 5.583311e-01 -60.7792950
-## height        0.638571  0.08791977  7.2631109 1.159161e-09   0.4625147
+##                Estimate  Std. Error   t value     Pr(&gt;|t|)    CI Lower
+## (Intercept) -11.4868157 24.43150661 -0.470164 6.400318e-01 -60.4100638
+## height        0.6240033  0.08824021  7.071644 2.417174e-09   0.4473053
 ##               CI Upper DF
-## (Intercept) 33.1586678 57
-## height       0.8146273 57
+## (Intercept) 37.4364324 57
+## height       0.8007013 57
 ```
 
 
@@ -968,12 +968,12 @@ lm_robust(mass ~ height, data = starwars, clusters = homeworld)
 ```
 
 ```
-##               Estimate  Std. Error    t value     Pr(&gt;|t|)    CI Lower
-## (Intercept) -9.3014938 28.84436408 -0.3224718 0.7559158751 -76.6200628
-## height       0.6134058  0.09911832  6.1886211 0.0002378887   0.3857824
+##               Estimate Std. Error    t value     Pr(&gt;|t|)    CI Lower
+## (Intercept) -6.4571556 30.4270813 -0.2122174 0.8376015708 -77.4711944
+## height       0.5959504  0.1066112  5.5899430 0.0004845487   0.3508593
 ##               CI Upper       DF
-## (Intercept) 58.0170751 7.486034
-## height       0.8410291 8.195141
+## (Intercept) 64.5568831 7.485115
+## height       0.8410415 8.144022
 ```
 
 ---
@@ -1011,14 +1011,14 @@ etable(ols_fe, ols_fe)
 ##                             ols_fe           ols_fe.1
 ## Dependent Var.:               mass               mass
 ##                                                      
-## height          0.9749*** (0.0443) 0.9749*** (0.0443)
+## height          0.9256*** (0.0191) 0.9256*** (0.0191)
 ## Fixed-Effects:  ------------------ ------------------
 ## species                        Yes                Yes
 ## _______________ __________________ __________________
 ## S.E.: Clustered        by: species        by: species
-## Observations                    58                 58
-## R2                         0.99672            0.99672
-## Within R2                  0.66249            0.66249
+## Observations                    56                 56
+## R2                         0.99645            0.99645
+## Within R2                  0.61556            0.61556
 ## ---
 ## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1096,8 +1096,8 @@ lm(mass ~ height, no_jabba) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)  -32.5     12.6        -2.59 1.22e- 2
-## 2 height         0.621    0.0707      8.79 4.02e-12
+## 1 (Intercept)  -31.3     12.8        -2.44 1.79e- 2
+## 2 height         0.613    0.0720      8.51 1.14e-11
 ```
 
 Put into a complete sentence with units:
@@ -1120,8 +1120,8 @@ lm(log(mass) ~ height, no_jabba) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   2.28    0.159         14.4 2.00e-20
-## 2 height        0.0112  0.000895      12.5 6.77e-18
+## 1 (Intercept)   2.30    0.164         14.0 5.49e-20
+## 2 height        0.0111  0.000921      12.1 3.45e-17
 ```
 
 Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
@@ -1168,8 +1168,8 @@ lm(mass ~ log(height), no_jabba) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   -347.       52.4     -6.61 1.51e- 8
-## 2 log(height)     82.3      10.2      8.06 6.05e-11
+## 1 (Intercept)   -341.       53.1     -6.43 3.03e- 8
+## 2 log(height)     81.2      10.3      7.86 1.31e-10
 ```
 
 Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**
@@ -1197,8 +1197,8 @@ lm(log(mass) ~ log(height), no_jabba) |&gt; tidy()
 ## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)    -3.76     0.614     -6.12 9.61e- 8
-## 2 log(height)     1.56     0.120     13.0  1.34e-18
+## 1 (Intercept)    -3.68     0.630     -5.84 2.73e- 7
+## 2 log(height)     1.54     0.123     12.6  5.97e-18
 ```
 
 Still true: **"A one-unit change in `\(x\)` is associated with a `\(\beta\)`-unit change in `\(y\)`."**

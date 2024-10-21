@@ -1,5 +1,5 @@
 ---
-title: "Topic 11: Regression Modeling"
+title: "Topic 10: Regression Modeling"
 author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Data Science for Economists”](https://raw.githack.com/uo-ec607/lectures/master/08-regression/08-regression.html) by Grant R. McDermott, used under the [MIT License](https://github.com/uo-ec607/lectures/blob/master/LICENSE).]"
 

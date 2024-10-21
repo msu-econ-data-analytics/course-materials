@@ -94,7 +94,7 @@ Fall 2024
   * Adjusting for other variables
   * Bin smoothing and local regression
 
-[**Topic 10: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Regression/11-Regression.html)
+[**Topic 10: Regression Modeling**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/10-Regression/10-Regression.html)
 
 * Basic regression in R
 * Indicator and interaction terms
@@ -102,7 +102,7 @@ Fall 2024
 * Modeling nonlinear relationships
 * Using regression models for prediction
 
-[**Topic 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/09-Visualization.html)
+[**Topic 11: Data Visualization**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/11-Visualization/11-Visualization.html)
 
 * Basics of `ggplot2`
 * Plotting examples

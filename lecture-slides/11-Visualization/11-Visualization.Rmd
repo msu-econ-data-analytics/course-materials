@@ -1,6 +1,6 @@
 ---
-title: "Topic 9: Data Visualization"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+title: "Topic 11: Data Visualization"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 date: ".small[<br> *Parts of these slides are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/data-visualization-principles.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).]"
 output:
   xaringan::moon_reader:
@@ -399,7 +399,6 @@ Labels are generally more effective than legends. Add text at specific points:
 .small[
 ```{r labels-better-than-legends}
 labels = data.frame(country = countries, x = c(1975, 1965), y = c(60, 72))
-
 gapminder |> 
   filter(country %in% countries) |> 
   ggplot(aes(year, life_expectancy, col = country)) +
@@ -411,9 +410,35 @@ gapminder |>
 
 ---
 
-# Cleveland dot plots
+# Plotting categorical values
 
-**Cleveland dot plots** are uncluttered and can be more effective than bar charts.
+Vertical bar charts are often very difficult to read.
+
+```{r, fig.height=4}
+gapminder |> mutate(GDP_percapita = gdp/population) |>
+  filter(year == 1970 & !is.na(GDP_percapita) & continent=="Asia") |>
+  ggplot(aes(country, GDP_percapita)) +
+    geom_col()
+```
+
+---
+
+# Plotting categorical values
+
+Horizontal bar charts show the same information but are easier to read.
+
+```{r, fig.height=4}
+gapminder |> mutate(GDP_percapita = gdp/population) |>
+  filter(year == 1970 & !is.na(GDP_percapita) & continent=="Asia") |>
+  ggplot(aes(GDP_percapita, country)) +
+    geom_col()
+```
+
+---
+
+# Plotting categorical values
+
+**Cleveland dot plots** are less cluttered and can be more effective than bar charts.
 - Especially when the x-intercept doesn't mean much.
 - Or when plotting multiple values per category.
 
@@ -430,7 +455,7 @@ gapminder |> mutate(GDP_percapita = gdp/population) |>
 
 ---
 
-# Cleveland dot plots
+# Plotting categorical values
 
 **Cleveland dot plots** are uncluttered and can be more effective than bar charts.
 - Especially when the x-intercept doesn't mean much.
@@ -449,7 +474,7 @@ gapminder |> mutate(GDP_percapita = gdp/population) |>
 
 ---
 
-# Cleveland dot plots
+# Plotting categorical values
 
 **Cleveland dot plots** are uncluttered and can be more effective than bar charts.
 - Especially when the x-intercept doesn't mean much.
