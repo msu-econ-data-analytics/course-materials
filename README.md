@@ -115,17 +115,17 @@ Fall 2024
 
 **Topic 12: Spatial Analysis**
 
-* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/Overview_Geospatial_Data.pdf)
-* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part1.html)
+* [**Intro to Geospatial Data**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Spatial/Overview_Geospatial_Data.pdf)
+* [**Part 1**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Spatial/16-Spatial-part1.html)
   - Spatial data and quick mapping
   - Reference systems and projections
-* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-Spatial/16-Spatial-part2.html)
+* [**Part 2**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Spatial/16-Spatial-part2.html)
   - Spatial queries (measurement, relationships)
   - Spatial subsetting
   - Geometry operations
   - Spatial joins
 
-[**Topic 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/12-Learning/12-Learning.html)
+[**Topic 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/12-Learning.html)
 
 * Overview: Statistical learning
 * Assessing model accuracy
@@ -133,11 +133,11 @@ Fall 2024
 
 **Topic 14: Prediction Methods**
 
-* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/13a-Shrinkage.html)
+* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/13a-Shrinkage.html)
   - Shrinkage methods
   - Ridge regression
   - Lasso (and elasticnet)
-* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Prediction/13b-Tidymodels.html)
+* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/13b-Tidymodels.html)
   - Setup and splitting
   - Recipes
   - Workflows
@@ -145,7 +145,7 @@ Fall 2024
   - Prediction
   - Dependence
 
-[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/15-ML-Applications/15-ML-Applications.html)
+[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-ML-Applications/15-ML-Applications.html)
 
 * Predicting outcomes
 * Constructing new data

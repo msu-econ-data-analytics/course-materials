@@ -371,7 +371,7 @@ qtm(states_mercator)
 - Preserves area but distorts direction/angle/shape and distance.
 - My favorite for the continental U.S.
 ```{r, out.width="50%"}
-states_albers = st_transform(states, crs = 2163)
+states_albers = st_transform(states, crs = 9311)
 qtm(states_albers)
 ```
 
