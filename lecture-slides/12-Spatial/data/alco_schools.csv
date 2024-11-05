@@ -423,7 +423,7 @@ X,Y,Site,Address,City,State,Type,API,Org
 -122.1282708,37.67070477,San Lorenzo Adult,820 Bockman Rd.,San Lorenzo,CA,Adult,0,Public
 -122.2437797,37.7686949,Alameda Christian,2226 Pacific Avenue,Alameda,CA,K-8,0,private
 -122.2386716,37.72562637,Chinese American Schools - Alameda,"1501 Harbor Bay Parkway, Suite 200",Alameda,CA,9 to 12,0,private
--122.2399036,37.72725414,Chinese Christian Schools–Alameda,1801 North Loop Road,Alameda,CA,K-8,0,private
+-122.2399036,37.72725414,Chinese Christian Schools - Alameda,1801 North Loop Road,Alameda,CA,K-8,0,private
 -122.2432671,37.73666105,Peter Pan Academy,3171 Mecartney Road,Alameda,CA,K-2,0,private
 -122.2318727,37.75849659,Rising Star Montessori School,1421 High Street,Alameda,CA,K-5,0,private
 -122.255345,37.76609586,St. Joseph Elementary,1910 San Antonio Avenue,Alameda,CA,K-8,0,private
@@ -446,7 +446,7 @@ X,Y,Site,Address,City,State,Type,API,Org
 -122.2808408,37.87074097,West-Wind Academy,1551 University Avenue,Berkeley,CA,1 to 12,0,private
 -122.0983938,37.69690078,Camelot School,2330 Pomar Vista,Castro Valley,CA,K-5,0,private
 -122.0831068,37.7015695,Our Lady of Grace,3427 Somerset Avenue,Castro Valley,CA,K-8,0,private
--122.0738168,37.70569739,Redwood Christian–Redwood Elementary,19300 Redwood Road,Castro Valley,CA,K-5,0,private
+-122.0738168,37.70569739,Redwood Christian - Redwood Elementary,19300 Redwood Road,Castro Valley,CA,K-5,0,private
 -122.0935839,37.71706482,Vita Academy,17524 Kingston Way,Castro Valley,CA,1 to 6,0,private
 -121.8712108,37.72786546,"Quarry Lane School, The",6363 Tassjara Road,Dublin,CA,K-12,0,private
 -121.9368231,37.7233241,St. Philip Lutheran,8850 Davona Drive,Dublin,CA,K-8,0,private
@@ -491,7 +491,7 @@ X,Y,Site,Address,City,State,Type,API,Org
 -122.0225375,37.59973027,Purple Lotus Buddhist School,33615 Ninth Street,Union City,CA,3 to 12,0,private
 -122.0341927,37.59096188,Union City Christian School,33700 Alvarado Niles Road,Union City,CA,K-12,0,private
 -121.9976443,37.52157919,Challenger - Newark,39600 Cedar Boulevard,Newark,CA,K,0,private
--122.0519903,37.5478304,Challenger–Ardenwood,35487 Dumbarton Court,Newark,CA,K-8,0,private
+-122.0519903,37.5478304,Challenger - Ardenwood,35487 Dumbarton Court,Newark,CA,K-8,0,private
 -122.0282572,37.53943973,St. Edward Parish,5788 Thornton Avenue,Newark,CA,K-8,0,private
 -122.0097581,37.5321822,Stellar Academy for Dyslexics,38325 Cedar Boulevard,Newark,CA,2 to 8,0,private
 -122.1978693,37.75892826,Acts Christian Academy,1034 66th Avenue,Oakland,CA,K-8,0,private
@@ -504,7 +504,7 @@ X,Y,Site,Address,City,State,Type,API,Org
 -122.1760068,37.76634767,Candell's College Preparatory School,2544-73rd Avenue,Oakland,CA,K-12,0,private
 -122.2265217,37.84794315,"College Preparatory, The",6100 Broadway Street,Oakland,CA,9 to 12,0,private
 -122.1901711,37.76052006,Dr. Herbert Guice Christian Academy,6925 International Boulevard,Oakland,CA,K-6,0,private
--122.2569458,37.850803,Escuela Bilingüe Internacional,410 Alcatraz Avenue,Oakland,CA,K-3,0,private
+-122.2569458,37.850803,Escuela Bilingue Internacional,410 Alcatraz Avenue,Oakland,CA,K-3,0,private
 -122.2505246,37.81679963,Grand Lake Montessori,466 Chetwood Street,Oakland,CA,K,0,private
 -122.2007741,37.81030653,Growing Light Montessori,4700 Lincoln Avenue,Oakland,CA,K-3,0,private
 -122.2047581,37.80821111,Head-Royce School,4315 Lincoln Avenue,Oakland,CA,K-12,0,private
@@ -545,7 +545,7 @@ X,Y,Site,Address,City,State,Type,API,Org
 -122.1501333,37.71512228,"Principled Academy, The",2305 Washington Avenue,San Leandro,CA,K-8,0,private
 -122.1596032,37.72444825,St. Leander,451 Davis Street,San Leandro,CA,K-8,0,private
 -122.1265801,37.67429306,Calvary Lutheran Elementary,17200 Via Magdalena,San Lorenzo,CA,K-8,0,private
--122.1416198,37.68778634,Chinese Christian Schools–San Leandro,750 Fargo Avenue,San Lorenzo,CA,K-12,0,private
--122.1349707,37.67648741,Redwood Christian Junior–Senior,1000 Paseo Grande,San Lorenzo,CA,6 to 12,0,private
+-122.1416198,37.68778634,Chinese Christian Schools - San Leandro,750 Fargo Avenue,San Lorenzo,CA,K-12,0,private
+-122.1349707,37.67648741,Redwood Christian Junior - Senior,1000 Paseo Grande,San Lorenzo,CA,6 to 12,0,private
 -122.1586919,37.69084912,St. Felicitas Catholic School,1650 Manor Boulevard,San Lorenzo,CA,K-8,0,private
 -122.1174519,37.68681163,St. John Elementary,270 East Lewelling Boulevard,San Lorenzo,CA,K-8,0,private
