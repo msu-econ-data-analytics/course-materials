@@ -125,7 +125,7 @@ Fall 2024
   - Geometry operations
   - Spatial joins
 
-[**Topic 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/12-Learning.html)
+[**Topic 13: Machine Learning Fundamentals**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/13-Learning/13-Learning.html)
 
 * Overview: Statistical learning
 * Assessing model accuracy
