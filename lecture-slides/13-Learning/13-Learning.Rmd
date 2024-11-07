@@ -1,0 +1,806 @@
+---
+title: "Topic 13: <br> Machine Learning Fundamentals"
+author: "Nick Hagerty* <br> ECNS 460/560 <br> Montana State University"
+date: "<br> .small[*Slides 6-17 and 27-42 are adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission, and excluded from this resource's overall CC license.]"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+name: toc
+
+```{css, echo=FALSE}
+.text-small {
+  font-size: 50%;
+}
+.text-big {
+  font-size: 150%;
+}
+.small {
+  font-size: 75%;
+}
+```
+
+```{R, setup, include = F}
+library(pacman)
+p_load(
+  broom, tidyverse, polyclip, cowplot, scales,
+  ggplot2, ggthemes, ggridges, ggforce, ggstance, ggformula,
+  latex2exp, viridis, gridExtra,
+  knitr, extrafont, plotly, FNN, caret, here
+)
+#   kableExtra, snakecase, janitor, DT,
+#   data.table, 
+#   lubridate, future, furrr, parallel,
+#   MASS, estimatr, parsnip, glmnet,
+#   huxtable, here, magrittr, 
+#   patchwork, splines
+# Define colors
+red_pink   = "#e64173"
+turquoise  = "#20B2AA"
+orange     = "#FFA500"
+red        = "#fb6107"
+blue       = "#3b3b9a"
+green      = "#8bb174"
+grey_light = "grey70"
+grey_mid   = "grey50"
+grey_dark  = "grey20"
+purple     = "#6A5ACD"
+slate      = "#314f4f"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+	cache = TRUE,
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(knitr.table.format = "html")
+```
+
+
+# Table of contents
+
+1. [Overview: Statistical learning](#learning)
+
+1. [Assessing model accuracy](#accuracy)
+
+1. [Cross-validation](#resampling)
+
+
+---
+class: inverse, middle
+name: learning
+# Overview: Statistical learning
+
+<!-- --- -->
+<!-- # Review: Goals of data analysis -->
+
+<!-- There are **3 main purposes** of data analysis: -->
+<!-- 1. .hi-turquoise[**Descriptive analysis:**] Characterize observed patterns among variables. -->
+<!-- 2. .hi[**Causal inference:**] Learn how Y changes as a result of an active intervention to change X. -->
+<!-- 3. .hi-purple[**Prediction:**] Predict the value of one variable from other information. -->
+
+<!-- Key differences among the 3 goals: -->
+<!-- 1. **Focus:** Prediction focuses on the outcome $\color{#6A5ACD}{\hat{Y_{i}}}$, causal inference on a coefficient $\color{#e64173}{\hat{\beta_0}}$. -->
+<!-- 2. **Selection bias** is a problem for causal inference, but not predictive or descriptive analysis. -->
+<!-- 3. **Interpretion:** Coefficients have meaning in causal inference and descriptive analysis, but little meaning in prediction. -->
+
+
+---
+# Prediction
+
+$$\color{#6A5ACD}{Y_i} = f(x_{0i}, x_{1i}, ..., x_{Ni}) = \color{#e64173}{\beta_0} x_{0i} + \beta_1 x_{1i} + \beta_2 x_{2i} + ... + \varepsilon_i$$
+
+.hi-purple[**Prediction:**] Want to estimate $\color{#6A5ACD}{\hat{Y_{i}}}$ given observed data $x_{0i}, x_{1i}, x_{2i}, ....$.
+- Does not matter whether your model is "correct" (the true DGP), only whether it *works.*
+
+--
+
+The idea is that we will:
+1. **Train** a model on data for which we know both $X$ and $Y$.
+2. **Apply** the model to new situations where we know $X$ but not $Y$.
+
+
+---
+layout: true
+# Statistical learning
+
+---
+
+The class of methods for doing prediction is called **statistical learning** or **machine learning.**
+
+First, a few definitions...
+
+
+---
+## Supervised vs. unsupervised
+
+Statistical learning is generally divided into two classes:
+
+1. .hi-slate[Supervised learning] builds ("learns") a statistical model for predicting an .hi-orange[output] $\left( \color{#FFA500}{\mathbf{y}} \right)$ given a set of .hi-purple[inputs] $\left( \color{#6A5ACD}{x_{1},\, \ldots,\, x_{p}} \right)$.
+
+--
+
+2. .hi-slate[Unsupervised learning] learns relationships and structure using only .hi-purple[inputs] $\left( \color{#6A5ACD}{x_{1},\, \ldots,\, x_{p}} \right)$ without any *supervising* output — letting the data "speak for itself."
+
+---
+class: clear, middle
+layout: false
+
+```{r, comic, echo = F}
+knitr::include_graphics("images/comic-learning.jpg")
+```
+
+.it[.smaller[[Source](https://twitter.com/athena_schools/status/1063013435779223553)]]
+
+---
+layout: true
+# Statistical learning
+
+---
+## Classification vs. Regression
+
+.hi-slate[Supervised learning] is broken into two types, based on what kind of .hi-orange[output] we want to predict:
+
+1. .hi-slate[Classification tasks] for which the values of $\color{#FFA500}{\mathbf{y}}$ are discrete categories.
+<br>*E.g.*, race, sex, loan default, hazard, disease, flight status
+
+2. .hi-slate[Regression tasks] in which $\color{#FFA500}{\mathbf{y}}$ takes on continuous, numeric values.
+<br>*E.g.*, price, arrival time, number of emails, temperature
+
+.note[Note] The use of .it[regression] differs from our use of .it[linear regression].
+
+---
+## Translating terms
+
+$\color{#6A5ACD}{\mathbf{X}}$ (treatment variable/covariates, independent variables, regressors)
+- Now: **predictors, features.**
+
+$\hat{\color{#FFA500}{\mathbf{Y}}}$ (outcome variable, dependent variable)
+- Now: **target, label.**
+
+"Estimate a model" or "fit a model"
+- Now: **Train** a model, **learn** a model.
+
+
+---
+## General framework
+
+A .turquoise[function] $\color{#20B2AA}{f}$ takes .purple[inputs] $\color{#6A5ACD}{\mathbf{X}} = \color{#6A5ACD}{\mathbf{x}_1}, \ldots, \color{#6A5ACD}{\mathbf{x}_p}$ and maps them to the .orange[output], along with a random, mean-zero .pink[error term] $\color{#e64173}{\varepsilon}$.
+
+$$\color{#FFA500}{\mathbf{y}} = \color{#20B2AA}{f} \! \left( \color{#6A5ACD}{\mathbf{X}} \right) + \color{#e64173}{\varepsilon}$$
+
+If we can estimate $\hat{\color{#20B2AA}{f}}$, then we can use $\color{#6A5ACD}{\mathbf{X}}_i$ to generate predictions $\color{#FFA500}{\mathbf{y}}_i$.
+
+<!-- The accuracy of $\hat{\color{#FFA500}{\mathbf{y}}}$ depends upon .hi-slate[two errors]: -->
+
+<!-- 1. .hi-slate[Reducible error] The error due to $\hat{\color{#20B2AA}{f}}$ imperfectly estimating $\color{#20B2AA}{f}$. -->
+<!-- <br>*Reducible* in the sense that we can improve $\hat{\color{#20B2AA}{f}}$. -->
+
+<!-- 1. .hi-slate[Irreducible error] The error component that is outside of the model $\color{#20B2AA}{f}$. -->
+<!-- <br>*Irreducible* because we defined an error term $\color{#e64173}{\varepsilon}$ unexplained by $\color{#20B2AA}{f}$. -->
+
+<!-- Our goal is to minimize .hi-slate[reducible error]. -->
+
+
+<!-- --- -->
+<!-- ## How to predict -->
+
+<!-- **How do we minimize reducible error** (and form the best predictions)? -->
+
+<!-- The basic workflow for predictive analysis: -->
+
+<!-- 1. **Choose** a model. -->
+<!-- 2. **Train** the model (estimate its parameters). -->
+<!-- 3. **Assess** its performance. -->
+<!-- 4. Repeat steps 1-3 for different models, and choose the **best** model. -->
+
+<!-- -- -->
+
+<!-- .note[Note:] "Different models" can mean: -->
+
+<!-- * Either completely distinct models (e.g., OLS vs. *k*-nearest neighbors). -->
+<!-- * Or a set of closely related models differing by a **hyperparameter**. -->
+<!--   - E.g., polynomial regression (hyperparameter: polynomial degree). -->
+
+
+---
+## How to predict
+
+The basic workflow for predictive analysis:
+
+1. **Choose** a model.
+2. **Train** the model (estimate its parameters).
+3. **Assess** its performance.
+4. Repeat steps 1-3 for different models, and choose the **best** model.
+
+<!-- -- -->
+
+<!-- .qa[Q] Why don't we do this for causal inference? -->
+<!-- - In causal inference, the best model is determined by outside knowledge (i.e., which research design is most plausible). -->
+<!-- - In prediction, the best model is simply the one that performs best. -->
+
+
+---
+layout: false
+class: inverse, middle
+name: accuracy
+
+# Assessing model accuracy
+
+
+---
+layout: true
+# Model accuracy
+
+---
+## Loss
+
+*Prediction error* is defined as:
+$$\color{#FFA500}{\mathbf{y}}_i - \hat{\color{#FFA500}{\mathbf{y}}}_i$$
+<!-- $$\color{#FFA500}{\mathbf{y}}_i - \hat{\color{#20B2AA}{f}}\!\left( \color{#6A5ACD}{x}_i \right) = \color{#FFA500}{\mathbf{y}}_i - \hat{\color{#FFA500}{\mathbf{y}}}_i$$ -->
+the difference between the label $\left( \color{#FFA500}{\mathbf{y}} \right)$ and its prediction $\left( \hat{\color{#FFA500}{\mathbf{y}}} \right)$.
+
+The (absolute) distance between a true value and its prediction is often called .b[loss].
+
+The way you choose to use loss to measure model performance is called a **loss function.**
+
+---
+name: accuracy-subtlety
+
+## What loss function should we choose?
+
+How do we compare loss across observations? Many questions:
+
+- Which do you prefer?
+  1. Lots of little errors and a few really large errors.
+  1. Medium-sized errors for everyone.
+
+- Is a 1-unit error (*e.g.*, $1,000) equally bad for everyone?
+
+- Is an overestimate equally bad as an underestimate?
+
+<!-- --- -->
+<!-- ## Subtlety -->
+
+<!-- Defining performance can be tricky... -->
+
+<!-- *Classification:* -->
+
+<!-- - Which is worse? -->
+<!--   1. False positive (*e.g.*, incorrectly diagnosing cancer) -->
+<!--   1. False negative (*e.g.*, missing cancer) -->
+
+<!-- - Which is more important? -->
+<!--   1. True positive (*e.g.*, correct diagnosis of cancer) -->
+<!--   1. True negative (*e.g.*, correct diagnosis of "no cancer") -->
+
+---
+name: mse
+## Most common: MSE
+
+.attn[Mean squared error (MSE)] is the most common loss function in a regression setting. (Not necessarily the best.)
+
+$$\text{MSE} = \dfrac{1}{n} \sum_{i=1}^n \left[ \color{#FFA500}{y}_i - \hat{\color{#20B2AA}{f}}(\color{#6A5ACD}{x}_i) \right]^2$$
+
+Note:
+
+1. MSE is small when .hi-slate[prediction error] is small.
+1. MSE .hi-slate[penalizes] big errors more than small errors (the squared part).
+
+---
+name: overfitting
+layout: false
+# Model accuracy
+## Overfitting
+
+Low MSE on the data that trained the model is not necessarily impressive — maybe the model is just **overfitting** our data.
+
+**Tradeoff:** More flexible models...
+
+- might better fit complex systems (lower bias).
+
+- but also might falsely interpret noise as signal (higher variance).
+
+---
+name: training-testing
+
+# Model accuracy
+## Training vs. testing data
+
+**Our real goal:** A model that performs well *on data it has never seen.*
+
+To avoid overfitting, we must:
+
+1. Split our data into a **training set** and a **test set**.
+2. Use the **training set** only to train our model.
+3. Use the **test set** only to measure model performance.
+
+
+---
+class: clear, middle
+layout: true
+
+```{r, echo = F, cache = T, eval = T}
+# Function to generate our data
+sim_fun = function(x) (x - 3)^2 * (x + 3) * (x + 5) / 100 + 7
+# Generate data
+set.seed(1234)
+nnn = 75
+sd = 1
+train = tibble(
+  #x = runif(n = nnn, min = -4.25, max = 4.25),
+  x = seq(from = -4.25, to = 4.25, length.out = nnn),
+  y = sim_fun(x) + rnorm(nnn, sd = sd)
+)
+test = tibble(
+  #x = runif(n = nnn, min = -4.25, max = 4.25),
+  x = seq(from = -4.25, to = 4.25, length.out = nnn),
+  y = sim_fun(x) + rnorm(nnn, sd = sd)
+)
+range = tibble(x = seq(from = -4.25, to = 4.25, length.out = 500))
+true_shape = cbind(range, y = sim_fun(range$x))
+degrees = c(1, 2, 3, 4, 5, 7, 11, 17, 25)
+
+# Calculate training and test MSEs for each polynomial degree
+mses = lapply(
+  X = degrees,
+  FUN = function(degree) {
+    # Fit polynomial on training data
+    fit = lm(y ~ poly(x, degree = degree), train)
+    # Calculate MSE
+    mse_train = (train$y - predict(fit, train))^2 |> mean()
+    mse_test = (test$y - predict(fit, test))^2 |> mean()
+    # Return data frame
+    tibble(
+      degree = rep(degree, 2),
+      mse_type = c("Train", "Test"),
+      mse_value = c(mse_train, mse_test)
+    )
+  }
+) %>% bind_rows()
+
+# Get y-scale mins and maxes
+fit = lm(y ~ poly(x, degree = 25), train)
+ymax = max(max(predict(fit, range)), max(train$y), max(test$y))
+ymin = min(min(predict(fit, range)), min(train$y), min(test$y))
+
+# Function to make plot for one polynomial degree
+plot_test_train = function(degree) {
+  fit = lm(y ~ poly(x, degree = degree), train)
+  predict_shape = cbind(range, yhat = predict(fit, range))
+  predict_train = tibble(x = train$x, y = predict(fit, train), type = "hat")
+  predict_test = tibble(x = test$x, y = predict(fit, test), type = "hat")
+  df_train = bind_rows(cbind(train, type = "raw"), predict_train)
+  df_test = bind_rows(cbind(test, type = "raw"), predict_test)
+  plot_train = ggplot(df_train) +
+    geom_line(aes(x, y, group = x), col = "gray") +
+    geom_line(data = predict_shape, aes(x, yhat), color = "blue") + 
+    geom_line(data = true_shape, aes(x, y), linetype = "dashed") +
+    geom_point(data = df_train |> filter(type == "raw"), aes(x, y), shape = "circle filled", fill = "#00BFC4") +
+    ylim(ymin, ymax) +
+    theme_void() +
+    labs(title = "Training data")
+  plot_test = ggplot(df_test) +
+    geom_line(aes(x, y, group = x), col = "gray") +
+    geom_line(data = predict_shape, aes(x, yhat), color = "blue") + 
+    geom_line(data = true_shape, aes(x, y), linetype = "dashed") +
+    geom_point(data = df_test |> filter(type == "raw"), aes(x, y), shape = "circle filled", fill = "#F8766D") +
+    ylim(ymin, ymax) +
+    theme_void() +
+    labs(title = "Testing data")
+  return(plot_train + plot_test)
+}
+
+# Function to make MSE plot up to one polynomial degree
+plot_mses = function(d) {
+  ggplot(
+    mses |> filter(degree <= d), 
+    aes(x = degree, y = mse_value, color = mse_type)
+    ) +
+    geom_line(size = 1) + 
+    geom_point(size = 3) + 
+    ylim(min(mses$mse_value), max(mses$mse_value)) +
+    theme_minimal() +
+    theme(axis.text.y = element_blank(), 
+          legend.title = element_blank(), 
+          legend.position = "top", # text = element_text(size=14)
+          ) +
+    scale_x_log10(breaks = c(1, 5, 10, 20), minor_breaks = c(1, 2, 3, 4, 5, 10, 15, 20, 25), limits = c(1, 25)) +
+    labs(title = "MSE") + ylab("") + xlab("Degree")
+}
+
+```
+
+---
+
+Fitting a polynomial of degree **1**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 1
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **2**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 2
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **3**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 3
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **4**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 4
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **5**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 5
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **7**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 7
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **11**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 11
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **17**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 17
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+
+Fitting a polynomial of degree **25**
+```{r, message = F, echo = F, cache = T, eval = T, fig.width = 8.75, fig.height = 6.25}
+d = 25
+plot_test_train(d) + plot_mses(d) + plot_layout(widths = c(2, 2, 1))
+```
+
+---
+layout: false
+name: bias-variance
+# Model accuracy
+## The bias-variance tradeoff
+
+Finding the optimal level of flexibility highlights the .hi-pink[bias]-.hi-purple[variance] .b[tradeoff.]
+
+.hi-pink[Bias:] The error that comes from modeling $\color{#20B2AA}{f}$ with the wrong structure.
+- More flexible models are better equipped to recover complex relationships $\left( \color{#20B2AA}{f} \right)$, reducing bias.
+- Models that are too simple have high bias.
+
+.hi-purple[Variance:] The amount $\hat{\color{#20B2AA}{f}}$ would change with a different .hi-slate[training sample]
+- If new .hi-slate[training sets] drastically change $\hat{\color{#20B2AA}{f}}$, then we have a lot of uncertainty about $\color{#20B2AA}{f}$.
+- Models that are too flexible have high variance.
+
+---
+# Model accuracy
+## The bias-variance tradeoff
+
+The expected value of the .hi-pink[test MSE] can be written
+$$
+\begin{align}
+  \mathop{E}\left[ \left(\color{#FFA500}{\mathbf{y_0}} - \mathop{\hat{\color{#20B2AA}{f}}}\left(\color{#6A5ACD}{\mathbf{X}_0}\right) \right)^2 \right] =
+  \underbrace{\mathop{\text{Var}} \left( \mathop{\hat{\color{#20B2AA}{f}}}\left(\color{#6A5ACD}{\mathbf{X}_0}\right) \right)}_{\text{Variance}} +
+  \underbrace{\left[ \text{Bias}\left( \mathop{\hat{\color{#20B2AA}{f}}}\left(\color{#6A5ACD}{\mathbf{X}_0}\right) \right) \right]^2}_{\text{Bias}} +
+  \underbrace{\mathop{\text{Var}} \left( \varepsilon \right)}_{\text{Irr. error}}
+\end{align}
+$$
+
+.b[The tradeoff] in terms of model flexibility:
+
+- At first, adding flexibility reduces bias more than it increases variance.
+- Later on, the bias reduction gets swamped out by increases in variance.
+- At some point, the marginal benefits of flexibility equal marginal costs.
+
+
+---
+class: inverse, middle
+name: resampling
+# Cross-validation
+
+---
+layout: false
+# Cross-validation
+
+**How do we choose the best model?** (e.g., degree of polynomial)
+- Based on test-set MSE? 
+
+--
+- **NO!!!** We will just overfit the test set itself!
+- The test set must be used *only for evaluation.*
+
+Instead, we must conduct model selection *entirely within the training set.*
+
+
+---
+name: resampling-validation
+layout: true
+# Cross-validation
+## The .it[validation set] approach
+
+**Hold out** a subset of our training set to *estimate* the test error.
+
+1. Train each model using the .hi-purple[rest of the training set].
+2. Calculate MSE in the .hi-slate[validation set].
+3. Compare performance and choose the best model.
+
+---
+
+```{r, data-validation-set, include = F, cache = T}
+# Generate data
+X = 40
+Y = 12
+set.seed(12345)
+v_df = expand_grid(
+  x = 1:X,
+  y = 1:Y
+) %>% mutate(grp = sample(
+  x = c("Train", "Validate"),
+  size = X * Y,
+  replace = T,
+  prob = c(0.7, 0.3)
+)) %>% mutate(
+  grp2 = c(
+    rep("Validate", sum(grp == "Validate")),
+    rep("Train", sum(grp == "Train"))
+  )
+)
+```
+
+---
+
+```{r, plot-validation-set, echo = F, dependson = "data-validation-set", fig.height = 3, cache = T}
+ggplot(data = v_df, aes(x, y, fill = grp, color = grp)) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5, color = purple, fill = "white") +
+theme_void() +
+theme(legend.position = "none")
+```
+
+.col-left[.hi-purple[Full training set]]
+
+
+---
+
+```{r, plot-validation-set-2, echo = F, dependson = "data-validation-set", fig.height = 3, cache = T}
+ggplot(data = v_df, aes(x, y, fill = grp, color = grp)) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+.col-left[.hi-slate[Validation set]]
+.col-right[.hi-purple[Rest of training set]]
+
+---
+
+```{r, plot-validation-set-3, echo = F, dependson = "data-validation-set", fig.height = 3, cache = T}
+ggplot(data = v_df, aes(x, y, fill = grp2, color = grp2)) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+.col-left[.hi-slate[Validation set]]
+.col-right[.hi-purple[Rest of training set]]
+
+---
+layout: true
+# Cross-validation
+## *k*-fold cross-validation
+
+---
+name: resampling-kcv
+
+Even better is to use .hi[k-fold cross validation].
+
+1. .b[Divide] the training data into $k$ equally sized groups (folds).
+2. .b[Iterate] over the $k$ folds, treating each as a validation set once<br>(training the model on the other $k-1$ folds).
+3. .b[Average] the folds' MSEs to estimate test MSE.
+
+Relative to the validation set approach:
+- Uses all the data, so not as sensitive to exactly which observations end up in the validation set.
+- So produces a lower-variance estimate of the test-set MSE.
+
+
+---
+exclude: true
+
+```{r, data-cv, include = F, cache = T}
+# Generate data
+X = 40
+Y = 12
+set.seed(12345)
+cv_df = expand_grid(
+  x = 1:X,
+  y = 1:Y
+) %>% mutate(
+  id = 1:(X*Y),
+  grp = sample(X * Y) %% 5 + 1
+)
+# Find groups
+a = seq(1, X*Y, by = X*Y/5)
+b = c(a[-1] - 1, X*Y)
+```
+
+---
+layout: true
+# Cross-validation
+## *k*-fold cross-validation
+
+With $k$-fold cross validation, we estimate test MSE as
+$$
+\begin{align}
+  \text{CV}_{(k)} = \dfrac{1}{k} \sum_{i=1}^{k} \text{MSE}_{i}
+\end{align}
+$$
+---
+
+```{r, plot-cvk-0a, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(data = cv_df, aes(x, y, color = grp)) +
+geom_point(size = 4.5) +
+scale_color_viridis_c(option = "magma", end = 0.925) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+Our $k=$ 5 folds.
+---
+
+```{r, plot-cvk-0b, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(data = cv_df, aes(x, y, color = grp == 1, fill = grp == 1)) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+Each fold takes a turn at .hi-slate[validation]. The other $k-1$ folds .hi-purple[train].
+---
+
+```{r, plot-cvk-1, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(
+  data = cv_df,
+  aes(x, y, color = between(id, a[1], b[1]), fill = between(id, a[1], b[1]))
+) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+For $k=5$, fold number $1$ as the .hi-slate[validation set] produces MSE.sub[k=1].
+---
+
+```{r, plot-cvk-2, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(
+  data = cv_df,
+  aes(x, y, color = between(id, a[2], b[2]), fill = between(id, a[2], b[2]))
+) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+For $k=5$, fold number $2$ as the .hi-slate[validation set] produces MSE.sub[k=2].
+---
+
+```{r, plot-cvk-3, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(
+  data = cv_df,
+  aes(x, y, color = between(id, a[3], b[3]), fill = between(id, a[3], b[3]))
+) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+For $k=5$, fold number $3$ as the .hi-slate[validation set] produces MSE.sub[k=3].
+---
+
+```{r, plot-cvk-4, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(
+  data = cv_df,
+  aes(x, y, color = between(id, a[4], b[4]), fill = between(id, a[4], b[4]))
+) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+For $k=5$, fold number $4$ as the .hi-slate[validation set] produces MSE.sub[k=4].
+---
+
+```{r, plot-cvk-5, echo = F, fig.height = 3, dependson = "data-cv"}
+ggplot(
+  data = cv_df,
+  aes(x, y, color = between(id, a[5], b[5]), fill = between(id, a[5], b[5]))
+) +
+geom_point(shape = 21, size = 4.5, stroke = 0.5) +
+scale_fill_manual("", values = c("white", slate)) +
+scale_color_manual("", values = c(purple, slate)) +
+theme_void() +
+theme(legend.position = "none")
+```
+
+For $k=5$, fold number $5$ as the .hi-slate[validation set] produces MSE.sub[k=5].
+
+---
+layout: false
+# Summary
+
+.smaller[
+.pull-left[
+[**Prediction vs. causal inference**](#goal)
+- In causal inference we want to estimate the treatment effect $\hat{\beta}$.
+- In prediction problems we want to estimate the outcome value $\hat{Y_i}$.
+
+**[Statistical learning](#learning)**
+- Supervised vs. unsupervised learning.
+- Regression vs. classification.
+<!-- - Reducible vs. irreducible error. -->
+]
+.pull-right[
+**[Model accuracy](#accuracy)**
+- Models can be assessed using loss functions that combine prediction errors.
+- For regression problems, MSE is the most common loss function.
+- Using separate testing and training data avoids overfitting.
+
+**[Cross-validation](#resampling)**
+- Resampling methods avoid overfitting in model assessment and selection.
+- Validation set approach.
+<!-- - Leave-one-out cross-validation. -->
+- *k*-fold cross-validation.
+]
+]

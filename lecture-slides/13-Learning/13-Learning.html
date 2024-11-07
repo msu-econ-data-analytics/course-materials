@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Topic 12:   Machine Learning Fundamentals</title>
+    <title>Topic 13:   Machine Learning Fundamentals</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty*   ECNS 460/560 Fall 2023   Montana State University" />
-    <script src="12-Learning_files/header-attrs-2.21/header-attrs.js"></script>
-    <link href="12-Learning_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="12-Learning_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="12-Learning_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <meta name="author" content="Nick Hagerty*   ECNS 460/560   Montana State University" />
+    <script src="13-Learning_files/header-attrs-2.27/header-attrs.js"></script>
+    <link href="13-Learning_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="13-Learning_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="13-Learning_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="my-css.css" type="text/css" />
   </head>
   <body>
@@ -15,13 +15,13 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Topic 12: <br> Machine Learning Fundamentals
+# Topic 13: <br> Machine Learning Fundamentals
 ]
 .author[
-### Nick Hagerty* <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty* <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
-### <br> .small[*Adapted from <a href="https://github.com/edrubin/EC524W21">“Prediction and machine-learning in econometrics”</a> by Ed Rubin, used with permission. Other than the simulation in slides 20-28 (which is included), these slides are excluded from this resource’s overall CC license.]
+### <br> .small[*Slides 6-17 and 27-42 are adapted from <a href="https://github.com/edrubin/EC524W21">“Prediction and machine-learning in econometrics”</a> by Ed Rubin, used with permission, and excluded from this resource’s overall CC license.]
 ]
 
 ---
@@ -148,26 +148,48 @@ layout: true
 
 
 ---
-## Prediction errors
+## General framework
 
-Imagine there is a .turquoise[function] `\(\color{#20B2AA}{f}\)` that takes .purple[inputs] `\(\color{#6A5ACD}{\mathbf{X}} = \color{#6A5ACD}{\mathbf{x}_1}, \ldots, \color{#6A5ACD}{\mathbf{x}_p}\)` &lt;br&gt;and maps them, plus a random, mean-zero .pink[error term] `\(\color{#e64173}{\varepsilon}\)`, to the .orange[output].
+A .turquoise[function] `\(\color{#20B2AA}{f}\)` takes .purple[inputs] `\(\color{#6A5ACD}{\mathbf{X}} = \color{#6A5ACD}{\mathbf{x}_1}, \ldots, \color{#6A5ACD}{\mathbf{x}_p}\)` and maps them to the .orange[output], along with a random, mean-zero .pink[error term] `\(\color{#e64173}{\varepsilon}\)`.
+
 `$$\color{#FFA500}{\mathbf{y}} = \color{#20B2AA}{f} \! \left( \color{#6A5ACD}{\mathbf{X}} \right) + \color{#e64173}{\varepsilon}$$`
 
-The accuracy of `\(\hat{\color{#FFA500}{\mathbf{y}}}\)` depends upon .hi-slate[two errors]:
+If we can estimate `\(\hat{\color{#20B2AA}{f}}\)`, then we can use `\(\color{#6A5ACD}{\mathbf{X}}_i\)` to generate predictions `\(\color{#FFA500}{\mathbf{y}}_i\)`.
 
-1. .hi-slate[Reducible error] The error due to `\(\hat{\color{#20B2AA}{f}}\)` imperfectly estimating `\(\color{#20B2AA}{f}\)`.
-&lt;br&gt;*Reducible* in the sense that we can improve `\(\hat{\color{#20B2AA}{f}}\)`.
+&lt;!-- The accuracy of `\(\hat{\color{#FFA500}{\mathbf{y}}}\)` depends upon .hi-slate[two errors]: --&gt;
 
-1. .hi-slate[Irreducible error] The error component that is outside of the model `\(\color{#20B2AA}{f}\)`.
-&lt;br&gt;*Irreducible* because we defined an error term `\(\color{#e64173}{\varepsilon}\)` unexplained by `\(\color{#20B2AA}{f}\)`.
+&lt;!-- 1. .hi-slate[Reducible error] The error due to `\(\hat{\color{#20B2AA}{f}}\)` imperfectly estimating `\(\color{#20B2AA}{f}\)`. --&gt;
+&lt;!-- &lt;br&gt;*Reducible* in the sense that we can improve `\(\hat{\color{#20B2AA}{f}}\)`. --&gt;
 
-Our goal is to minimize .hi-slate[reducible error].
+&lt;!-- 1. .hi-slate[Irreducible error] The error component that is outside of the model `\(\color{#20B2AA}{f}\)`. --&gt;
+&lt;!-- &lt;br&gt;*Irreducible* because we defined an error term `\(\color{#e64173}{\varepsilon}\)` unexplained by `\(\color{#20B2AA}{f}\)`. --&gt;
+
+&lt;!-- Our goal is to minimize .hi-slate[reducible error]. --&gt;
+
+
+&lt;!-- --- --&gt;
+&lt;!-- ## How to predict --&gt;
+
+&lt;!-- **How do we minimize reducible error** (and form the best predictions)? --&gt;
+
+&lt;!-- The basic workflow for predictive analysis: --&gt;
+
+&lt;!-- 1. **Choose** a model. --&gt;
+&lt;!-- 2. **Train** the model (estimate its parameters). --&gt;
+&lt;!-- 3. **Assess** its performance. --&gt;
+&lt;!-- 4. Repeat steps 1-3 for different models, and choose the **best** model. --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- .note[Note:] "Different models" can mean: --&gt;
+
+&lt;!-- * Either completely distinct models (e.g., OLS vs. *k*-nearest neighbors). --&gt;
+&lt;!-- * Or a set of closely related models differing by a **hyperparameter**. --&gt;
+&lt;!--   - E.g., polynomial regression (hyperparameter: polynomial degree). --&gt;
 
 
 ---
 ## How to predict
-
-**How do we minimize reducible error** (and form the best predictions)?
 
 The basic workflow for predictive analysis:
 
@@ -176,30 +198,11 @@ The basic workflow for predictive analysis:
 3. **Assess** its performance.
 4. Repeat steps 1-3 for different models, and choose the **best** model.
 
---
+&lt;!-- -- --&gt;
 
-.note[Note:] "Different models" can mean:
-
-* Either completely distinct models (e.g., OLS vs. *k*-nearest neighbors).
-* Or a set of closely related models differing by a **hyperparameter**.
-  - E.g., polynomial regression (hyperparameter: polynomial degree).
-
-
----
-## How to predict
-
-**How do we minimize reducible error** (and form the best predictions)?
-
-The basic workflow for predictive analysis:
-
-1. **Choose** a model.
-2. **Train** the model (estimate its parameters).
-3. **Assess** its performance.
-4. Repeat steps 1-3 for different models, and choose the **best** model.
-
-.qa[Q] Why don't we do this for causal inference?
-- In causal inference, the best model is determined by outside knowledge (i.e., which research design is most plausible).
-- In prediction, the best model is simply the one that performs best.
+&lt;!-- .qa[Q] Why don't we do this for causal inference? --&gt;
+&lt;!-- - In causal inference, the best model is determined by outside knowledge (i.e., which research design is most plausible). --&gt;
+&lt;!-- - In prediction, the best model is simply the one that performs best. --&gt;
 
 
 ---
@@ -215,13 +218,23 @@ layout: true
 # Model accuracy
 
 ---
+## Loss
+
+*Prediction error* is defined as:
+`$$\color{#FFA500}{\mathbf{y}}_i - \hat{\color{#FFA500}{\mathbf{y}}}_i$$`
+&lt;!-- `$$\color{#FFA500}{\mathbf{y}}_i - \hat{\color{#20B2AA}{f}}\!\left( \color{#6A5ACD}{x}_i \right) = \color{#FFA500}{\mathbf{y}}_i - \hat{\color{#FFA500}{\mathbf{y}}}_i$$` --&gt;
+the difference between the label `\(\left( \color{#FFA500}{\mathbf{y}} \right)\)` and its prediction `\(\left( \hat{\color{#FFA500}{\mathbf{y}}} \right)\)`.
+
+The (absolute) distance between a true value and its prediction is often called .b[loss].
+
+The way you choose to use loss to measure model performance is called a **loss function.**
+
+---
 name: accuracy-subtlety
 
-## Subtlety
+## What loss function should we choose?
 
-Defining performance can be tricky...
-
-*Regression:*
+How do we compare loss across observations? Many questions:
 
 - Which do you prefer?
   1. Lots of little errors and a few really large errors.
@@ -231,45 +244,28 @@ Defining performance can be tricky...
 
 - Is an overestimate equally bad as an underestimate?
 
----
-## Subtlety
+&lt;!-- --- --&gt;
+&lt;!-- ## Subtlety --&gt;
 
-Defining performance can be tricky...
+&lt;!-- Defining performance can be tricky... --&gt;
 
-*Classification:*
+&lt;!-- *Classification:* --&gt;
 
-- Which is worse?
-  1. False positive (*e.g.*, incorrectly diagnosing cancer)
-  1. False negative (*e.g.*, missing cancer)
+&lt;!-- - Which is worse? --&gt;
+&lt;!--   1. False positive (*e.g.*, incorrectly diagnosing cancer) --&gt;
+&lt;!--   1. False negative (*e.g.*, missing cancer) --&gt;
 
-- Which is more important?
-  1. True positive (*e.g.*, correct diagnosis of cancer)
-  1. True negative (*e.g.*, correct diagnosis of "no cancer")
-
----
-## Loss
-
-*Prediction error* is defined as:
-`$$\color{#FFA500}{\mathbf{y}}_i - \hat{\color{#20B2AA}{f}}\!\left( \color{#6A5ACD}{x}_i \right) = \color{#FFA500}{\mathbf{y}}_i - \hat{\color{#FFA500}{\mathbf{y}}}_i$$`
-the difference between the label `\(\left( \color{#FFA500}{\mathbf{y}} \right)\)` and its prediction `\(\left( \hat{\color{#FFA500}{\mathbf{y}}} \right)\)`.
-
-The distance (_i.e._, non-negative value) between a true value and its prediction is often called .b[loss].
-
-The way you choose to use loss to measure model performance is called a **loss function.**
+&lt;!-- - Which is more important? --&gt;
+&lt;!--   1. True positive (*e.g.*, correct diagnosis of cancer) --&gt;
+&lt;!--   1. True negative (*e.g.*, correct diagnosis of "no cancer") --&gt;
 
 ---
 name: mse
-## MSE
+## Most common: MSE
 
-.attn[Mean squared error (MSE)] is the most common.super[.pink[†]] loss function in a regression setting.
-
-.footnote[
-.pink[†] *Most common* does not mean best—it just means lots of people use it.
-]
+.attn[Mean squared error (MSE)] is the most common loss function in a regression setting. (Not necessarily the best.)
 
 `$$\text{MSE} = \dfrac{1}{n} \sum_{i=1}^n \left[ \color{#FFA500}{y}_i - \hat{\color{#20B2AA}{f}}(\color{#6A5ACD}{x}_i) \right]^2$$`
-
---
 
 Note:
 
@@ -282,36 +278,27 @@ layout: false
 # Model accuracy
 ## Overfitting
 
-Low MSE (accurate performance) on the data that trained the model is not necessarily impressive — maybe the model is just overfitting our data.
+Low MSE on the data that trained the model is not necessarily impressive — maybe the model is just **overfitting** our data.
 
-More flexible models...
+**Tradeoff:** More flexible models...
 
-- might better fit complex systems.
+- might better fit complex systems (lower bias).
 
-- but also might falsely interpret noise as signal.
+- but also might falsely interpret noise as signal (higher variance).
 
 ---
 name: training-testing
 
 # Model accuracy
-## Training or testing?
+## Training vs. testing data
 
-.note[What we want:] How well does the model perform .hi-slate[on data it has never seen]?
+**Our real goal:** A model that performs well *on data it has never seen.*
 
---
+To avoid overfitting, we must:
 
-This introduces an important distinction:
-
-1. .hi-slate[Training data]: The observations `\((\color{#FFA500}{y}_i,\color{#e64173}{x}_i)\)` used to .hi-slate[train] our model `\(\hat{\color{#20B2AA}{f}}\)`.
-1. .hi-slate[Testing data]: The observations `\((\color{#FFA500}{y}_0,\color{#e64173}{x}_0)\)` that our model has yet to see—and which we can use to evaluate the performance of `\(\hat{\color{#20B2AA}{f}}\)`.
-
---
-
-.hi-slate[Real goal: Low test-set MSE] (not the training-set MSE).
-
-.note[Note:] This is different from causal inference, where:
-- We don't care about model *performance.*
-- We just want to use all available data to learn the model *structure.*
+1. Split our data into a **training set** and a **test set**.
+2. Use the **training set** only to train our model.
+3. Use the **test set** only to measure model performance.
 
 
 ---
@@ -323,47 +310,47 @@ layout: true
 ---
 
 Fitting a polynomial of degree **1**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-3-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-3-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **2**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-4-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-4-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **3**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-5-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-5-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **4**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-6-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-6-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **5**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-7-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-7-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **7**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-8-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-8-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **11**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-9-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-9-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **17**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Fitting a polynomial of degree **25**
-&lt;img src="12-Learning_files/figure-html/unnamed-chunk-11-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/unnamed-chunk-11-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: false
@@ -409,229 +396,73 @@ name: resampling
 
 ---
 layout: false
-# Resampling methods
+# Cross-validation
 
-If we just need to **train** a model once and then **evaluate** its performance...
-- We can use the training set to fit the model...
-- And then the test set to calculate MSE and see how it did.
-
---
-
-But what if we also need to **choose** a model / **tune** its parameter(s)?
-- We could estimate the **test MSE** for each model we're considering, and then choose the best one.
+**How do we choose the best model?** (e.g., degree of polynomial)
+- Based on test-set MSE? 
 
 --
+- **NO!!!** We will just overfit the test set itself!
+- The test set must be used *only for evaluation.*
 
-But wait -- now, how do we **evaluate** the model we've chosen?
-- We already used up the test set during the training process!
-- We chose the model based on this sample, so of course its MSE will be low (too low).
-
----
-layout: false
-# Resampling methods
-
-Instead, we can use .hi[resampling methods] to conduct model selection entirely within the training set.
-- Hold out a mini "test" sample of the training data that we use to *estimate* the test error.
-
---
-
-The process:
-
-1. **Fit your model(s)** on only one part of the training data (a sample).
-2. **Estimate the test MSE** using the other part of the training data.
-3. **Repeat steps 1-2** for different random splits of the training data.
-4. **Select a model** based on your estimated test MSE.
-5. Finally, **evaluate your chosen model** by estimating MSE in the *real* test set. (Don't touch it until the very end!)
+Instead, we must conduct model selection *entirely within the training set.*
 
 
 ---
 name: resampling-validation
 layout: true
-# Resampling methods
-## Option 1: The .it[validation set] approach
+# Cross-validation
+## The .it[validation set] approach
 
-To estimate the .hi-pink[test error], we can .it[hold out] a subset of our .hi-purple[training data] and then .hi-slate[validate] (evaluate) our model on this held out .hi-slate[validation set].
+**Hold out** a subset of our training set to *estimate* the test error.
 
-- The .hi-slate[validation error rate] estimates the .hi-pink[test error rate]
-- The model only "sees" the non-validation subset of the .hi-purple[training data].
-
----
-
-
+1. Train each model using the .hi-purple[rest of the training set].
+2. Calculate MSE in the .hi-slate[validation set].
+3. Compare performance and choose the best model.
 
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-validation-set-1.svg" style="display: block; margin: auto;" /&gt;
-
-.col-left[.hi-purple[Initial training set]]
 
 
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-validation-set-2-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-validation-set-1.svg" style="display: block; margin: auto;" /&gt;
 
-.col-left[.hi-slate[Validation (sub)set]]
-.col-right[.hi-purple[Training set:] .purple[Model training]]
-
----
-
-&lt;img src="12-Learning_files/figure-html/plot-validation-set-3-1.svg" style="display: block; margin: auto;" /&gt;
-
-.col-left[.hi-slate[Validation (sub)set]]
-.col-right[.hi-purple[Training set:] .purple[Model training]]
-
----
-layout: true
-# Resampling methods
-## Option 1: The .it[validation set] approach
-
----
-.ex[Example] We could use the validation-set approach to help select the degree of a polynomial for a linear-regression model.
-
---
-
-The goal of the validation set is to .hi-pink[.it[estimate] out-of-sample (test) error.]
-
-.qa[Q] So what?
-
---
-
-- Estimates come with .b[uncertainty]—varying from sample to sample.
-
-- Variability (standard errors) is larger with .b[smaller samples].
-
-.qa[Problem] This estimated error is often based upon a fairly small sample (&lt;30% of our training data). So its variance can be large.
----
-exclude: true
-
-
+.col-left[.hi-purple[Full training set]]
 
 
 ---
-name: validation-simulation
-layout: false
-class: clear, middle
 
-.b[Validation MSE] for 10 different validation samples
-&lt;img src="12-Learning_files/figure-html/plot-vset-sim-1.svg" style="display: block; margin: auto;" /&gt;
----
-layout: false
-class: clear, middle
+&lt;img src="13-Learning_files/figure-html/plot-validation-set-2-1.svg" style="display: block; margin: auto;" /&gt;
 
-.b[True test MSE] compared to validation-set estimates
-&lt;img src="12-Learning_files/figure-html/plot-vset-sim-2-1.svg" style="display: block; margin: auto;" /&gt;
+.col-left[.hi-slate[Validation set]]
+.col-right[.hi-purple[Rest of training set]]
 
 ---
-# Resampling methods
-## Option 1: The .it[validation set] approach
 
-The validation-set approach has two major drawbacks:
+&lt;img src="13-Learning_files/figure-html/plot-validation-set-3-1.svg" style="display: block; margin: auto;" /&gt;
 
-1. .hi[High variability.] The validation MSE is highly sensitive to exactly which observations are included in the validation set.
-  - So validation MSE is a **noisy** estimator of test-set MSE.
-
-2. .hi[Inefficiency in training our model.] We're throwing away the validation data when training the model.
-  - The model isn't as good as it will be once we use all the data.
-  - So validation MSE is also a **biased** estimate of test-set MSE.
-
+.col-left[.hi-slate[Validation set]]
+.col-right[.hi-purple[Rest of training set]]
 
 ---
 layout: true
-# Resampling methods
-## Option 2: Leave-one-out cross validation
-
-Each observation takes a turn as the .hi-slate[validation set],
-&lt;br&gt;while the other n-1 observations get to .hi-purple[train the model].
-&lt;br&gt;
-&lt;br&gt;
-
----
-exclude: true
-
-
-
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-1-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation 1's turn for validation produces MSE.sub[1]].
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-2-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation 2's turn for validation produces MSE.sub[2]].
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-3-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation 3's turn for validation produces MSE.sub[3]].
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-4-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation 4's turn for validation produces MSE.sub[4]].
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-5-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation 5's turn for validation produces MSE.sub[5]].
----
-&lt;img src="12-Learning_files/figure-html/plot-loocv-n-1.svg" style="display: block; margin: auto;" /&gt;
-
-.slate[Observation n's turn for validation produces MSE.sub[n]].
----
-layout: true
-# Resampling methods
-## Option 2: Leave-one-out cross validation
-
----
-Because .hi-pink[LOOCV uses n-1 observations] to train the model (and n-1 ≈ n), MSE.sub[i] is approximately unbiased for the test MSE.
-
-.qa[Problem] MSE.sub[i] is a terribly noisy estimator for test MSE (albeit ≈unbiased).
---
-&lt;br&gt;.qa[Solution] Take the mean!
-$$
-`\begin{align}
-  \text{CV}_{(n)} = \dfrac{1}{n} \sum_{i=1}^{n} \text{MSE}_i
-\end{align}`
-$$
---
-
-1. LOOCV .b[reduces bias] by using n-1 (almost all) observations for training.
-2. LOOCV .b[resolves variance]: it uses all possible comparisons&lt;br&gt;(it doesn't depend on which validation-test split you make).
-
----
-exclude: true
-
-
----
-name: ex-loocv
-layout: false
-class: clear, middle
-
-.b[True test MSE] and .hi-orange[LOOCV MSE] compared to .hi-purple[validation-set estimates]
-&lt;img src="12-Learning_files/figure-html/plot-loocv-mse-1.svg" style="display: block; margin: auto;" /&gt;
----
-layout: true
-# Resampling methods
-## Best option: k-fold cross validation
+# Cross-validation
+## *k*-fold cross-validation
 
 ---
 name: resampling-kcv
 
-Leave-one-out cross validation is a special case of a broader strategy:
-&lt;br&gt;.hi[k-fold cross validation].
+Even better is to use .hi[k-fold cross validation].
 
 1. .b[Divide] the training data into `\(k\)` equally sized groups (folds).
 2. .b[Iterate] over the `\(k\)` folds, treating each as a validation set once&lt;br&gt;(training the model on the other `\(k-1\)` folds).
 3. .b[Average] the folds' MSEs to estimate test MSE.
 
---
+Relative to the validation set approach:
+- Uses all the data, so not as sensitive to exactly which observations end up in the validation set.
+- So produces a lower-variance estimate of the test-set MSE.
 
-Benefits?
---
-
-1. .b[Less computationally demanding] (fit model `\(k=\)` 5 or 10 times; not `\(n\)`).
---
-
-2. .b[Greater accuracy] (in general) due to bias-variance tradeoff!
-  - Somewhat higher bias, relative to LOOCV: `\(n-1\)` *vs.* `\((k-1)/k\)`.
-  - Lower variance due to high-degree of correlation in LOOCV MSE.sub[i].
 
 ---
 exclude: true
@@ -640,8 +471,8 @@ exclude: true
 
 ---
 layout: true
-# Resampling methods
-## Best option: k-fold cross validation
+# Cross-validation
+## *k*-fold cross-validation
 
 With `\(k\)`-fold cross validation, we estimate test MSE as
 $$
@@ -651,68 +482,42 @@ $$
 $$
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-0a-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-0a-1.svg" style="display: block; margin: auto;" /&gt;
 
 Our `\(k=\)` 5 folds.
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-0b-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-0b-1.svg" style="display: block; margin: auto;" /&gt;
 
 Each fold takes a turn at .hi-slate[validation]. The other `\(k-1\)` folds .hi-purple[train].
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-1-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-1-1.svg" style="display: block; margin: auto;" /&gt;
 
 For `\(k=5\)`, fold number `\(1\)` as the .hi-slate[validation set] produces MSE.sub[k=1].
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-2-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-2-1.svg" style="display: block; margin: auto;" /&gt;
 
 For `\(k=5\)`, fold number `\(2\)` as the .hi-slate[validation set] produces MSE.sub[k=2].
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-3-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-3-1.svg" style="display: block; margin: auto;" /&gt;
 
 For `\(k=5\)`, fold number `\(3\)` as the .hi-slate[validation set] produces MSE.sub[k=3].
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-4-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-4-1.svg" style="display: block; margin: auto;" /&gt;
 
 For `\(k=5\)`, fold number `\(4\)` as the .hi-slate[validation set] produces MSE.sub[k=4].
 ---
 
-&lt;img src="12-Learning_files/figure-html/plot-cvk-5-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="13-Learning_files/figure-html/plot-cvk-5-1.svg" style="display: block; margin: auto;" /&gt;
 
 For `\(k=5\)`, fold number `\(5\)` as the .hi-slate[validation set] produces MSE.sub[k=5].
----
-exclude: true
-
 
 ---
-name: ex-cv-sim
 layout: false
-class: clear, middle
-
-.b[Test MSE] .it[vs.] estimates: .orange[LOOCV], .pink[5-fold CV] (20x), and .purple[validation set] (10x)
-&lt;img src="12-Learning_files/figure-html/plot-cv-mse-1.svg" style="display: block; margin: auto;" /&gt;
-
----
-name: holdout-caveats
-layout: false
-# Resampling methods
-## Caveat
-
-So far, we've treated each observation as independent of each other observation. But exceptions are everywhere:
-- Individuals in a household (cross-sectional data)
-- Days of stock returns (time series data)
-- Observations of the same county over time (panel data)
-- Pixels of satellite imagery (spatial data)
-
-For cases like these, we need to modify the cross-validation procedures to take **dependence** into account.
-- We'll come back to methods for doing this soon.
-
-
----
 # Summary
 
 .smaller[
@@ -724,7 +529,7 @@ For cases like these, we need to modify the cross-validation procedures to take 
 **[Statistical learning](#learning)**
 - Supervised vs. unsupervised learning.
 - Regression vs. classification.
-- Reducible vs. irreducible error.
+&lt;!-- - Reducible vs. irreducible error. --&gt;
 ]
 .pull-right[
 **[Model accuracy](#accuracy)**
@@ -735,7 +540,7 @@ For cases like these, we need to modify the cross-validation procedures to take 
 **[Cross-validation](#resampling)**
 - Resampling methods avoid overfitting in model assessment and selection.
 - Validation set approach.
-- Leave-one-out cross-validation.
+&lt;!-- - Leave-one-out cross-validation. --&gt;
 - *k*-fold cross-validation.
 ]
 ]

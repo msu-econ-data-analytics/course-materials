@@ -562,6 +562,17 @@ layout: true
 class: inverse, middle
 
 ---
+
+So far, we've treated each observation as independent of each other observation. But exceptions are everywhere:
+- Individuals in a household (cross-sectional data)
+- Days of stock returns (time series data)
+- Observations of the same county over time (panel data)
+- Pixels of satellite imagery (spatial data)
+
+For cases like these, we need to modify the cross-validation procedures to take **dependence** into account.
+- We'll come back to methods for doing this soon.
+
+---
 name: dependence
 
 .b[Resampling methods] assume something similar to independence: our resampling must match the original sampling procedure.
