@@ -1,7 +1,7 @@
 ---
 title: "Topic 13: <br> Machine Learning Fundamentals"
 author: "Nick Hagerty* <br> ECNS 460/560 <br> Montana State University"
-date: "<br> .small[*Slides 6-17 and 27-42 are adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission, and excluded from this resource's overall CC license.]"
+date: "<br> .small[*Slides 6-17 and 27-43 are adapted from [“Prediction and machine-learning in econometrics”](https://github.com/edrubin/EC524W21) by Ed Rubin, used with permission, and excluded from this resource's overall CC license.]"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
@@ -641,10 +641,6 @@ Even better is to use .hi[k-fold cross validation].
 2. .b[Iterate] over the $k$ folds, treating each as a validation set once<br>(training the model on the other $k-1$ folds).
 3. .b[Average] the folds' MSEs to estimate test MSE.
 
-Relative to the validation set approach:
-- Uses all the data, so not as sensitive to exactly which observations end up in the validation set.
-- So produces a lower-variance estimate of the test-set MSE.
-
 
 ---
 exclude: true
@@ -775,6 +771,13 @@ theme(legend.position = "none")
 ```
 
 For $k=5$, fold number $5$ as the .hi-slate[validation set] produces MSE.sub[k=5].
+
+---
+
+Relative to the validation set approach:
+- Uses all the data, so not as sensitive to exactly which observations end up in the validation set.
+- So produces a lower-variance estimate of the test-set MSE.
+
 
 ---
 layout: false

@@ -133,11 +133,11 @@ Fall 2024
 
 **Topic 14: Prediction Methods**
 
-* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/13a-Shrinkage.html)
+* [**Part 1: Shrinkage methods**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14a-Shrinkage.html)
   - Shrinkage methods
   - Ridge regression
   - Lasso (and elasticnet)
-* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/13b-Tidymodels.html)
+* [**Part 2: Learning with `tidymodels`**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/14-Prediction/14b-Tidymodels.html)
   - Setup and splitting
   - Recipes
   - Workflows

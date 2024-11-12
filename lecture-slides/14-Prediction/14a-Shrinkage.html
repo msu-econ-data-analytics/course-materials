@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Topic 13: Prediction Methods</title>
+    <title>Topic 14: Prediction Methods</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty   ECNS 460/560 Fall 2023   Montana State University" />
-    <script src="13a-Shrinkage_files/header-attrs-2.21/header-attrs.js"></script>
-    <link href="13a-Shrinkage_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="13a-Shrinkage_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="13a-Shrinkage_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <meta name="author" content="Nick Hagerty   ECNS 460/560   Montana State University" />
+    <script src="14a-Shrinkage_files/header-attrs-2.27/header-attrs.js"></script>
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="14a-Shrinkage_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/my-css.css" type="text/css" />
   </head>
   <body>
@@ -15,13 +15,13 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Topic 13: Prediction Methods
+# Topic 14: Prediction Methods
 ]
 .subtitle[
 ## Part 1: Shrinkage Methods
 ]
 .author[
-### Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University
+### Nick Hagerty <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### <br> .smallest[*Adapted from <a href="https://github.com/edrubin/EC524W21">“Prediction and machine-learning in econometrics”</a> by Ed Rubin, used with permission. These slides are excluded from this resource’s overall CC license.]
@@ -93,7 +93,7 @@ When we estimate a large, imprecise coefficient, should we just accept it?
 - Is the pattern likely to come up again, or idiosyncratic to this sample?
 - Maybe we should demand stronger evidence for larger coefficients.
 
-&lt;img src="13a-Shrinkage_files/figure-html/jabba-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="14a-Shrinkage_files/figure-html/jabba-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 name: shrinkage-why
@@ -192,7 +192,7 @@ layout: false
 class: clear, middle
 
 .b[Ridge regression coefficients] for `\(\lambda\)` between 0.01 and 100,000
-&lt;img src="13a-Shrinkage_files/figure-html/plot-ridge-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="14a-Shrinkage_files/figure-html/plot-ridge-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: true
@@ -323,7 +323,7 @@ layout: false
 class: clear, middle
 
 .b[Lasso coefficients] for `\(\lambda\)` between 0.01 and 100,000
-&lt;img src="13a-Shrinkage_files/figure-html/plot-lasso-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
+&lt;img src="14a-Shrinkage_files/figure-html/plot-lasso-glmnet-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: true
