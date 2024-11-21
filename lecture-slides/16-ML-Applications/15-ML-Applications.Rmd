@@ -1,6 +1,6 @@
 ---
 title: "Lecture 15: Machine Learning in Economics"
-author: "Nick Hagerty <br> ECNS 460/560 Fall 2023 <br> Montana State University"
+author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'css/my-css.css']
@@ -120,21 +120,25 @@ But be careful once you start using these for decisions with real stakes.
 
 But be careful once you start using these for decisions with real stakes.
 
-**Issue 3. Fairness, discrimination, and equity.** Are these fair or unfair?
+**Issue 3. Fairness, discrimination, and equity.** 
 
-1. Race is explicitly used as a variable in the algorithm, and white defendants are released at higher rates than Black defendants.
-
---
-
-  - What if the algorithm produces less inequality than the status quo?
+For the bail decision: How should we evaluate whether an algorithm is fair or discriminates on the basis of race?
 
 --
 
-1. Race is not explicitly used, but the algorithm still releases white defendants at higher rates than Black defendants.
+1. Race is explicitly used as a variable in the algorithm, and white defendants are released at higher rates than black defendants.
 
 --
 
-  - What if this algorithm produces *more* racial inequality than the algorithm in #1? (This could result from interaction effects between race and other variables.)
+1. Race is not explicitly used, but the algorithm still releases white defendants at higher rates than black defendants.
+
+--
+
+1. \#1, but the rates are more equal than the status quo.
+
+--
+
+1. \#2, and the rates are even less equal than the algorithm in \#1.
 
 ---
 
@@ -142,9 +146,9 @@ But be careful once you start using these for decisions with real stakes.
 
 **Issue 3. Fairness, discrimination, and equity.**
 
-- **Some variables may be unethical (or illegal!) to use in prediction,** depending on the purpose.
+- Some variables may be unethical (or illegal!) to use in prediction, depending on the purpose.
 
-- **Predictive models can easily reproduce patterns of racial bias** (or other forms of bias) found in society.
+- Predictive models can easily reproduce patterns of bias found in society.
   - Given the far reaches of historical (and ongoing) discrimination, race can affect virtually any of your variables.
   - If race is a good predictor, excluding it will simply put more weight on other variables that proxy for race.
   - If your training data reflect discrimination, your model will too.
