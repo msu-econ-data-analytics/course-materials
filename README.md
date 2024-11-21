@@ -145,7 +145,7 @@ Fall 2024
   - Prediction
   - Dependence
 
-[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-ML-Applications/15-ML-Applications.html)
+[**Topic 15: Machine Learning in Economics**](https://raw.githack.com/msu-econ-data-analytics/course-materials/main/lecture-slides/16-ML-Applications/16-ML-Applications.html)
 
 * Predicting outcomes
 * Constructing new data

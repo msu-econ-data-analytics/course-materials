@@ -1,5 +1,5 @@
 ---
-title: "Lecture 15: Machine Learning in Economics"
+title: "Topic 16: Machine Learning in Economics"
 author: "Nick Hagerty <br> ECNS 460/560 <br> Montana State University"
 output:
   xaringan::moon_reader:
