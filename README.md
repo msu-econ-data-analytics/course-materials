@@ -14,7 +14,7 @@ Except where otherwise noted, this work is licensed under <a rel="license" href=
 
 ## Lecture slides
 
-Fall 2024
+Last taught Spring 2026
 
 ### Part I: Pre-Analytical Tools
 

@@ -3,7 +3,7 @@
   <head>
     <title>Topic 1: R Basics</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty*   ECNS 460/560 Fall 2024   Montana State University" />
+    <meta name="author" content="Nick Hagerty*   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Topic 1: R Basics
 ]
 .author[
-### Nick Hagerty* <br> ECNS 460/560 Fall 2024 <br> Montana State University
+### Nick Hagerty* <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="http://rafalab.dfci.harvard.edu/dsbook/r-basics.html">“Introduction to Data Science”</a> by Rafael A. Irizarry, used under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.]
@@ -200,7 +200,7 @@ name: operators
 
 You can use R like a fancy graphing calculator:
 
-```r
+``` r
 1 + 2 # Addition
 ```
 
@@ -208,7 +208,7 @@ You can use R like a fancy graphing calculator:
 ## [1] 3
 ```
 
-```r
+``` r
 6 - 7 # Subtraction
 ```
 
@@ -216,7 +216,7 @@ You can use R like a fancy graphing calculator:
 ## [1] -1
 ```
 
-```r
+``` r
 5 / 2 # Division
 ```
 
@@ -224,7 +224,7 @@ You can use R like a fancy graphing calculator:
 ## [1] 2.5
 ```
 
-```r
+``` r
 2 ^ 3 # Exponentiation
 ```
 
@@ -232,7 +232,7 @@ You can use R like a fancy graphing calculator:
 ## [1] 8
 ```
 
-```r
+``` r
 2 + 4 * 1 ^ 3 # Standard order of operations
 ```
 
@@ -246,7 +246,7 @@ You can use R like a fancy graphing calculator:
 
 Logical operators follow standard programming conventions:
 
-```r
+``` r
 1 &gt; 2
 ```
 
@@ -254,7 +254,7 @@ Logical operators follow standard programming conventions:
 ## [1] FALSE
 ```
 
-```r
+``` r
 1 &gt; 2 &amp; 1 &gt; 0.5 # The "&amp;" means "and"
 ```
 
@@ -262,7 +262,7 @@ Logical operators follow standard programming conventions:
 ## [1] FALSE
 ```
 
-```r
+``` r
 1 &gt; 2 | 1 &gt; 0.5 # The "|" means "or"
 ```
 
@@ -272,7 +272,7 @@ Logical operators follow standard programming conventions:
 
 Negation:
 
-```r
+``` r
 !(1 &gt; 2)
 ```
 
@@ -287,7 +287,7 @@ Negation:
 R ignores the rest of a line after a `#`. So you can write notes to yourself about what your code is doing.
 
 
-```r
+``` r
 # Test whether 4 is greater than 3
 4 &gt; 3
 ```
@@ -308,7 +308,7 @@ Widely accepted conventions:
 
 This doesn't work, because `=` is reserved for assignment:
 
-```r
+``` r
 1 = 1
 ```
 
@@ -318,7 +318,7 @@ This doesn't work, because `=` is reserved for assignment:
 
 Instead, use **==**:
 
-```r
+``` r
 1 == 1
 ```
 
@@ -328,7 +328,7 @@ Instead, use **==**:
 
 For "not equal", use **!=**:
 
-```r
+``` r
 1 != 2  # This looks weird because of the font
 ```
 
@@ -353,14 +353,14 @@ name: objects
 
 We can store values for later by assigning them to **objects.**
 
-```r
+``` r
 bill = 18.45
 percentage = 0.2
 ```
 
 Instead of **=**, you can use **&lt;-** (and many people do):
 
-```r
+``` r
 bill &lt;- 18.45  # this font turns "&lt;" and "-" into a symbol
 percentage &lt;- 0.2
 ```
@@ -373,7 +373,7 @@ In this course, I will use `=` for assignment. You can use either one, but be co
 
 To see the value of an object, just type its name:
 
-```r
+``` r
 bill
 ```
 
@@ -385,7 +385,7 @@ Notice that `bill` and `percentage` are now listed in your Environment pane.
 
 Now, we can calculate the tip:
 
-```r
+``` r
 bill * percentage
 ```
 
@@ -395,7 +395,7 @@ bill * percentage
 
 Assign a new value to `bill` and recalculate the tip:
 
-```r
+``` r
 bill = 90
 bill * percentage
 ```
@@ -418,7 +418,7 @@ Hint: The formula for the sum of integers `\(1\)` through `\(n\)` is `\(n(n+1)/2
  
 Solution:
 
-```r
+``` r
 n = 100
 n * (n + 1) / 2
 ```
@@ -434,7 +434,7 @@ n * (n + 1) / 2
 
 Doing anything more complicated than arithmetic requires **functions.**
 
-```r
+``` r
 log(50)
 ```
 
@@ -443,7 +443,7 @@ log(50)
 ```
 To find out what **arguments** a function takes, look up its help file.
 
-```r
+``` r
 ?log
 ```
 
@@ -451,7 +451,7 @@ Some arguments are required, some are optional. You can see that `base` is optio
 
 If you type the arguments in the expected order, you don't need to use argument names:
 
-```r
+``` r
 log(50, 10)
 ```
 
@@ -465,7 +465,7 @@ log(50, 10)
 
 But using argument names can help improve clarity:
 
-```r
+``` r
 log(50, base = 10)
 ```
 
@@ -475,7 +475,7 @@ log(50, base = 10)
 
 If you name all the arguments, you can put them in any order:
 
-```r
+``` r
 log(base = 10, x = 50)
 ```
 
@@ -485,7 +485,7 @@ log(base = 10, x = 50)
 
 We can use objects as arguments, or nest functions:
 
-```r
+``` r
 log(bill)
 ```
 
@@ -493,7 +493,7 @@ log(bill)
 ## [1] 4.49981
 ```
 
-```r
+``` r
 log(exp(50))
 ```
 
@@ -521,7 +521,7 @@ There are many different types of objects:
 
 To know what type of object you have, use `class`:
 
-```r
+``` r
 a = 2
 class(a)
 ```
@@ -530,7 +530,7 @@ class(a)
 ## [1] "numeric"
 ```
 
-```r
+``` r
 class("a")
 ```
 
@@ -538,7 +538,7 @@ class("a")
 ## [1] "character"
 ```
 
-```r
+``` r
 class(TRUE)
 ```
 
@@ -554,19 +554,19 @@ Many of the most useful functions of R come from add-on **packages.**
 
 To install the package called `dslabs`, type:
 
-```r
+``` r
 install.packages("dslabs")
 ```
 
 You only need to install a package on your computer once. But you still need to load it each time you open RStudio:
 
-```r
+``` r
 library(dslabs)
 ```
 
 Load the dataset `murders` from this package:
 
-```r
+``` r
 data(murders)
 ```
 
@@ -578,7 +578,7 @@ data(murders)
 A data frame is like a table. Each row is an observation and each column is a variable.
 
 
-```r
+``` r
 class(murders)
 ```
 
@@ -590,7 +590,7 @@ To learn more about an data frame, you can:
 
 (1) Examine its **str**ucture with `str`:
 
-```r
+``` r
 str(murders)
 ```
 
@@ -609,7 +609,7 @@ str(murders)
 
 (2) Display some summary statistics with `summary`:
 
-```r
+``` r
 summary(murders)
 ```
 
@@ -636,7 +636,7 @@ summary(murders)
 
 (3) Show the first few rows with `head`:
 
-```r
+``` r
 head(murders)
 ```
 
@@ -652,7 +652,7 @@ head(murders)
 
 (4) Directly inspect it with `View` (or just click on it in your Environment pane)
 
-```r
+``` r
 View(murders)
 ```
 
@@ -663,7 +663,7 @@ View(murders)
 
 To refer to individual variables (columns) in this data frame, we can use `$`:
 
-```r
+``` r
 murders$population
 ```
 
@@ -681,7 +681,7 @@ The object `murders$population` is a **vector**, a set of numbers.
 
 How many entries (rows) does it have?
 
-```r
+``` r
 length(murders$population)
 ```
 
@@ -695,7 +695,7 @@ length(murders$population)
 
 Make a quick **histogram:**
 
-```r
+``` r
 hist(murders$total)
 ```
 
@@ -707,7 +707,7 @@ hist(murders$total)
 
 Make a quick **scatterplot:**
 
-```r
+``` r
 plot(x = murders$population, y = murders$total)
 with(murders, plot(x = population, y = total))  # These lines are equivalent
 ```
@@ -727,7 +727,7 @@ Bonus, if you finish quickly: Which state has the worst murder rate?
  
 Solution:
 
-```r
+``` r
 hist(murders$total / murders$population * 100000)
 ```
 
@@ -745,7 +745,7 @@ name: interlude
 
 You *could* remove objects from your environment (R's memory) using `rm`:
 
-```r
+``` r
 a = "hi"
 rm(a)
 ```
@@ -790,7 +790,7 @@ Vectors are the most basic objects in R. `a = 1` produces a vector of length 1.
 
 To create longer vectors, use `c()`, for "concatenate":
 
-```r
+``` r
 codes = c(380, 124, 818)
 countries = c("italy", "canada", "egypt")
 class(codes)
@@ -800,7 +800,7 @@ class(codes)
 ## [1] "numeric"
 ```
 
-```r
+``` r
 class(countries)
 ```
 
@@ -810,7 +810,7 @@ class(countries)
 
 In R, you can use either single or double quotes:
 
-```r
+``` r
 countries = c('italy', 'canada', 'egypt')
 ```
 
@@ -825,7 +825,7 @@ Why doesn't it work to type `countries = c(canada, spain, egypt)`?
 
 We can name the entries of a vector (with or without quotes):
 
-```r
+``` r
 codes = c(italy = 380, canada = 124, egypt = 818)
 codes
 ```
@@ -835,7 +835,7 @@ codes
 ##    380    124    818
 ```
 
-```r
+``` r
 codes = c("italy" = 380, "canada" = 124, "egypt" = 818)
 codes
 ```
@@ -847,7 +847,7 @@ codes
 
 Or by using the `names` function:
 
-```r
+``` r
 codes = c(380, 124, 818)
 country = c("italy", "canada", "egypt")
 names(codes) = country
@@ -865,7 +865,7 @@ codes
 
 Another useful way to create vectors is to generate sequences:
 
-```r
+``` r
 seq(1, 10)
 ```
 
@@ -875,7 +875,7 @@ seq(1, 10)
 
 Shortcut for consecutive integers:
 
-```r
+``` r
 1:10
 ```
 
@@ -885,7 +885,7 @@ Shortcut for consecutive integers:
 
 Counting by 5s:
 
-```r
+``` r
 seq(5, 50, 5)
 ```
 
@@ -899,7 +899,7 @@ seq(5, 50, 5)
 
 We use square brackets to access specific elements of a vector:
 
-```r
+``` r
 codes[2]
 ```
 
@@ -910,7 +910,7 @@ codes[2]
 
 You can get more than one entry by using a multi-entry vector as an index:
 
-```r
+``` r
 codes[c(1,3)]
 ```
 
@@ -921,7 +921,7 @@ codes[c(1,3)]
 
 Sequences are useful if we want to access, say, the first two elements:
 
-```r
+``` r
 codes[1:2]
 ```
 
@@ -936,7 +936,7 @@ codes[1:2]
 
 You can also index using names, if they're defined:
 
-```r
+``` r
 codes["canada"]
 ```
 
@@ -947,7 +947,7 @@ codes["canada"]
 
 And you can assign new values to indexed elements:
 
-```r
+``` r
 codes[2] = 125
 codes
 ```
@@ -965,7 +965,7 @@ codes
 Pair programming! Try this with a neighbor:
 
 
-```r
+``` r
 library(dslabs)
 data(murders)
 ```
@@ -976,7 +976,7 @@ Change the name of the column "total" to be "murders", and then change it back t
  
 Solution:
 
-```r
+``` r
 names(murders)[5] = "murders"
 head(murders)
 ```
@@ -991,7 +991,7 @@ head(murders)
 ## 6   Colorado  CO   West    5029196      65
 ```
 
-```r
+``` r
 names(murders)[5] = "total"
 ```
 
@@ -1002,7 +1002,7 @@ names(murders)[5] = "total"
 
 Turn numbers into characters, and back again:
 
-```r
+``` r
 x = 1:5
 y = as.character(x)
 y
@@ -1012,7 +1012,7 @@ y
 ## [1] "1" "2" "3" "4" "5"
 ```
 
-```r
+``` r
 as.numeric(y)
 ```
 
@@ -1026,7 +1026,7 @@ as.numeric(y)
 
 A vector can't mix and match types, so R will just guess:
 
-```r
+``` r
 z = c(1, "canada", 3)
 z
 ```
@@ -1035,7 +1035,7 @@ z
 ## [1] "1"      "canada" "3"
 ```
 
-```r
+``` r
 class(z)
 ```
 
@@ -1045,7 +1045,7 @@ class(z)
 
 If a conversion isn't obvious to R, you'll get an `NA` ("not available"):
 
-```r
+``` r
 as.numeric(z)
 ```
 
@@ -1059,7 +1059,7 @@ as.numeric(z)
 
 In R, `NA` contains no information.
 
-```r
+``` r
 NA == NA
 ```
 
@@ -1067,7 +1067,7 @@ NA == NA
 ## [1] NA
 ```
 
-```r
+``` r
 NA + 0
 ```
 
@@ -1075,7 +1075,7 @@ NA + 0
 ## [1] NA
 ```
 
-```r
+``` r
 is.na(NA + 0)
 ```
 
@@ -1091,7 +1091,7 @@ is.na(NA + 0)
 
 Other special values in R:
 
-```r
+``` r
 1/0
 ```
 
@@ -1099,7 +1099,7 @@ Other special values in R:
 ## [1] Inf
 ```
 
-```r
+``` r
 -1/0
 ```
 
@@ -1107,7 +1107,7 @@ Other special values in R:
 ## [1] -Inf
 ```
 
-```r
+``` r
 0/0
 ```
 
@@ -1148,7 +1148,7 @@ $$
 
 Multiply a vector by a scalar:
 
-```r
+``` r
 inches = 1:12
 cm = inches * 2.54
 cm
@@ -1160,7 +1160,7 @@ cm
 
 Divide (the elements of) one vector by (the elements of) another:
 
-```r
+``` r
 murder_rate = murders$total / murders$population * 1e5
 mean(murder_rate)
 ```
@@ -1177,7 +1177,7 @@ mean(murder_rate)
 We could add the murder rate to our data frame as a new variable (column):
 
 
-```r
+``` r
 murders$rate = murders$total / murders$population * 1e5
 head(murders)
 ```
@@ -1207,7 +1207,7 @@ But this isn't always the best approach to editing data frames. Why?
 One potentially better approach uses `cbind` to create a new object:
 
 
-```r
+``` r
 murders_with_rate = cbind(murders, murder_rate)
 head(murders_with_rate)
 ```
@@ -1233,7 +1233,7 @@ It's often useful to **subset** a vector based on the properties of another vect
 
 Generate a logical vector that says whether each element of a vector passes a test:
 
-```r
+``` r
 low = murder_rate &lt;= 0.6  # this is "&lt; =" without a space
 low
 ```
@@ -1252,7 +1252,7 @@ low
 
 Now we can subset (index) states using this logical:
 
-```r
+``` r
 murders$state[low]
 ```
 
@@ -1262,7 +1262,7 @@ murders$state[low]
 
 How many states meet this test? `sum` coerces logical to numeric, treating `TRUE` as 1 and `FALSE` as 0:
 
-```r
+``` r
 sum(low)
 ```
 
@@ -1285,7 +1285,7 @@ Hint: Use logical indexing and the `max` function.
 Solution:
 
 
-```r
+``` r
 most = max(murders$total)
 is_most = (murders$total == most)
 murders$state[is_most]
@@ -1298,7 +1298,7 @@ murders$state[is_most]
 Or, in one line:
 
 
-```r
+``` r
 murders$state[murders$total == max(murders$total)]
 ```
 
@@ -1321,7 +1321,7 @@ name: misc
 
 Is Montana listed as a state in this dataset?
 
-```r
+``` r
 "Montana" %in% murders$state
 ```
 
@@ -1331,7 +1331,7 @@ Is Montana listed as a state in this dataset?
 
 How about D.C. and Puerto Rico?
 
-```r
+``` r
 c("District of Columbia", "Puerto Rico") %in% murders$state
 ```
 
@@ -1345,7 +1345,7 @@ c("District of Columbia", "Puerto Rico") %in% murders$state
 
 Lists are objects that can store any combination of types.
 
-```r
+``` r
 record = list(
   name = "John Doe",
   id = 1234,
@@ -1373,7 +1373,7 @@ record
 
 Access the components with `$` as usual, or with double square brackets:
 
-```r
+``` r
 record$id
 ```
 
@@ -1381,7 +1381,7 @@ record$id
 ## [1] 1234
 ```
 
-```r
+``` r
 record[["id"]]
 ```
 
@@ -1389,7 +1389,7 @@ record[["id"]]
 ## [1] 1234
 ```
 
-```r
+``` r
 record[[2]]
 ```
 
@@ -1397,7 +1397,7 @@ record[[2]]
 ## [1] 1234
 ```
 
-```r
+``` r
 record$grades[3]
 ```
 
