@@ -3,7 +3,7 @@
   <head>
     <title>Topic 2: Programming</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Nick Hagerty*   ECNS 460/560 Fall 2024   Montana State University" />
+    <meta name="author" content="Nick Hagerty*   ECNS 460/560   Montana State University" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Topic 2: Programming
 ]
 .author[
-### Nick Hagerty* <br> ECNS 460/560 Fall 2024 <br> Montana State University
+### Nick Hagerty* <br> ECNS 460/560 <br> Montana State University
 ]
 .date[
 ### .small[<br> *Parts of these slides are adapted from <a href="http://rafalab.dfci.harvard.edu/dsbook/programming-basics.html">“Introduction to Data Science”</a> by Rafael A. Irizarry, used under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>, and <a href="https://raw.githack.com/uo-ec607/lectures/master/12-parallel/12-parallel.html">“Data Science for Economists”</a> by Grant R. McDermott, used under the <a href="https://github.com/uo-ec607/lectures/blob/master/LICENSE">MIT License</a>.]
@@ -86,7 +86,7 @@ If/else statements are a type of **conditional expression**.
 **Example:** Print the reciprocal of `a`, unless `a` is 0.
 
 
-```r
+``` r
 a = 0
 
 if(a != 0) {
@@ -116,13 +116,13 @@ Statements like this are used for **control flow** of your code.
 
 Here's a related function that you *will* use all the time in data analysis: `ifelse`. Its syntax is:
 
-```r
+``` r
 ifelse(test, yes, no)
 ```
 
 For example:
 
-```r
+``` r
 a = 0
 ifelse(a &gt; 0, 1/a, NA)
 ```
@@ -135,7 +135,7 @@ ifelse(a &gt; 0, 1/a, NA)
 
 `ifelse` is particularly useful because it is **vectorized**. For example, to change negative numbers to missing:
 
-```r
+``` r
 b = c(0, 1, 2, -3, 4)
 ifelse(b &lt; 0, NA, b)
 ```
@@ -173,7 +173,7 @@ A good rule to aim for is to **never copy-and-paste more than twice.** If you're
 A for-loop is a simple tool that is used for **iteration**. It just repeats the same code for different values of a variable (entries of a vector):
 
 
-```r
+``` r
 for (i in 1:5) {
   print(i)
 }
@@ -192,7 +192,7 @@ for (i in 1:5) {
 # For-loops
 
 
-```r
+``` r
 library(dslabs)
 data(murders)
 murders2 = cbind(murders, rate = murders$total / murders$population * 1e5)
@@ -200,7 +200,7 @@ murders2 = cbind(murders, rate = murders$total / murders$population * 1e5)
 
 Suppose we want to calculate the mean of the numeric columns in the `murders` data frame. And we also want the mean murder *rate*. We could copy and paste:
 
-```r
+``` r
 mean(murders2$total)
 ```
 
@@ -208,7 +208,7 @@ mean(murders2$total)
 ## [1] 184.3725
 ```
 
-```r
+``` r
 mean(murders2$population)
 ```
 
@@ -216,7 +216,7 @@ mean(murders2$population)
 ## [1] 6075769
 ```
 
-```r
+``` r
 mean(murders$rate)
 ```
 
@@ -235,7 +235,7 @@ Oops! What's the problem?
 Instead of risking errors with copy-and-paste, we could put this into a for-loop:
 
 
-```r
+``` r
 numeric_cols = c("total", "population", "rate")
 for(var in numeric_cols) {
   print(mean(murders2[[var]]))
@@ -256,7 +256,7 @@ for(var in numeric_cols) {
 Instead of printing the output, we can populate a vector:
 
 
-```r
+``` r
 numeric_cols = c("total", "population", "rate")
 murder_means = vector()
 for(var in numeric_cols) {
@@ -283,7 +283,7 @@ There is one technical problem with this code. The vector storing the output "gr
 To make the loop more efficient, give your empty vector the right length before starting the loop:
 
 
-```r
+``` r
 numeric_cols = c("total", "population", "rate")
 murder_numbers = murders2[numeric_cols]
 murder_means = vector("numeric", length = length(murder_numbers))
@@ -324,7 +324,7 @@ name: functions
 
 Suppose I want to **standardize**, or calculate the Z-score of, a numeric variable.
 
-```r
+``` r
 z_population = (murders$population - mean(murders$population)) / sd(murders$population)
 ```
 
@@ -340,7 +340,7 @@ This works, but:
 
 We can abstract this calculation by writing our own **function.**
 
-```r
+``` r
 calculate_z = function(x) {
   z = (x - mean(x)) / sd(x)
   return(z)
@@ -362,7 +362,7 @@ What's going on:
 
 Now we can use this function:
 
-```r
+``` r
 calculate_z = function(x) {
   z = (x - mean(x)) / sd(x)
   return(z)
@@ -381,7 +381,7 @@ Isn't this better? Compare readability.
 Also, we now have the function available to use in different contexts:
 
 
-```r
+``` r
 z_population = calculate_z(murders$population)
 
 z_rate = calculate_z(murders2$rate)
@@ -446,7 +446,7 @@ name: vectorization
 Another way to iterate uses the `apply` family. These functions apply a function to all elements of an object. For example:
 
 
-```r
+``` r
 nums = data.frame(a = 1:5, b = 11:15, c = 21:25)
 sapply(X = nums, FUN = sqrt)
 ```
@@ -470,7 +470,7 @@ sapply(X = nums, FUN = sqrt)
 Say we want to apply our function `calculate_z` to all columns of `murder_numbers`. We wrote `calculate_z` to work on vectors, but not lists of vectors, so this doesn't work:
 
 
-```r
+``` r
 calculate_z(murder_numbers)
 ```
 
@@ -483,7 +483,7 @@ calculate_z(murder_numbers)
 What can we do? First, we could copy and paste:
 
 
-```r
+``` r
 z_total      = calculate_z(murder_numbers$total)
 z_population = calculate_z(murder_numbers$population)
 z_rate       = calculate_z(murder_numbers$rate)
@@ -509,7 +509,7 @@ This is OK, but what if `murder_numbers` had 50 columns? It would get unwieldy.
 Another option is to put our function inside of a for-loop:
 
 
-```r
+``` r
 murders_z = list()
 for(col in names(murder_numbers)) {
   murders_z[[col]] = calculate_z(murder_numbers[[col]])
@@ -538,7 +538,7 @@ But this is hard to read (and to write). It puts more emphasis on the structure 
 Instead, we can do the same thing in 1 line with `sapply`:
 
 
-```r
+``` r
 murders_z = sapply(murder_numbers, calculate_z)
 head(as.data.frame(murders_z))
 ```
@@ -573,7 +573,7 @@ name: parallelization
 Run these preliminaries:
 
 
-```r
+``` r
 library(future)
 library(future.apply)
 library(tictoc)
@@ -582,7 +582,7 @@ plan(multisession)
 
 Let's make a deliberately slow function:
 
-```r
+``` r
 slow_square = function(x = 1) {
   Sys.sleep(1/3)  # Just wait a third of a second
   return(x^2)
@@ -595,7 +595,7 @@ slow_square = function(x = 1) {
 
 How long does it take to run this for 24 iterations?
 
-```r
+``` r
 tic()
 sapply(1:24, slow_square)
 ```
@@ -605,19 +605,19 @@ sapply(1:24, slow_square)
 ## [20] 400 441 484 529 576
 ```
 
-```r
+``` r
 toc()
 ```
 
 ```
-## 8 sec elapsed
+## 8.01 sec elapsed
 ```
 
 The iteration is executed in **serial,** so it should have taken about `\(24 * 1/3 = 8\)` seconds.
 
 But we can speed this up. Modern CPUs are made up of multiple **cores,** or processing units, so they can actually run iterations in **parallel.** How many cores does your computer have?
 
-```r
+``` r
 availableCores()
 ```
 
@@ -632,7 +632,7 @@ availableCores()
 
 A really easy way to **parallelize** your code uses the `future.apply` package. Let's try it:
 
-```r
+``` r
 tic()
 future_sapply(1:24, slow_square)
 ```
@@ -642,12 +642,12 @@ future_sapply(1:24, slow_square)
 ## [20] 400 441 484 529 576
 ```
 
-```r
+``` r
 toc()
 ```
 
 ```
-## 2.14 sec elapsed
+## 2.05 sec elapsed
 ```
 
 Much less time! We've engaged not just one core, but all of them.
@@ -683,7 +683,7 @@ Other functions for vectorization:
 * Base: `lapply()` returns a list instead of a vector, so it's a bit more general. (You can always `unlist` the result.)
 
 
-```r
+``` r
 sapply(1:2, sqrt)
 ```
 
@@ -691,7 +691,7 @@ sapply(1:2, sqrt)
 ## [1] 1.000000 1.414214
 ```
 
-```r
+``` r
 lapply(1:2, sqrt)
 ```
 
@@ -703,7 +703,7 @@ lapply(1:2, sqrt)
 ## [1] 1.414214
 ```
 
-```r
+``` r
 unlist(lapply(1:2, sqrt))
 ```
 

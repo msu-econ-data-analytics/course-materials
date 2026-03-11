@@ -348,6 +348,193 @@ Clearly this is more useful in some situations than others.
 
 ---
 class: inverse, middle
+name: smooth
+
+# Smoothing
+
+Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/smoothing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
+
+---
+
+# Smoothing
+
+**Basic idea:** Separate true signal (a predictable data generating process) from the noise.
+- Problem: Hard to tell the difference.
+- This is a general problem in prediction.
+
+```{r, out.width = "50%", echo = F}
+include_graphics("img/signal-plus-noise-example-1.png")
+```
+
+---
+
+# Bin smoothing / moving averages
+
+How to best estimate a CEF? We can think of this as a problem of predicting
+
+$$Y_i = f(x_i) + \epsilon_i$$
+
+where
+
+$$f(x) = \mathbb{E}[Y|X = x_i].$$
+
+One option that holds intuitive appeal is **bin smoothing.** This is like binscatter, but with overlapping bins.
+
+Take moving averages of $Y$ across your observations $i$ at each point $x_0$ in the support of $x$:
+
+$$ \hat{f}(x_0) = \frac{ \sum_i { Y_i \space 1 \\big\\{ |x_i - x_0| \leq h \\big\\} } } { \sum_i {1 \\big\\{ |x_i - x_0| \leq h \\big\\}} } $$
+
+where $h$ is the bandwidth. E.g., for a weekly moving average, $h = 3.5$.
+
+---
+
+# Bin smoothing / moving averages
+
+Do this at enough values of $x_0$ that it appears continuous:
+
+```{r, echo = F}
+include_graphics("img/binsmoother-animation.gif")
+```
+
+---
+
+# Kernels
+
+We can reduce the variance of this estimate by choosing different weights $w_0$ in the moving average:
+
+$$ \hat{f}(x_0) = \sum_i { Y_i \space w_0(x_i) }  $$
+
+In the moving average example, the weights were either $0$ or $1/N_0$, the number of observations that fall within the window.
+- Turn on and off discretely as data points enter and exit the window.
+
+</br>
+
+Instead, we can choose weights that vary more smoothly.
+
+These weights are described with a **kernel** function.
+- Nonnegative, symmetric, integrates to 1.
+
+---
+
+# Some kernels
+
+Uniform kernel:
+
+$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \leq 1 \\}. $$
+
+```{r, out.width = "60%", echo = F}
+include_graphics("img/Kernel_uniform.svg")
+```
+
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+
+---
+
+# Some kernels
+
+Triangular kernel:
+
+$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
+
+```{r, out.width = "60%", echo = F}
+include_graphics("img/Kernel_triangle.svg")
+```
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+
+---
+
+# Some kernels
+
+Epanechnikov kernel:
+
+$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
+
+```{r, out.width = "60%", echo = F}
+include_graphics("img/Kernel_epanechnikov.svg")
+```
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+
+---
+
+# Some kernels
+
+Gaussian (normal) kernel:
+
+$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
+
+```{r, out.width = "60%", echo = F}
+include_graphics("img/Kernel_exponential.svg")
+```
+.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
+
+---
+
+# Local regression
+
+Instead of treating the mean as constant within each window...
+- **Fit a regression line** within each window.
+
+Regression is estimated via weighted least squares, using the kernel weights.
+
+```{r, out.width = "50%", echo = F}
+include_graphics("img/loess-animation.gif")
+```
+
+---
+
+# Local regression
+
+Instead of treating the mean as constant within each window...
+- **Fit a regression line** within each window.
+
+As usual, larger bandwidths lead to more smoothing.
+
+```{r, out.width = "50%", echo = F}
+include_graphics("img/loess-multi-span-animation.gif")
+```
+
+---
+
+# Local regression >> bin smoothing
+
+Local regression is preferred over bin smoothing / moving averages.
+
+Moving averages can be badly biased at the edges of the data.
+
+---
+
+# Beware of default arguments
+
+Be careful with `geom_smooth`. The default options may not be what you intend.
+- With $<1000$ observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
+- With $> = 1000$ observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
+
+To get *local linear* regression in `ggplot`, specify:
+
+`geom_smooth(method = "loess", method.args = list(degree = 1))`.
+
+
+---
+
+# Beware of default arguments
+
+`loess` does not allow you to choose the bandwidth or kernel.
+- Instead, you can set the share of *all* data used at each point (the "span").
+- Default: `span = 0.75`.
+- Default kernel: tricube.
+
+Alternatives:
+- Package `locpol` allows you to choose the kernel and bandwidth
+  - Or choose it "optimally" based on cross-validation or a "rule of thumb" formula.
+- `gam` estimates the smoothing parameter for you, but it's uncommon in economics.
+
+Practical advice:
+- Use `locpol` for important results, but `geom_smooth` is fine for quick-and-dirty answers.
+- Robustness to method and bandwidth is more important than the particular choices themselves.
+
+
+---
+class: inverse, middle
 name: cef
 
 # Conditional Expectations
@@ -493,15 +680,14 @@ A well-chosen CEF is (almost) everything you need for empirical work.
 - For **prediction:** the CEF is the best predictor of $Y_i$ given $X_i$.
   - In the sense of minimizing mean squared error (bias squared plus variance).
 
-- For **causal inference:** when the variation in $X$ is as-good-as-random, then the CEF shows how $X$ causally affects $Y$.
-  - Specifically, the slope of the CEF is the **average causal response** of $Y$ to a 1-unit change in $X$, for each value of $X$.
+- For **causal inference:** if the variation in $X$ is as-good-as-random, then the CEF shows how $X$ causally affects $Y$.
 
 --
 
 </br>
 
 So... **why are we always running regressions??**
-
+- Why not always show binscatter or local regression plots?
 
 ---
 
@@ -515,7 +701,6 @@ So... **why are we always running regressions??**
 - Regression minimizes the *vertical* sum of squared errors.
 - The mean *also* minimizes the sum of squared errors for a given value of $X_i$.
 - So the regression line approximates the mean over all values of $X_i$, or the CEF.
-- Try out [this game](https://old.mathematik.tu-clausthal.de/en/mathematics-interactive/statistics/guessing-the-regression-line/).
 
 ---
 
@@ -768,193 +953,6 @@ This is exactly what **fixed effects** regression does.
 include_graphics("img/Animation of Fixed Effects.gif")
 ```
 .small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
-
-
----
-class: inverse, middle
-name: smooth
-
-# Smoothing
-
-Parts of this section are adapted from [“Introduction to Data Science”](http://rafalab.dfci.harvard.edu/dsbook/smoothing.html) by Rafael A. Irizarry, used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0).
-
----
-
-# Smoothing
-
-**Basic idea:** Separate true signal (a predictable data generating process) from the noise.
-- Problem: Hard to tell the difference.
-- This is a general problem in prediction.
-
-```{r, out.width = "50%", echo = F}
-include_graphics("img/signal-plus-noise-example-1.png")
-```
-
----
-
-# Bin smoothing / moving averages
-
-How to best estimate a CEF? We can think of this as a problem of predicting
-
-$$Y_i = f(x_i) + \epsilon_i$$
-
-where
-
-$$f(x) = \mathbb{E}[Y|X = x_i].$$
-
-One option that holds intuitive appeal is **bin smoothing.** This is like binscatter, but with overlapping bins.
-
-Take moving averages of $Y$ across your observations $i$ at each point $x_0$ in the support of $x$:
-
-$$ \hat{f}(x_0) = \frac{ \sum_i { Y_i \space 1 \\big\\{ |x_i - x_0| \leq h \\big\\} } } { \sum_i {1 \\big\\{ |x_i - x_0| \leq h \\big\\}} } $$
-
-where $h$ is the bandwidth. E.g., for a weekly moving average, $h = 3.5$.
-
----
-
-# Bin smoothing / moving averages
-
-Do this at enough values of $x_0$ that it appears continuous:
-
-```{r, echo = F}
-include_graphics("img/binsmoother-animation.gif")
-```
-
----
-
-# Kernels
-
-We can reduce the variance of this estimate by choosing different weights $w_0$ in the moving average:
-
-$$ \hat{f}(x_0) = \sum_i { Y_i \space w_0(x_i) }  $$
-
-In the moving average example, the weights were either $0$ or $1/N_0$, the number of observations that fall within the window.
-- Turn on and off discretely as data points enter and exit the window.
-
-</br>
-
-Instead, we can choose weights that vary more smoothly.
-
-These weights are described with a **kernel** function.
-- Nonnegative, symmetric, integrates to 1.
-
----
-
-# Some kernels
-
-Uniform kernel:
-
-$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{2} \space 1\\{|u| \leq 1 \\}. $$
-
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_uniform.svg")
-```
-
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
-
----
-
-# Some kernels
-
-Triangular kernel:
-
-$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = (1-|u|) \space 1\\{|u| \leq 1 \\}. $$
-
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_triangle.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
-
----
-
-# Some kernels
-
-Epanechnikov kernel:
-
-$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{3}{4} (1-u^2) \space 1\\{|u| \leq 1 \\}. $$
-
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_epanechnikov.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
-
----
-
-# Some kernels
-
-Gaussian (normal) kernel:
-
-$$ w_0(x_i) = W(\frac{x_i - x_0}{h}), \space W(u) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}u^2}. $$
-
-```{r, out.width = "60%", echo = F}
-include_graphics("img/Kernel_exponential.svg")
-```
-.small[Image from <a href = "https://en.wikipedia.org/wiki/Kernel_(statistics)">Wikipedia</a> and used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en).]
-
----
-
-# Local regression
-
-Instead of treating the mean as constant within each window...
-- **Fit a regression line** within each window.
-
-Regression is estimated via weighted least squares, using the kernel weights.
-
-```{r, out.width = "50%", echo = F}
-include_graphics("img/loess-animation.gif")
-```
-
----
-
-# Local regression
-
-Instead of treating the mean as constant within each window...
-- **Fit a regression line** within each window.
-
-As usual, larger bandwidths lead to more smoothing.
-
-```{r, out.width = "50%", echo = F}
-include_graphics("img/loess-multi-span-animation.gif")
-```
-
----
-
-# Local regression >> bin smoothing
-
-Local regression is preferred over bin smoothing / moving averages.
-
-Moving averages can be badly biased at the edges of the data.
-
----
-
-# Beware of default arguments
-
-Be careful with `geom_smooth`. The default options may not be what you intend.
-- With $<1000$ observations, uses **local polynomial** smoothing (`loess`) of **degree 2**.
-- With $> = 1000$ observations, uses **penalized regression splines** in a generalized additive model (`gam`), an entirely different method.
-
-To get *local linear* regression in `ggplot`, specify:
-
-`geom_smooth(method = "loess", method.args = list(degree = 1))`.
-
-
----
-
-# Beware of default arguments
-
-`loess` does not allow you to choose the bandwidth or kernel.
-- Instead, you can set the share of *all* data used at each point (the "span").
-- Default: `span = 0.75`.
-- Default kernel: tricube.
-
-Alternatives:
-- Package `locpol` allows you to choose the kernel and bandwidth
-  - Or choose it "optimally" based on cross-validation or a "rule of thumb" formula.
-- `gam` estimates the smoothing parameter for you, but it's uncommon in economics.
-
-Practical advice:
-- Use `locpol` for important results, but `geom_smooth` is fine for quick-and-dirty answers.
-- Robustness to method and bandwidth is more important than the particular choices themselves.
 
 
 ---

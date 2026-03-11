@@ -513,6 +513,13 @@ Even when extreme values are correct and truly belong to your distribution, they
 - But this alone is ***not a reason*** to remove extreme values.
 - Instead, it's a sign that you should consider applying a **transformation** to your variable.
 
+--
+
+"Don't we need the data to be normal to run a regression?"
+- No! This is a common misconception that still gets taught in statistics classes.
+- OLS does not assume or require that your variables follow a normal distribution.
+- As long as you use robust standard errors (which you should anyway).
+
 
 ---
 class: inverse, middle

@@ -79,7 +79,7 @@ name: challenge
 Load this data:
 
 
-```r
+``` r
 puzzle = read_csv("https://bit.ly/3B4BraF")
 ```
 
@@ -92,7 +92,7 @@ puzzle = read_csv("https://bit.ly/3B4BraF")
 # Challenge
 
 
-```r
+``` r
 ggplot(puzzle, aes(x, y)) +
   geom_point(size=4)
 ```
@@ -123,7 +123,7 @@ All 4 of these datasets have the same means, standard deviations, correlation co
 Long before you run a regression, you should be looking at the scatterplots.
 
 
-```r
+``` r
 vienna = read_csv("https://osf.io/y6jvb/download")
 
 ggplot(vienna, aes(x = rating_count, y = price)) + 
@@ -139,7 +139,7 @@ ggplot(vienna, aes(x = rating_count, y = price)) +
 Transformations are often extremely important to learning what's really going on.
 
 
-```r
+``` r
 vienna = vienna |&gt; mutate(ln_price = log(price),
                           ln_rating_count = log(rating_count))
 ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) + 
@@ -155,7 +155,7 @@ ggplot(vienna, aes(x = ln_rating_count, y = ln_price)) +
 Another example of how helpful transformations can be.
 
 
-```r
+``` r
 library(gapminder)
 gap07 = gapminder |&gt;
   filter(year == 2007) |&gt;
@@ -173,7 +173,7 @@ ggplot(gap07, aes(x = pop, y = gdp)) +
 Another example of how helpful transformations can be.
 
 
-```r
+``` r
 gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
@@ -191,7 +191,7 @@ ggplot(gap07, aes(x = pop, y = ln_gdp)) +
 Another example of how helpful transformations can be.
 
 
-```r
+``` r
 gap07 = gap07 |&gt;
   mutate(ln_gdp = log(gdp),
          ln_pop = log(pop))
@@ -211,7 +211,7 @@ When you have a lot of data, scatterplots get too crowded to be useful!
 Download this data scraped from Airbnb for listings in London on the night of 4 March 2017.
 
 
-```r
+``` r
 london = read_csv("https://osf.io/ey5p7/download")
 london2 = london |&gt;
   mutate(ln_price = log(price))
@@ -236,7 +236,7 @@ Binscatter divides your X variable into "bins" and plots the mean of Y within ea
 First, create the bins. They can be equally spaced or equally sized (quantiles).
 - Quantiles are preferred, so each bin represents the same amount of underlying data.
 
-```r
+``` r
 london2 = london2 |&gt; mutate(longitude_bins = factor(ntile(longitude, 40)),
                             bin_color = factor(ntile(longitude, 40) %% 8))
 ggplot(london2, aes(x = longitude, y = ln_price, color = bin_color)) +
@@ -251,7 +251,7 @@ ggplot(london2, aes(x = longitude, y = ln_price, color = bin_color)) +
 
 Then, calculate the means of both X and Y within each bin.
 
-```r
+``` r
 london3 = london2 |&gt;
   group_by(longitude_bins) |&gt;
   mutate(ln_price_binned = mean(ln_price, na.rm = TRUE),
@@ -271,7 +271,7 @@ ggplot(london3) +
 Let's show just the binned points:
 
 
-```r
+``` r
 london_binned = london2 |&gt;
   group_by(longitude_bins) |&gt;
   summarize(across(c("ln_price", "longitude"), mean, na.rm = TRUE))
@@ -289,11 +289,11 @@ Easier: Use `binsreg` ([Cattaneo, Crump, Farrell, and Feng 2021](https://arxiv.o
 - Correctly handles many of the finer statistical details.
 
 
-```r
+``` r
 install.packages("binsreg")
 ```
 
-```r
+``` r
 library(binsreg)
 binsreg(london2$ln_price, london2$longitude)
 ```
@@ -314,7 +314,7 @@ binsreg(london2$ln_price, london2$longitude)
 ## # of clusters (Nclust)             =  NA
 ## dots, degree (p)                   =  0
 ## dots, smoothness (s)               =  0
-## # of bins (nbins)                  =  71
+## # of bins (nbins)                  =  87
 ```
 
 ---
@@ -326,7 +326,7 @@ A useful alternative to binscatter is **local regression.**
 Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
 
 
-```r
+``` r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
 
   geom_smooth()
@@ -343,7 +343,7 @@ A useful alternative to binscatter is **local regression.**
 Local regression gives a smooth line that closely resembles the binscatter plot. What does it do exactly? We'll come back to this.
 
 
-```r
+``` r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth()
@@ -360,7 +360,7 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 Clearly this is more useful in some situations than others.
 
 
-```r
+``` r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
   geom_point(aes(x = longitude_binned, y = ln_price_binned), size = 2) +
   geom_smooth(method = "lm", formula = y ~ x)
@@ -377,7 +377,7 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 Clearly this is more useful in some situations than others.
 
 
-```r
+``` r
 ggplot(london3, aes(x = longitude, y = ln_price)) +
   geom_smooth(data = filter(london3, longitude &lt; -0.17), method = 'lm', formula = y~x) +
   geom_smooth(data = filter(london3, longitude &gt; -0.17), method = 'lm', formula = y~x) +
@@ -395,355 +395,6 @@ You can also add the **line of best fit**, aka the **least-squares regression li
 Clearly this is more useful in some situations than others.
 
 **So if you just ran a regression without plotting your data, you would get a woefully misleading answer!**
-
-
----
-class: inverse, middle
-name: cef
-
-# Conditional Expectations
-
-Images and code in this section are from ["Why Regression?"](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) by Ed Rubin, used with permission, and are not included under this resource's overall CC license.
-
----
-
-# The Conditional Expectation Function (CEF)
-
-The CEF tells us the **expected value** (population mean) of an outcome variable `\(Y_i\)` at each value of `\(X_i\)`.
-$$ \mathbb{E}[Y_i|X_i] $$
-
-Examples:
-- `\(\mathbb{E}[\text{Price}_i|\text{Longitude}_i]\)`
-- `\(\mathbb{E}[\text{Income}_i|\text{Education}_i]\)`
-- `\(\mathbb{E}[\text{Birth weight}_i|\text{Air pollution}_i]\)`
-
-&lt;/br&gt;
-
-Binscatter and local regression give **nonparametric estimates** of the CEF.
-- Nonparametric: functional form is not pre-specified but rather driven by the data.
-
-
----
-class: clear, middle, center
-
-The conditional distributions of `\(\text{Y}_{i}\)` for `\(\text{X}_{i} = x\)` in 8, ..., 22.
-
-
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
-
----
-class: clear, middle, center
-
-The CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`, connects these conditional distributions' means.
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
-
----
-class: clear, middle, center
-
-Focusing in on the CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`...
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/fig_cef_only-1.png" style="display: block; margin: auto;" /&gt;
-
----
-
-# The Conditional Expectation Function
-
-A well-chosen CEF is (almost) everything you need for empirical work.
-
-- For **prediction:** the CEF is the best predictor of `\(Y_i\)` given `\(X_i\)`.
-  - In the sense of minimizing mean squared error (bias squared plus variance).
-
-- For **causal inference:** when the variation in `\(X\)` is as-good-as-random, then the CEF shows how `\(X\)` causally affects `\(Y\)`.
-  - Specifically, the slope of the CEF is the **average causal response** of `\(Y\)` to a 1-unit change in `\(X\)`, for each value of `\(X\)`.
-
---
-
-&lt;/br&gt;
-
-So... **why are we always running regressions??**
-
-
----
-
-# Why Use Regression?
-
-**Regression gives the best linear approximation of the CEF.**
-
-- Again, "best" in the sense of lowest possible mean squared error.
-
-**Why?** The intuition:
-- Regression minimizes the *vertical* sum of squared errors.
-- The mean *also* minimizes the sum of squared errors for a given value of `\(X_i\)`.
-- So the regression line approximates the mean over all values of `\(X_i\)`, or the CEF.
-- Try out [this game](https://old.mathematik.tu-clausthal.de/en/mathematics-interactive/statistics/guessing-the-regression-line/).
-
----
-
-# Why Use Regression?
-
-**Regression gives the best linear approximation of the CEF.**
-
-- Again, "best" in the sense of lowest possible mean squared error.
-
-Regression is a **good way to summarize the CEF,** even when the CEF is not linear.
-- Your regression can be useful even if it is not a literally correct model of the true data generating process.
-- But, different regressions may be more or less useful (better or worse approximations of the CEF).
-
-How useful is *your* regression in *your* situation?
-- Look at a nonparametric estimate of your CEF to see if your regression is a good approximation.
-- That is: binscatter or local regression.
-
----
-
-# Why Use Regression?
-
-My view:
-
-**By the time you actually run a regression, the results should never be a surprise.**
-- Because you have already learned what the underlying CEF looks like.
-
---
-
-So what's the point of running regressions?
-1. **Quantification:** To measure the average slope of the CEF.
-2. **Statistical inference:** To compute standard errors.
-
-&lt;/br&gt;
-
---
-
-What if linear regression is not a good approximation to the CEF?
-- You can always add nonlinear *terms* to a regression to improve the approximation.
-- Doesn't change the fact that regression provides a linear *approximation*, in the sense that all the terms enter the model in a linear combination.
-
-
-
----
-class: inverse, middle
-name: adjusting
-
-# Adjusting for other variables
-
----
-
-# Simpson's Paradox
-
-A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
-
-&lt;img src="img/Simpsons_paradox_-_animation.gif" width="67%" style="display: block; margin: auto;" /&gt;
-
-Which trend is the "right" one?
-
-.small[Image from [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif) and used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]
-
----
-
-# The Simpsons Paradox
-
-A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
-
-&lt;img src="img/the-simpsons-paradox.jfif" width="67%" style="display: block; margin: auto;" /&gt;
-.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
-
----
-
-# The Simpsons Pair O' Docs
-
-A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
-
-&lt;img src="img/the-simpsons-pair-o-docs.jfif" width="73%" style="display: block; margin: auto;" /&gt;
-.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
-
----
-
-# Adjusting for a binary variable
-
-Let's go back to the `gapminder` data and plot life expectancy by GDP:
-
-
-```r
-library(gapminder)
-gap07 = gapminder |&gt;
-  filter(year == 2007) |&gt;
-  mutate(gdp = pop * gdpPercap,
-         ln_gdp = log(gdp),
-         ln_pop = log(pop))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp)) +
-  geom_point()
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-Suppose you think there might be something different about Africa.
-
-Create a binary variable and color the dots by it:
-
-
-```r
-gap07 = gap07 |&gt;
-  mutate(africa = if_else(continent == "Africa", 1, 0))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
-  geom_point()
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-Suppose you think there might be something different about Africa.
-
-Create a binary variable and color the dots by it:
-
-
-```r
-gap07 = gap07 |&gt;
-  mutate(africa = factor(if_else(continent == "Africa", 1, 0)))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
-  geom_point()
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-28-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-We can **adjust** for the Africa indicator, in order to remove its influence on the relationship we're seeing between GDP and life expectancy.
-
----
-
-# Adjusting for a binary variable
-
-First, find the mean differences in the `\(X\)` variable that are explained by `Africa`.
-
-
-```r
-gap07 = gap07 |&gt;
-  group_by(africa) |&gt;
-  mutate(ln_gdp_by_africa = mean(ln_gdp))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
-  geom_point() + 
-  geom_vline(aes(xintercept = ln_gdp_by_africa, color = africa))
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-Remove the differences explained by `Africa`, by subtracting these group means from `\(X\)`.
-
-
-```r
-gap07 = gap07 |&gt;
-  group_by(africa) |&gt;
-  mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
-  geom_point() + 
-  geom_vline(aes(xintercept = 0, color = africa))
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-Second, find the mean differences in the `\(Y\)` variable that are explained by `Africa`.
-
-
-```r
-gap07 = gap07 |&gt;
-  group_by(africa) |&gt;
-  mutate(lifeExp_by_africa = mean(lifeExp))
-ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
-  geom_point() + 
-  geom_hline(aes(yintercept = lifeExp_by_africa, color = africa))
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-Remove the differences explained by `Africa`, by subtracting these group means from `\(Y\)`.
-
-
-```r
-gap07 = gap07 |&gt;
-  group_by(africa) |&gt;
-  mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
-ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
-  geom_point() + 
-  geom_hline(aes(yintercept = 0, color = africa))
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-For a more easily interpretable graph, add the "grand" (overall sample) means back in:
-
-
-```r
-gap07 = gap07 |&gt;
-  ungroup() |&gt;
-  mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
-         lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
-ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
-  geom_point()
-```
-
-&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Adjusting for a binary variable
-
-**This is exactly what happens when you "control for" a variable in a regression.**
-
-Note: You do have to adjust both your X and Y variables. Adjusting only Y is not enough -- it'll give the wrong answer. (Look up the Frisch-Waugh Theorem.)
-- One common place this trips people up is in seasonal adjustment.
-
---
-
-Did we gain anything useful by adjusting for whether a country is in Africa?
-
-&lt;img src="img/you-were-so-preoccupied-with-whether-or-not-you-could-you-didnt-stop-to-think-if-you-should.jpg" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-# Within-unit variation
-
-What if, instead of a binary indicator variable, we want to adjust for many different categories?
-- For example, we might observe multiple observations over time for the same person, household, firm, or county.
-
-We can follow the same process of subtracting out group means as we did for the binary variable. The only difference is that we might have thousands of different groups, instead of just two.
-
-Now the variation remaining is all **within-unit.**
-
---
-
-This is exactly what **fixed effects** regression does.
-
----
-
-# Within-unit variation
-
-&lt;img src="img/Animation of Fixed Effects.gif" style="display: block; margin: auto;" /&gt;
-.small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
 
 
 ---
@@ -915,6 +566,353 @@ Alternatives:
 Practical advice:
 - Use `locpol` for important results, but `geom_smooth` is fine for quick-and-dirty answers.
 - Robustness to method and bandwidth is more important than the particular choices themselves.
+
+
+---
+class: inverse, middle
+name: cef
+
+# Conditional Expectations
+
+Images and code in this section are from ["Why Regression?"](https://github.com/edrubin/EC607S21/tree/master/notes-lecture/03-why-regression) by Ed Rubin, used with permission, and are not included under this resource's overall CC license.
+
+---
+
+# The Conditional Expectation Function (CEF)
+
+The CEF tells us the **expected value** (population mean) of an outcome variable `\(Y_i\)` at each value of `\(X_i\)`.
+$$ \mathbb{E}[Y_i|X_i] $$
+
+Examples:
+- `\(\mathbb{E}[\text{Price}_i|\text{Longitude}_i]\)`
+- `\(\mathbb{E}[\text{Income}_i|\text{Education}_i]\)`
+- `\(\mathbb{E}[\text{Birth weight}_i|\text{Air pollution}_i]\)`
+
+&lt;/br&gt;
+
+Binscatter and local regression give **nonparametric estimates** of the CEF.
+- Nonparametric: functional form is not pre-specified but rather driven by the data.
+
+
+---
+class: clear, middle, center
+
+The conditional distributions of `\(\text{Y}_{i}\)` for `\(\text{X}_{i} = x\)` in 8, ..., 22.
+
+
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: clear, middle, center
+
+The CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`, connects these conditional distributions' means.
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: clear, middle, center
+
+Focusing in on the CEF, `\(\mathop{E}\left[ \text{Y}_{i}\mid \text{X}_{i} \right]\)`...
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/fig_cef_only-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# The Conditional Expectation Function
+
+A well-chosen CEF is (almost) everything you need for empirical work.
+
+- For **prediction:** the CEF is the best predictor of `\(Y_i\)` given `\(X_i\)`.
+  - In the sense of minimizing mean squared error (bias squared plus variance).
+
+- For **causal inference:** if the variation in `\(X\)` is as-good-as-random, then the CEF shows how `\(X\)` causally affects `\(Y\)`.
+
+--
+
+&lt;/br&gt;
+
+So... **why are we always running regressions??**
+- Why not always show binscatter or local regression plots?
+
+---
+
+# Why Use Regression?
+
+**Regression gives the best linear approximation of the CEF.**
+
+- Again, "best" in the sense of lowest possible mean squared error.
+
+**Why?** The intuition:
+- Regression minimizes the *vertical* sum of squared errors.
+- The mean *also* minimizes the sum of squared errors for a given value of `\(X_i\)`.
+- So the regression line approximates the mean over all values of `\(X_i\)`, or the CEF.
+
+---
+
+# Why Use Regression?
+
+**Regression gives the best linear approximation of the CEF.**
+
+- Again, "best" in the sense of lowest possible mean squared error.
+
+Regression is a **good way to summarize the CEF,** even when the CEF is not linear.
+- Your regression can be useful even if it is not a literally correct model of the true data generating process.
+- But, different regressions may be more or less useful (better or worse approximations of the CEF).
+
+How useful is *your* regression in *your* situation?
+- Look at a nonparametric estimate of your CEF to see if your regression is a good approximation.
+- That is: binscatter or local regression.
+
+---
+
+# Why Use Regression?
+
+My view:
+
+**By the time you actually run a regression, the results should never be a surprise.**
+- Because you have already learned what the underlying CEF looks like.
+
+--
+
+So what's the point of running regressions?
+1. **Quantification:** To measure the average slope of the CEF.
+2. **Statistical inference:** To compute standard errors.
+
+&lt;/br&gt;
+
+--
+
+What if linear regression is not a good approximation to the CEF?
+- You can always add nonlinear *terms* to a regression to improve the approximation.
+- Doesn't change the fact that regression provides a linear *approximation*, in the sense that all the terms enter the model in a linear combination.
+
+
+
+---
+class: inverse, middle
+name: adjusting
+
+# Adjusting for other variables
+
+---
+
+# Simpson's Paradox
+
+A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
+
+&lt;img src="img/Simpsons_paradox_-_animation.gif" width="67%" style="display: block; margin: auto;" /&gt;
+
+Which trend is the "right" one?
+
+.small[Image from [Wikipedia](https://commons.wikimedia.org/wiki/File:Simpsons_paradox_-_animation.gif) and used under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).]
+
+---
+
+# The Simpsons Paradox
+
+A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
+
+&lt;img src="img/the-simpsons-paradox.jfif" width="67%" style="display: block; margin: auto;" /&gt;
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
+
+---
+
+# The Simpsons Pair O' Docs
+
+A trend in a full dataset can disappear or even reverse when looking at the constituent groups individually.
+
+&lt;img src="img/the-simpsons-pair-o-docs.jfif" width="73%" style="display: block; margin: auto;" /&gt;
+.small[Image from [RJ Andrews @infowetrust](https://twitter.com/infowetrust/status/984536880199876608) and not included in the CC license.]
+
+---
+
+# Adjusting for a binary variable
+
+Let's go back to the `gapminder` data and plot life expectancy by GDP:
+
+
+``` r
+library(gapminder)
+gap07 = gapminder |&gt;
+  filter(year == 2007) |&gt;
+  mutate(gdp = pop * gdpPercap,
+         ln_gdp = log(gdp),
+         ln_pop = log(pop))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp)) +
+  geom_point()
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+Suppose you think there might be something different about Africa.
+
+Create a binary variable and color the dots by it:
+
+
+``` r
+gap07 = gap07 |&gt;
+  mutate(africa = if_else(continent == "Africa", 1, 0))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
+  geom_point()
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+Suppose you think there might be something different about Africa.
+
+Create a binary variable and color the dots by it:
+
+
+``` r
+gap07 = gap07 |&gt;
+  mutate(africa = factor(if_else(continent == "Africa", 1, 0)))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
+  geom_point()
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-36-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+We can **adjust** for the Africa indicator, in order to remove its influence on the relationship we're seeing between GDP and life expectancy.
+
+---
+
+# Adjusting for a binary variable
+
+First, find the mean differences in the `\(X\)` variable that are explained by `Africa`.
+
+
+``` r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
+  mutate(ln_gdp_by_africa = mean(ln_gdp))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp, color = africa)) +
+  geom_point() + 
+  geom_vline(aes(xintercept = ln_gdp_by_africa, color = africa))
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-37-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+Remove the differences explained by `Africa`, by subtracting these group means from `\(X\)`.
+
+
+``` r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
+  mutate(ln_gdp_adj_africa = ln_gdp - mean(ln_gdp))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
+  geom_point() + 
+  geom_vline(aes(xintercept = 0, color = africa))
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-38-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+Second, find the mean differences in the `\(Y\)` variable that are explained by `Africa`.
+
+
+``` r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
+  mutate(lifeExp_by_africa = mean(lifeExp))
+ggplot(gap07, aes(y = lifeExp, x = ln_gdp_adj_africa, color = africa)) +
+  geom_point() + 
+  geom_hline(aes(yintercept = lifeExp_by_africa, color = africa))
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-39-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+Remove the differences explained by `Africa`, by subtracting these group means from `\(Y\)`.
+
+
+``` r
+gap07 = gap07 |&gt;
+  group_by(africa) |&gt;
+  mutate(lifeExp_adj_africa = lifeExp - mean(lifeExp))
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
+  geom_point() + 
+  geom_hline(aes(yintercept = 0, color = africa))
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-40-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+For a more easily interpretable graph, add the "grand" (overall sample) means back in:
+
+
+``` r
+gap07 = gap07 |&gt;
+  ungroup() |&gt;
+  mutate(ln_gdp_adj_africa = ln_gdp_adj_africa + mean(ln_gdp),
+         lifeExp_adj_africa = lifeExp_adj_africa + mean(lifeExp))
+ggplot(gap07, aes(y = lifeExp_adj_africa, x = ln_gdp_adj_africa, color = africa)) +
+  geom_point()
+```
+
+&lt;img src="08-Exploratory-part2-with-solutions_files/figure-html/unnamed-chunk-41-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting for a binary variable
+
+**This is exactly what happens when you "control for" a variable in a regression.**
+
+Note: You do have to adjust both your X and Y variables. Adjusting only Y is not enough -- it'll give the wrong answer. (Look up the Frisch-Waugh Theorem.)
+- One common place this trips people up is in seasonal adjustment.
+
+--
+
+Did we gain anything useful by adjusting for whether a country is in Africa?
+
+&lt;img src="img/you-were-so-preoccupied-with-whether-or-not-you-could-you-didnt-stop-to-think-if-you-should.jpg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Within-unit variation
+
+What if, instead of a binary indicator variable, we want to adjust for many different categories?
+- For example, we might observe multiple observations over time for the same person, household, firm, or county.
+
+We can follow the same process of subtracting out group means as we did for the binary variable. The only difference is that we might have thousands of different groups, instead of just two.
+
+Now the variation remaining is all **within-unit.**
+
+--
+
+This is exactly what **fixed effects** regression does.
+
+---
+
+# Within-unit variation
+
+&lt;img src="img/Animation of Fixed Effects.gif" style="display: block; margin: auto;" /&gt;
+.small[Image by [Nick Huntington-Klein](https://nickchk.com/causalgraphs.html) and not included in this resource's overall CC license.]
 
 
 ---
